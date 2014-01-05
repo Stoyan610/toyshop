@@ -1,0 +1,1 @@
+<img id='%sightnum%' width='70px' height='70px' class='dim' src='%site_url%/pictures/toyssmall/%toyname%-%sightnum%.jpg' alt='%toyname%-%sightnum%' onclick='change("#%sightnum%")' />
