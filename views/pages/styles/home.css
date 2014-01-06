@@ -1,0 +1,58 @@
+﻿/*Только на главной*/
+#search {
+	float: right;
+	padding: 0 10px;
+	background-color: #9ADD8D;
+	border: 1px solid #9ADD8D;
+	border-radius: 10px;
+}
+#invitation {
+	padding: 0 0 0 5px;
+	height: 35px;
+	font-family: 'Comic Sans MS', Verdana, 'Lucida Sans Unicode';
+	font-size: 140%;
+	background-color: #D5FFBE;
+}
+#pluto {
+	width: 60px;
+	height: 60px;
+	vertical-align: bottom;
+}
+
+
+/*Всё приветствие будет полностью переделываться, естественно...*/
+		#greeting  {
+			text-align: center;
+			clear: both;
+		}
+		#greeting p {
+			display: block;
+			margin: 0 auto;
+			width: 40%;
+		}
+		#greeting span {
+			font-size: 150%;
+			color: #FF0000;
+		}
+		.left {
+			text-align: left;
+		}
+		.right {
+			text-align: right;
+			font-size: 80%;
+		}
+
+
+
+#goods td {
+	text-align: center;
+	padding: 6px;
+}
+#goods img {
+	border: 10px solid #FDFDFD;
+	border-radius: 10px;
+	margin: 0;
+}
+#goods img:hover {
+	border-color: green;
+}

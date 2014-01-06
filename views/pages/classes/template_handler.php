@@ -18,9 +18,10 @@ abstract class TemplateHandler {
 
   public function __construct($n_item) {
     $this->db = new DbRover();
-    $this->subst_gen_1['%title_of_site%'] = TITLE;
     $this->subst_gen_0['%site_url%'] = VIEW.PAGE;
-    $this->subst_mgr['%toyname%'] = $this->Toy4mgr(0);
+    $this->subst_gen_1['%title_of_site%'] = TITLE;
+    $this->subst_gen_1['%present_page_description%'] = $this->DescrPage();
+    $this->subst_gen_1['%resent_page_key_words%'] = $this->KeywordsPage();
     $this->subst_gen_2['%merry_go_round%'] = $this->GetMerryGoRound();
     $this->subst_basket['%n_item%'] = $n_item;
     $this->subst_basket['%suffix%'] = $this->GetSuffix($n_item);
@@ -30,12 +31,64 @@ abstract class TemplateHandler {
     $this->general_2 = $this->GetReplacedTemplate($this->subst_gen_2, 'general2');
     $this->general_3 = $this->GetReplacedTemplate($this->subst_gen_3, 'general3');
     $this->basket = $this->GetReplacedTemplate($this->subst_basket, 'basket');
-        
-    
   }
-  
-  //Эта функция уже готова...
-  //Получение правильного суффикса для "игрушек" в корзине
+    
+//Эти функции уже готовы...
+  //Замена параметров в строке
+  protected function GetReplacedString($arr, $templ_str) {
+    if ($arr === NULL)      return $templ_str;
+    $predecessor = array();
+		$successor = array();
+		$i = 0;
+		foreach ($arr as $key => $value) {
+			$predecessor[$i] = $key;
+			$successor[$i] = $value;
+			$i++;
+		}
+		return str_replace($predecessor, $successor, $templ_str);
+  }
+  //Получение строки html из файла tpl и замена в ней параметров
+  protected function GetReplacedTemplate($arr, $file_name) {
+    $content = file_get_contents(TEMPLATE.$file_name.".tpl");
+    $next_content = $this->GetReplacedString($this->subst_gen_0, $content);
+    return $this->GetReplacedString($arr, $next_content);
+  }
+  //Получение массива из 24 имён игрушек для "карусели"
+  protected function GetToys4mgr() {
+    $toys = array();
+    //Получение общего числа всех игрушек в базе данных
+    $toy_num = $this->db->СountData(TOYS);
+    if ($toy_num <= N_MGR) {
+      $starttoy = $this->db->ReceiveField(TOYS, 'Name');
+      $rep = ((N_MGR % $toy_num) == 0) ? (N_MGR - (N_MGR % $toy_num)) / $toy_num : (N_MGR - (N_MGR % $toy_num)) / $toy_num + 1;
+      for ($i = 0; $i < $rep; $i++)      $toys = array_merge($toys, $starttoy);
+      while (count($toys) > N_MGR) {
+        array_pop($toys);
+      }
+    }
+    else {
+      $starttoy = $this->db->ReceiveFieldOnCondition(TOYS, 'Name', 'Popularity', '>', 0);
+      $toy_pop = count($starttoy);
+      if ($toy_pop < N_MGR) {
+        $resttoy = $this->db->ReceiveRandomOnCondition(TOYS, 'Name', 'Popularity', '=', 0, (N_MGR - $toy_pop));
+        $toys = array_merge($starttoy, $resttoy);
+      }
+      else      $toys = $starttoy;
+    }
+    return $toys;
+  }
+  //Получение строки html для составления "карусели"
+  protected function GetMerryGoRound() {
+    $toy4mgr = $this->GetToys4mgr();
+    $mgr = $this->GetReplacedTemplate(NULL, 'merrygoround');
+    $str = '';
+    for ($i = 0; $i < N_MGR; $i++) {
+      $this->subst_mgr['%toyname%'] = $toy4mgr[$i];
+      $str .= $this->GetReplacedString($this->subst_mgr, $mgr);
+    }
+    return $str;
+  }
+  //Получение правильного суффикса для слова "игрушки" в корзине
   protected function GetSuffix($n_item) {
     $ind = $n_item % 10;
     if ($n_item == 0) $n_item="нет";
@@ -65,45 +118,8 @@ abstract class TemplateHandler {
     }
     return $suff;
   }
-  //Эта функция уже готова...
-  //Получение массива из 24 имён игрушек для "карусели"
-  protected function GetToys4mgr() {
-    $n_mgr = 24;
-    $toys = array();
-    //Получение общего числа всех игрушек в базе данных
-    $toy_num = $this->db->СountData(TOYS);
-    if ($toy_num <= $n_mgr) {
-      $rest = $n_mgr - $toy_num;
-      $toys = $this->db->ReceiveField(TOYS, 'Name');
-      for ($i = 0; $i < $rest; $i++) {
-        $toys[] = EMPTY_TOY;
-      }
-    }
-    else {
-      $starttoy = $this->db->ReceiveFieldOnCondition(TOYS, 'Name', 'Popularity', '>', 0);
-      $toy_pop = count($starttoy);
-      $rest = $n_mgr - $toy_pop;
-      $resttoy = $this->db->ReceiveRandomOnCondition(TOYS, 'Name', 'Popularity', '=', 0, $rest);
-      $toys = array_merge($starttoy, $resttoy);
-    }
-    return $toys;
-  }
-  //Эта функция уже готова...
-  //Получение элемента массива из имён игрушек для "карусели"
-  protected function Toy4mgr($i) {
-    $arr = $this->GetToys4mgr();
-    return $arr[$i];
-  }
   
   
-  //Получение строки html для составления карусели
-  protected function GetMerryGoRound() {
-    
-    
-    //$this->GetReplacedTemplate($this->subst_mgr, 'merrygoround');
-    
-    return 'Something';
-  }
   
   
   
@@ -113,34 +129,18 @@ abstract class TemplateHandler {
   protected function GetSEO() {
     return 'Some SEO';
   }
-  
-  //Эта функция уже готова...
-  //Замена параметров в строке
-  protected function GetReplacedString($arr, $templ_str) {
-    if ($arr === NULL)      return $templ_str;
-    $predecessor = array();
-		$successor = array();
-		$i = 0;
-		foreach ($arr as $key => $value) {
-			$predecessor[$i] = $key;
-			$successor[$i] = $value;
-			$i++;
-		}
-		return str_replace($predecessor, $successor, $templ_str);
-  }
-  
-  //Эта функция уже готова...
-  //Получение строки из файла и замена в ней параметров
-  protected function GetReplacedTemplate($arr, $file_name) {
-    $content = file_get_contents(TEMPLATE.$file_name.".tpl");
-    $next_content = $this->GetReplacedString($this->subst_gen_0, $content);
-    return $this->GetReplacedString($arr, $next_content);
-  }
-  
+  //Получение содержания для meta тега описания страницы
+  abstract public function DescrPage();
+  //Получение содержания для meta тега ключевых слов страницы
+  abstract public function KeywordsPage();
+  //Получение строки html для составления страницы
+  abstract public function CreatePage();
 
-  
-  
-  
+
+
+
+
+
   public function __destruct() {
   }
 }

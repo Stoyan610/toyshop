@@ -41,7 +41,7 @@ class DbRover {
 	}
   //Эта функция готова...
   //Получение массива выборки из базы данных
-	private function Choice($table, $field_list, $condition='', $sort='', $vozr=true, $limit='') {
+	private function Choice($table, $field_list, $condition='', $sort='', $vozr=TRUE, $limit='') {
     $fields = $this->GetFields($field_list);
     //подготовка названия таблицы для запроса
 		$table = "`".$table."`";
@@ -96,8 +96,8 @@ class DbRover {
 	}
   //Эта функция готова...
   //Получение информации в одном поле из записи, если известно условие на значение другого поля в этой записи
-	public function ReceiveFieldOnCondition($table, $outfield, $infield, $sign, $invalue) {
-		$result = $this->Choice($table, array($outfield), "`".$infield."`".$sign."'".addslashes($invalue)."'");
+	public function ReceiveFieldOnCondition($table, $outfield, $infield, $sign, $invalue, $limit='') {
+		$result = $this->Choice($table, array($outfield), "`".$infield."`".$sign."'".addslashes($invalue)."'", '', TRUE, $limit);
     $num = count($result);
 		if ($num < 1) return FALSE;
 		$output = array();
