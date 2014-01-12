@@ -6,8 +6,8 @@ defined('ACCESS') or die('Access denied');
 class DbRover {
   private $connection;
   
-  public function __construct() {
-		$this->connection = new mysqli(HOST, DB_USER, DB_PASS, DB) or die("№ 3' - Can't set connection to DB");
+  public function __construct($user, $pass) {
+		$this->connection = new mysqli(HOST, $user, $pass, DB) or die("№ 3' - Can't set connection to DB");
 		$this->connection->query("SET NAMES 'utf8'");
     
 	}

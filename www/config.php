@@ -2,10 +2,9 @@
 
 //Запрет прямого обращения
 defined('ACCESS') or die('Access denied');
-echo '№ 1 - Файл конфигурации подключен<br />';
 
-//Домен - адрес
-define('PATH', 'http://localhost:8888/toyshop.local/www/');
+//Домен - адрес и Сервер БД и Пароль пользователя
+require_once 'config_address.php';
 //Имя сайта
 define('SITENAME', 'toyshop.local');
 //Путь к модели - обработчику базы данных
@@ -20,15 +19,13 @@ define('PAGE', 'pages/');
 define('TEMPLATE', 'templates/');
 //Путь к классам
 define('CLASSES', 'classes/');
+//Путь к картинкам
+define('PICT', 'pictures/');
 
-//Сервер БД
-define('HOST', 'localhost:8889');
 //БД
 define('DB', 'toyshop');
 //Пользователь БД
 define('DB_USER', 'root');
-//Пароль пользователя
-define('DB_PASS', 'root');
 //Префикс к паролям
 define('PASS_PREFIX', 'multik');
 
@@ -36,6 +33,8 @@ define('PASS_PREFIX', 'multik');
 define('TOYS', 'A_PRODUCT');
 //Таблицы базы данных - таблица мультфильмов
 define('MULTS', 'A_CATALOG');
+//Таблицы базы данных - таблица контента
+define('INFO', 'A_CONTENT');
 
 //Название магазина
 define('TITLE', 'Интернет магазин игрушек - героев мультфильмов');

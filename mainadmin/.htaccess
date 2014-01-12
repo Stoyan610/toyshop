@@ -1,0 +1,3 @@
+AddDefaultCharset utf-8
+php_flag magic_quates_gpc Off
+ErrorDocument 404 http://localhost:8888/toyshop/www/page404.html

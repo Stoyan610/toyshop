@@ -1,13 +1,17 @@
 <?php
 
+//Запрет прямого обращения
+defined('ACCESS') or die('Access denied');
+
 echo '№ 6 - Класс создателя домашней страницы подключен<br />';
 
-//Подключеие абстрактного класса обработчика шаблонов
+//Подключение абстрактного класса обработчика шаблонов
 require_once 'template_handler.php';
 
 class Home extends TemplateHandler {
   protected $subst;
   protected $mults;
+  protected $greeting;
   public $homebody;
 
   public function __construct($n_item) {
@@ -15,11 +19,17 @@ class Home extends TemplateHandler {
     $this->subst['%greeting%'] = $this->GetGreeting();
     $this->mults = $this->GetMult();
   }
-  
+  //Эта функция готова...
   //Получение строки-приветствия html из файла tpl и замена в ней параметров
   protected function GetGreeting() {
-    return 'Some Greeting!!!';
+    //Получение текста приветствия из базы данных
+    $this->greeting['%title_of_article%'] = $this->db->ReceiveFieldOnCondition(INFO, 'Title', 'Category', '=', 'Приветствие');
+    $this->greeting['%hello%'] = $this->db->ReceiveFieldOnCondition(INFO, 'Brief', 'Category', '=', 'Приветствие');
+    $this->greeting['%article_body%'] = $this->db->ReceiveFieldOnCondition(INFO, 'Text', 'Category', '=', 'Приветствие');
+    return $this->GetReplacedTemplate($this->greeting, 'greeting');
   }
+  
+  
   //Получение содержания для meta тега описания страницы
   public function DescrPage() {
     
@@ -38,6 +48,7 @@ class Home extends TemplateHandler {
     $mults = array();
     //Получение общего числа всех мультфильмов в базе данных
     $mult_num = $this->db->СountData(MULTS);
+    if ($mult_num == 0)    for ($i = 0; $i < 6; $i++)    $mults = EMPTY_MULT;
     if ($mult_num <= 6) {
       $startmult = $this->db->ReceiveField(MULTS, 'Mult_Name');
       $rep = ((6 % $mult_num) == 0) ? (6 - (6 % $mult_num)) / $mult_num : (6 - (6 % $mult_num)) / $mult_num + 1;

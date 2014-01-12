@@ -1,5 +1,8 @@
 <?php
 
+//Запрет прямого обращения
+defined('ACCESS') or die('Access denied');
+
 echo '№ 7 - Класс обработчика шаблонов подключен<br />';
 
 abstract class TemplateHandler {
@@ -17,7 +20,7 @@ abstract class TemplateHandler {
   
 
   public function __construct($n_item) {
-    $this->db = new DbRover();
+    $this->db = new DbRover(DB_USER, DB_PASS);
     $this->subst_gen_0['%site_url%'] = VIEW.PAGE;
     $this->subst_gen_1['%title_of_site%'] = TITLE;
     $this->subst_gen_1['%present_page_description%'] = $this->DescrPage();
@@ -58,6 +61,7 @@ abstract class TemplateHandler {
     $toys = array();
     //Получение общего числа всех игрушек в базе данных
     $toy_num = $this->db->СountData(TOYS);
+    if ($toy_num == 0)    for ($i = 0; $i < N_MGR; $i++)    $toys = EMPTY_TOY;
     if ($toy_num <= N_MGR) {
       $starttoy = $this->db->ReceiveField(TOYS, 'Name');
       $rep = ((N_MGR % $toy_num) == 0) ? (N_MGR - (N_MGR % $toy_num)) / $toy_num : (N_MGR - (N_MGR % $toy_num)) / $toy_num + 1;

@@ -1,5 +1,9 @@
 <?php
 session_start();
+
+//Запрет прямого обращения
+defined('ACCESS') or die('Access denied');
+
 if (!isset($_SESSION['items'])) $_SESSION['items'] = 0;
 $n_item = $_SESSION['items'];
 echo $n_item;
@@ -7,7 +11,7 @@ echo '<br />';
 echo '№ 4 - Создатели видов страниц подключены<br />';
 
 //Проверка кода страницы, Обработка GET-данных, и преобразование html коды в html-сущности, и присваивание странице название файла страницы
-if (!$_GET['page']) $page = 'home.php';
+if (!isset($_GET['page'])) $page = 'home.php';
 else {
   $page = htmlspecialchars($_GET['page']).'php';
   unset($_GET['page']);
@@ -18,6 +22,8 @@ echo '<br />';
 
 //Подключение класса обработчика шаблонов
 require_once CLASSES.$page;
+//Уничтожить объект, если он был создан для предыдущей страницы
+if (isset($pager)) unset($pager);
 //Создание объекта, соответствующего затребованной странице
 switch ($page) {
   case 'home.php': {
