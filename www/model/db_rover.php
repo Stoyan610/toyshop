@@ -57,18 +57,18 @@ class DbRover {
 			}
 			default: {
 				$sort = "ORDER BY `".$sort."`";
-				if (!$vozr)    $sort .= "DESC";
+				if (!$vozr)    $sort .= " DESC";
 			}
 		}
-    //подготовка количества записей в выборке для запроса
+    //Подготовка количества записей в выборке для запроса
 		if (($limit) && ($this->isPosInt($limit) ))     $limit = "LIMIT ".$limit;
 		else $limit = '';
-    //подготовка запроса по условию выборки
-		if ($condition)     $zapros = "SELECT ".$fields." FROM ".$table_name." WHERE ".$condition." ".$sort." ".$limit;
-		else $zapros = "SELECT ".$fields." FROM ".$table_name." ".$sort." ".$limit;
-    //формирование массива выборки
+    //Подготовка запроса по условию выборки
+		if ($condition)     $zapros = "SELECT ".$fields." FROM ".$table." WHERE ".$condition." ".$sort." ".$limit;
+		else $zapros = "SELECT ".$fields." FROM ".$table." ".$sort." ".$limit;
+    //Формирование массива выборки
 		$result = $this->connection->query($zapros);
-		if (!$result) return FALSE;
+    if (!$result) return FALSE;
 		$data_arr = array();
 		$i = 0;
 		while ($record = $result->fetch_assoc()) {
@@ -84,6 +84,11 @@ class DbRover {
 		$result = $this->Choice($table, array("COUNT('ID')"));
 		return $result[0]["COUNT('ID')"];
   }
+  //Получение всех записей и их сортировка
+	public function ReceiveAll($table, $sort='', $vozr=TRUE) {
+    return $this->Choice($table, array("*"), '', $sort, $vozr);
+  }
+
   //Эта функция готова...
   //Получение информации в одном поле из записи
 	public function ReceiveField($table, $outfield) {
@@ -97,7 +102,8 @@ class DbRover {
   //Эта функция готова...
   //Получение информации в одном поле из записи, если известно условие на значение другого поля в этой записи
 	public function ReceiveFieldOnCondition($table, $outfield, $infield, $sign, $invalue, $limit='') {
-		$result = $this->Choice($table, array($outfield), "`".$infield."`".$sign."'".addslashes($invalue)."'", '', TRUE, $limit);
+		$cond = "`".$infield."`".$sign."'".addslashes($invalue)."'";
+    $result = $this->Choice($table, array($outfield), $cond, '', TRUE, $limit);
     $num = count($result);
 		if ($num < 1) return FALSE;
 		$output = array();
@@ -105,10 +111,11 @@ class DbRover {
 		return $output;
 	}
   //Эта функция готова...
-  //получение случайной информации в одном поле из записи, если известно условие на значение другого поля в этой записи
+  //Получение случайной информации в одном поле из записи, если известно условие на значение другого поля в этой записи
 	public function ReceiveRandomOnCondition($table, $outfield, $infield, $sign, $invalue, $limit) {
-		return $this->choice($table_name, array($outfield), "`".$infield."`".$sign."'".addslashes($invalue)."'", "RAND()", "", $limit);
-}
+		$cond = "`".$infield."`".$sign."'".addslashes($invalue)."'";
+    return $this->choice($table, array($outfield), $cond, "RAND()", "", $limit);
+  }
 
   
   
@@ -117,12 +124,5 @@ class DbRover {
 		if ($this->connection) $this->connection->close();
 	}
 }
-
-
-
-echo '№ 3 - Модель подключена, и подключение к базе данных установлено<br />';
-
-
-
 
 ?>

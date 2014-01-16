@@ -8,8 +8,8 @@ $root = $_SERVER['DOCUMENT_ROOT'];
 $sample = '~[^\\/]*$~';
 $pure_root = preg_replace($sample, '', $root);
 
-//Для Денвера ничего не добавляется, а для MAMP добавляется 'htdoc/toyshop.local/'
-define('PATH', $pure_root.'htdoc/toyshop.local/');
+//Для Денвера ничего не добавляется, а для MAMP добавляется 'htdocs/toyshop.local/'
+define('PATH', $pure_root.'htdocs/toyshop.local/');
 //define('PATH', $pure_root);
 
 //URL-адрес админки - Для Денвера 'mainadmin.toyshop.local/' , а для MAMP 'http://localhost:8888/toyshop.local/mainadmin/'
