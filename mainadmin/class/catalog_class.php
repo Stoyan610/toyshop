@@ -21,6 +21,7 @@ class Catalog extends Admin {
   //Получение полной информации из данной таблицы БД 
   public function GetTable() {
     $arr_table = $this->db->ReceiveAll($this->tbl, 'Priority', FALSE);
+    
     if (!$arr_table) {
       $arr_table = array('ID', 'Name', 'Description', 'Keywords', 'Image', 'Priority', 'PublishFrom');
       echo "<table name='mult' cellspacing='0' cellpadding='3' border='1'><tr style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'>";
@@ -41,7 +42,7 @@ class Catalog extends Admin {
         echo "<tr>";
         foreach ($arr_table[$i] as $key => $val) {
           if ($key == 'Image_ID') {
-            $pic = $this->GetImage($arr_table[$i]['ID']);
+            $pic = $this->GetImage($arr_table[$i]['Image_ID']);
             echo "<td><img src='".SITEURL.VIEW.PAGE.PICT."mult114x86/".$pic.".jpg' alt='".$pic."' height='86' width='114' /></td>";
           }
           echo "<td>".$val."</td>";
@@ -60,15 +61,20 @@ class Catalog extends Admin {
   public function InsertItem() {
     echo '<br /><h2>Новая запись - мультфильм</h2>';
     
-    $arr_table = array('Name' => 'Название', 'Description' => 'Описание', 'Keywords' => 'Ключевые слова', 'Image' => 'Файл изображения', 'Priority' => 'Приоритет', 'PublishFrom' => 'Дата публикации');
+    $arr_table = array('Name' => 'Название', 'Description' => 'Описание', 'Keywords' => 'Ключевые слова', 'Image' => 'Файл изображения из БД', 'Priority' => 'Приоритет', 'PublishFrom' => 'Дата публикации, как (ГГГГ-ММ-ДД)');
     echo "<form name='addmult' action='addmult.php' method='post'>";
     echo "<table name='insertmult' cellspacing='0' cellpadding='5' border='1'>";
     
     foreach ($arr_table as $key => $val) {
-      echo "<tr><td style='font-size: 120%; font-weight: bold;'>".$val;
-      if ($key == 'PublishFrom')          echo " как (ДД-ММ-ГГГГ)";
-      echo "</td><td>";
-      if ($key == 'Image')    echo "<input type='file' name='new_image' /></td></tr>";
+      echo "<tr><td style='font-size: 120%; font-weight: bold;'>".$val."</td><td>";
+      if ($key == 'Image') {
+        //Выбрать картинку из базы данных
+        $arr_img = $this->db->ReceiveField('A_IMAGE', 'FileName');
+        foreach ($arr_img as $key2 => $val2) {
+          echo "<input type='radio' name='new_img' value='".$key2."' />&nbsp;&rarr;&nbsp;<img src='".SITEURL.VIEW.PAGE.PICT."mult114x86/".$val2.".jpg' alt='".$val2."' height='86' width='114' /> - ".$val2."<br />";
+        }
+        echo "</td></tr>";
+      }
       else {
         echo "<input type='text' name='".$key."' value=''";
         if ($key == 'Description')          echo "size='50'";

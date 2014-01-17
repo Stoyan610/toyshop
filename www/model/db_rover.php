@@ -68,7 +68,7 @@ class DbRover {
 		else $zapros = "SELECT ".$fields." FROM ".$table." ".$sort." ".$limit;
     //Формирование массива выборки
 		$result = $this->connection->query($zapros);
-    if (!$result) return FALSE;
+		if (!$result) return FALSE;
 		$data_arr = array();
 		$i = 0;
 		while ($record = $result->fetch_assoc()) {
@@ -90,13 +90,13 @@ class DbRover {
   }
 
   //Эта функция готова...
-  //Получение информации в одном поле из записи
+  //Получение информации в одном поле из записи - на выходе массив с ключами ID
 	public function ReceiveField($table, $outfield) {
-		$result = $this->Choice($table, array($outfield));
+		$result = $this->Choice($table, array($outfield, 'ID'));
     $num = count($result);
 		if ($num < 1) return FALSE;
 		$output = array();
-		for ($i = 0; $i < $num; $i++) $output[$i] = $result[$i][$outfield];
+		for ($i = 0; $i < $num; $i++) $output[$result[$i]['ID']] = $result[$i][$outfield];
 		return $output;
 	}
   //Эта функция готова...
@@ -116,7 +116,30 @@ class DbRover {
 		$cond = "`".$infield."`".$sign."'".addslashes($invalue)."'";
     return $this->choice($table, array($outfield), $cond, "RAND()", "", $limit);
   }
+  //Эта функция готова...
+  //Вставка новой записи в таблицу
+  public function DataIn($table, $fields_values) {
+		//подготовка названия таблицы для запроса
+		$table = "`".$table."`";
+    //Обработка массива ` и '-кавычками
+    $new_f_v = array();
+    foreach ($fields_values as $key => $value) {
+      $key1 = "`".$key."`";
+      if ($value === NULL)    $value1 = 'NULL';
+      else $value1 = "'".$value."'";
+      $new_f_v[$key1] = $value1;
+    }
+    //подготовка названия полей для запроса
+		$fields = implode(", ", array_keys($new_f_v));
+		//подготовка значений полей для запроса
+		foreach ($new_f_v as $value) $value = addslashes($value);
+		$values = implode(", ", $new_f_v);
+    $zapros = "INSERT INTO ".$table." (".$fields.") VALUES (".$values.")";
+    $this->connection->query($zapros);
+	}
 
+  
+  
   
   
   
