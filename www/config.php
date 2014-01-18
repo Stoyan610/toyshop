@@ -3,6 +3,8 @@
 //Запрет прямого обращения
 defined('ACCESS') or die('Access denied');
 
+//Домен - адрес и Сервер БД и Пароль пользователя
+require_once 'config_address.php';
 //Имя сайта
 define('SITENAME', 'toyshop.local');
 //Путь к модели - обработчику базы данных

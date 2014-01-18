@@ -12,7 +12,7 @@ class DbRover {
     
 	}
 
-  //Эта функция готова...  
+  //------------------------------  
   //Проверка числа на положительность и целочисленность
   private function isPosInt($n) {
 		if ($n < 0) return FALSE;
@@ -22,7 +22,8 @@ class DbRover {
 		}
 		return FALSE;
 	}
-  //Эта функция готова...
+  
+  //------------------------------
   //Подготовка названия полей для запроса
   private function GetFields($field_list) {
     $fields = '';
@@ -39,7 +40,8 @@ class DbRover {
     if ($flag == FALSE) $fields = implode(",", $field_list);
     return $fields;
 	}
-  //Эта функция готова...
+  
+  //------------------------------
   //Получение массива выборки из базы данных
 	private function Choice($table, $field_list, $condition='', $sort='', $vozr=TRUE, $limit='') {
     $fields = $this->GetFields($field_list);
@@ -77,8 +79,9 @@ class DbRover {
 		}
 		$result->close();
 		return $data_arr;
-	}  
-  //Эта функция готова...
+	}
+  
+  //------------------------------
   //Получение количества записей в базе
 	public function СountData($table) {
 		$result = $this->Choice($table, array("COUNT('ID')"));
@@ -89,7 +92,7 @@ class DbRover {
     return $this->Choice($table, array("*"), '', $sort, $vozr);
   }
 
-  //Эта функция готова...
+  //------------------------------
   //Получение информации в одном поле из записи - на выходе массив с ключами ID
 	public function ReceiveField($table, $outfield) {
 		$result = $this->Choice($table, array($outfield, 'ID'));
@@ -99,7 +102,8 @@ class DbRover {
 		for ($i = 0; $i < $num; $i++) $output[$result[$i]['ID']] = $result[$i][$outfield];
 		return $output;
 	}
-  //Эта функция готова...
+  
+  //------------------------------
   //Получение информации в одном поле из записи, если известно условие на значение другого поля в этой записи
 	public function ReceiveFieldOnCondition($table, $outfield, $infield, $sign, $invalue, $limit='') {
 		$cond = "`".$infield."`".$sign."'".addslashes($invalue)."'";
@@ -110,13 +114,14 @@ class DbRover {
 		for ($i = 0; $i < $num; $i++) $output[$i] = $result[$i][$outfield];
 		return $output;
 	}
-  //Эта функция готова...
+  //------------------------------
   //Получение случайной информации в одном поле из записи, если известно условие на значение другого поля в этой записи
 	public function ReceiveRandomOnCondition($table, $outfield, $infield, $sign, $invalue, $limit) {
 		$cond = "`".$infield."`".$sign."'".addslashes($invalue)."'";
     return $this->choice($table, array($outfield), $cond, "RAND()", "", $limit);
   }
-  //Эта функция готова...
+  
+  //------------------------------
   //Вставка новой записи в таблицу
   public function DataIn($table, $fields_values) {
 		//подготовка названия таблицы для запроса
@@ -137,7 +142,33 @@ class DbRover {
     $zapros = "INSERT INTO ".$table." (".$fields.") VALUES (".$values.")";
     $this->connection->query($zapros);
 	}
+  
+  //------------------------------
+  //Получение всех полей записи по ID этой записи
+	public function ReceiveAllOnId($table, $id) {
+		if ((!is_int($id)) && (!((is_string($id)) && (preg_match("~^(0|(-?\s?[1-9]\d*))$~", $id)))))    return FALSE;
+		$result = $this->Choice($table, array('ID'), "`ID`='".$id."'");
+		if (count($result) === 0)     return FALSE;
+    $arr = $this->Choice($table, array("*"), "`ID`='".$id."'");
+		return $arr[0];
+  }
+  
 
+  
+  
+  
+  
+  
+  //удалить запись по ID этой записи
+	public function DataOffOnId($table, $id) {
+		if ((!is_int($id)) && (!((is_string($id)) && (preg_match("~^(0|(-?\s?[1-9]\d*))$~", $id)))))    return FALSE;
+    $table = "`".$table."`";
+		$zapros = "DELETE FROM ".$table." WHERE `ID`='".$id."'";
+    $this->connection->query($zapros);
+  }  
+  
+  
+  
   
   
   
