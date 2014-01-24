@@ -9,8 +9,7 @@ class DbRover {
   public function __construct($user, $pass) {
 		$this->connection = new mysqli(HOST, $user, $pass, DB) or die("№ 3' - Can't set connection to DB");
 		$this->connection->query("SET NAMES 'utf8'");
-    
-	}
+ 	}
 
   //------------------------------  
   //Проверка числа на положительность и целочисленность
@@ -30,7 +29,7 @@ class DbRover {
 		$flag = FALSE;
     $field_num = count($field_list);
     for ($i=0; $i<$field_num; $i++) {
-			if (($field_list[$i] != '*') && (!stripos($field_list[$i],"COUNT(`")) && (!stripos($field_list[$i],"SUM(`")) && (!stripos($field_list[$i],"AVG(`")) && (!stripos($field_list[$i],"MIN(`")) && (!stripos($field_list[$i],"MAX(`")))        $field_list[$i] = "`".$field_list[$i]."`";
+			if (($field_list[$i] != '*') && (!stripos($field_list[$i],"COUNT(`")) && (!stripos($field_list[$i],"SUM(`")) && (!stripos($field_list[$i],"AVG(`")) && (!stripos($field_list[$i],"MIN(`")) && (!stripos($field_list[$i],"MAX(`")) && (!stripos($field_list[$i],"DISTINCT `")))        $field_list[$i] = "`".$field_list[$i]."`";
 			else {
 				$fields = $field_list[$i];
 				$flag = TRUE;
@@ -87,15 +86,41 @@ class DbRover {
 		$result = $this->Choice($table, array("COUNT('ID')"));
 		return $result[0]["COUNT('ID')"];
   }
+  
+  
+  
+  //Получение количества записей в базе, если известно условие на значение поля
+	public function СountDataOnCondition($table, $infield, $sign, $invalue) {
+		$cond = "`".$infield."`".$sign."'".addslashes($invalue)."'";
+    $result = $this->Choice($table, array("COUNT('ID')"), $cond);
+		return $result[0]["COUNT('ID')"];
+  }
+  
+  //Получение количества уникальных записей (с неповторяющимся значением поля)
+	public function СountUniqField($table, $field) {
+		$result = $this->Choice($table, array("COUNT(DISTINCT `".$field."`)"));
+    $count = $result[0]["COUNT(DISTINCT ".$field.")"];
+		return $count;
+  }
+  
+  //Получение уникальных (неповторяющихся) значений поля
+	public function GetUniqField($table, $field) {
+		return $this->Choice($table, "DISTINCT `".$field."`");
+  }
+  
+  
+  
+  
+  //------------------------------
   //Получение всех записей и их сортировка
 	public function ReceiveAll($table, $sort='', $vozr=TRUE) {
     return $this->Choice($table, array("*"), '', $sort, $vozr);
   }
 
   //------------------------------
-  //Получение информации в одном поле из записи - на выходе массив с ключами ID
-	public function ReceiveField($table, $outfield) {
-		$result = $this->Choice($table, array($outfield, 'ID'));
+  //Получение информации в одном поле из записи по условию - на выходе массив с ключами ID
+	public function ReceiveIDFieldsOnCondition($table, $outfield, $condition='') {
+		$result = $this->Choice($table, array($outfield, 'ID'), $condition);
     $num = count($result);
 		if ($num < 1) return FALSE;
 		$output = array();
@@ -121,27 +146,18 @@ class DbRover {
     return $this->choice($table, array($outfield), $cond, "RAND()", "", $limit);
   }
   
-  //------------------------------
-  //Вставка новой записи в таблицу
-  public function DataIn($table, $fields_values) {
-		//подготовка названия таблицы для запроса
-		$table = "`".$table."`";
-    //Обработка массива ` и '-кавычками
-    $new_f_v = array();
-    foreach ($fields_values as $key => $value) {
-      $key1 = "`".$key."`";
-      if ($value === NULL)    $value1 = 'NULL';
-      else $value1 = "'".$value."'";
-      $new_f_v[$key1] = $value1;
-    }
-    //подготовка названия полей для запроса
-		$fields = implode(", ", array_keys($new_f_v));
-		//подготовка значений полей для запроса
-		foreach ($new_f_v as $value) $value = addslashes($value);
-		$values = implode(", ", $new_f_v);
-    $zapros = "INSERT INTO ".$table." (".$fields.") VALUES (".$values.")";
-    $this->connection->query($zapros);
-	}
+  
+  
+  //Получение всех полей записи, если известно условие на значение другого поля в этой записи
+	public function ReceiveAllOnCondition($table, $infield, $sign, $invalue) {
+		$cond = "`".$infield."`".$sign."'".addslashes($invalue)."'";
+    $result = $this->Choice($table, array('ID'), $cond);
+		if (count($result) === 0)     return FALSE;
+    $arr = $this->Choice($table, array("*"), $cond);
+		return $arr;
+  }
+  
+  
   
   //------------------------------
   //Получение всех полей записи по ID этой записи
@@ -153,13 +169,30 @@ class DbRover {
 		return $arr[0];
   }
   
-
+  //------------------------------
+  //Вставка новой записи в таблицу
+  public function DataIn($table, $fields_values) {
+		//Подготовка названия таблицы для запроса
+		$table = "`".$table."`";
+    //Обработка массива ` и '-кавычками
+    $new_f_v = array();
+    foreach ($fields_values as $key => $value) {
+      $key1 = "`".$key."`";
+      if ($value === NULL)    $value1 = 'NULL';
+      else $value1 = "'".$value."'";
+      $new_f_v[$key1] = $value1;
+    }
+    //Подготовка названия полей для запроса
+		$fields = implode(", ", array_keys($new_f_v));
+		//подготовка значений полей для запроса
+		foreach ($new_f_v as $value) $value = addslashes($value);
+		$values = implode(", ", $new_f_v);
+    $zapros = "INSERT INTO ".$table." (".$fields.") VALUES (".$values.")";
+    $this->connection->query($zapros);
+	}
   
-  
-  
-  
-  
-  //удалить запись по ID этой записи
+  //------------------------------
+  //Удалить запись по ID этой записи
 	public function DataOffOnId($table, $id) {
 		if ((!is_int($id)) && (!((is_string($id)) && (preg_match("~^(0|(-?\s?[1-9]\d*))$~", $id)))))    return FALSE;
     $table = "`".$table."`";
@@ -167,13 +200,33 @@ class DbRover {
     $this->connection->query($zapros);
   }  
   
-  
-  
-  
-  
-  
-  
-  
+  //------------------------------
+  //Изменить запись по ID записи
+  public function ChangeDataOnId($table, $input, $id) {
+    if ((!is_int($id)) && (!((is_string($id)) && (preg_match("~^(0|(-?\s?[1-9]\d*))$~", $id)))))    return FALSE;
+    $table = "`".$table."`";
+    $some = array();
+    foreach ($input as $key => $val) {
+      if ($key != 'ID')       $some[] = "`".$key."`='".$val."'"; 
+    }
+    $what = implode(",", $some);
+    $zapros = "UPDATE ".$table." SET ".$what." WHERE `ID` = ".$id;
+    $this->connection->query($zapros);
+  }
+
+  //------------------------------
+  //Изменить поле по ID записи
+  public function ChangeFieldOnId($table, $field, $val, $id) {
+    if ((!is_int($id)) && (!((is_string($id)) && (preg_match("~^(0|(-?\s?[1-9]\d*))$~", $id)))))    return FALSE;
+    $table = "`".$table."`";
+    $what = "`".$field."`='".$val."'"; 
+    $zapros = "UPDATE ".$table." SET ".$what." WHERE `ID` = ".$id;
+    $this->connection->query($zapros);
+  }
+
+
+
+
   public function __destruct() {
 		if ($this->connection) $this->connection->close();
 	}

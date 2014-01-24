@@ -9,8 +9,6 @@ abstract class Admin {
     $this->db = new DbRover($user, $pass);
   }
   
-  //Получение фото по ID 
-  abstract public function GetImage($id);
   //Получение полной информации из данной таблицы БД 
   abstract public function GetTable();
   //Добавление новой записи в таблицу БД

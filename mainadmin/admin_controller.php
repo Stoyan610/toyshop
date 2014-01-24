@@ -36,15 +36,15 @@ unset($_GET['table']);
 
 //Переход на страницу, соответствующую таблице
 switch ($table) {
-  case 'A_CATALOG': {
+  case 'a_catalog': {
     header('Location: catalog.php');
     exit;
   }
-  case 'A_PRODUCT': {
+  case 'a_product': {
     header('Location: product.php');
     exit;
   }
-  case 'A_IMAGE': {
+  case 'a_image': {
     header('Location: image.php');
     exit;
   }

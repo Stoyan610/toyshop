@@ -8,6 +8,16 @@ defined('ACCESS') or die('Access denied');
 <head>
 <title>Administrator page</title>
 <meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
+<link rel='stylesheet' type='text/css' href='styles/jquery-ui-1.10.4.custom.min.css' />
+<script type='text/javascript' src='<?=ADMINURL ?>js/jquery-1.10.2.min.js'></script>
+<script type='text/javascript' src='<?=ADMINURL ?>js/jquery-ui-1.10.4.custom.min.js'></script>
+<script type='text/javascript' src='<?=ADMINURL ?>js/pick.js'></script>
+<script type='text/javascript' src='<?=ADMINURL ?>js/misc.js'></script>
+<script type='text/javascript'>
+	$(function(){
+    $("#pick").datepicker();
+  });
+</script>
 <style>
   body {background-color: #B3FFA5;}
 </style>
@@ -15,9 +25,9 @@ defined('ACCESS') or die('Access denied');
 <body>
 
   <ol>
-    <li><a href="admin_controller.php?table=A_CATALOG">Категории</a></li>
-    <li><a href="admin_controller.php?table=A_PRODUCT">Товары</a></li>
-    <li><a href="admin_controller.php?table=A_IMAGE">Изображения</a></li>
+    <li><a href="admin_controller.php?table=a_catalog">Категории</a></li>
+    <li><a href="admin_controller.php?table=a_product">Товары</a></li>
+    <li><a href="admin_controller.php?table=a_image">Изображения</a></li>
     <!-- ........................... -->
   </ol>
   

@@ -16,60 +16,49 @@ require_once 'half_index.php';
 //Подключение модели - обработчика базы данных, и создание его объекта (с подключением к БД)
 require_once PATH.'www/'.MODEL;
 //Создание объекта, соответствующего таблице, и подключение класса обработчика соответствующей таблицы
-require_once PATH.'mainadmin/class/catalog_class.php';
+require_once PATH.'mainadmin/class/image_class.php';
 
 //Уничтожить объект, если он был создан на предыдущей страницы
 if (isset($creator)) {
   unset($creator);
 }
 
-$creator = new Catalog($_SESSION['login'], $_SESSION['password']);
+$creator = new Images($_SESSION['login'], $_SESSION['password']);
 
 if (!isset($_GET['act'])) {
   $creator->GetTable();
 }
 else {
+  
+  
+  
+  
   $act = htmlspecialchars($_GET['act']);
   unset($_GET['act']);
   switch ($act) {
-    case 'changeimg': {
-      $id = htmlspecialchars($_GET['id']);
-      unset($_GET['id']);
-      $creator->ChangeImage($id);
-    break;
-    }
-    case 'edit': {
+    case 'edit_cat': {
       $id = htmlspecialchars($_GET['id']);
       unset($_GET['id']);
       $creator->EditItem($id);
     break;
     }
-    case 'del': {
+    case 'del_cat': {
       $id = htmlspecialchars($_GET['id']);
       unset($_GET['id']);
       $creator->DeleteItem($id);
     break;
     }
-    case 'add': {
+    case 'add_cat': {
       $creator->InsertItem();
     break;
     }
-    
-    case 'part': {
-      //Должен быть вывод таблицы с данными, отобранными по условию
-      
-    break;
-    }
-    
-    
-    
-    
     default: {
       exit ('Это сделать невозможно');
     }
   }
 }
- 
+
+
 ?>
   
 </body>

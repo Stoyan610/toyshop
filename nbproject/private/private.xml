@@ -4,13 +4,13 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/F:/WebServers/home/toyshop.local/www/model/db_rover.php</file>
-            <file>file:/F:/WebServers/home/toyshop.local/mainadmin/addmult.php</file>
-            <file>file:/F:/WebServers/home/toyshop.local/mainadmin/config_address.php</file>
             <file>file:/F:/WebServers/home/toyshop.local/mainadmin/index.php</file>
+            <file>file:/F:/WebServers/home/toyshop.local/www/config.php</file>
             <file>file:/F:/WebServers/home/toyshop.local/mainadmin/class/catalog_class.php</file>
             <file>file:/F:/WebServers/home/toyshop.local/mainadmin/admin_controller.php</file>
             <file>file:/F:/WebServers/home/toyshop.local/mainadmin/half_index.php</file>
             <file>file:/F:/WebServers/home/toyshop.local/mainadmin/catalog.php</file>
+            <file>file:/F:/WebServers/home/toyshop.local/mainadmin/class/admin_class.php</file>
         </group>
     </open-files>
 </project-private>

@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Хост: 127.0.0.1
--- Время создания: Янв 17 2014 г., 00:17
+-- Время создания: Янв 25 2014 г., 02:40
 -- Версия сервера: 5.5.25
 -- Версия PHP: 5.2.12
 
@@ -38,14 +38,15 @@ CREATE TABLE IF NOT EXISTS `a_catalog` (
   UNIQUE KEY `Name_UNIQUE` (`Name`),
   KEY `IX_Priority` (`Priority`),
   KEY `IX_Publish` (`PublishFrom`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
 --
 -- Дамп данных таблицы `a_catalog`
 --
 
 INSERT INTO `a_catalog` (`ID`, `Name`, `Description`, `Keywords`, `Image_ID`, `Priority`, `PublishFrom`) VALUES
-(1, 'Первый мультфильм', 'Самый первый мультфильм, самый популярный', 'самый', 1, 1, '2014-01-01');
+(1, 'Первый мультфильм', 'Самый первый мультфильм, самый популярный', 'самый', 0, 1, '2014-01-01'),
+(2, 'Маша и медведь', 'Современный отечественный мультсериал с хорошим чувством юмора', 'Маша, медведь, мульт, сериал ', 0, 5, '2014-01-16');
 
 -- --------------------------------------------------------
 
@@ -91,21 +92,23 @@ CREATE TABLE IF NOT EXISTS `a_content` (
 
 CREATE TABLE IF NOT EXISTS `a_image` (
   `ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `FileName` varchar(128) NOT NULL,
-  `Width` int(10) unsigned NOT NULL,
-  `Height` int(10) unsigned NOT NULL,
+  `Kind` varchar(45) NOT NULL DEFAULT 'Игрушка',
+  `BigFile` varchar(128) NOT NULL,
+  `Width` int(10) unsigned NOT NULL DEFAULT '0',
+  `Height` int(10) unsigned NOT NULL DEFAULT '0',
   `Alt` varchar(128) DEFAULT NULL,
-  `SmallFile` varchar(128) DEFAULT NULL,
-  `ThumbnailFile` varchar(128) DEFAULT NULL,
+  `SmallFile` varchar(128) NOT NULL,
+  `ThumbnailFile` varchar(128) NOT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
 --
 -- Дамп данных таблицы `a_image`
 --
 
-INSERT INTO `a_image` (`ID`, `FileName`, `Width`, `Height`, `Alt`, `SmallFile`, `ThumbnailFile`) VALUES
-(1, 'emptymult', 0, 0, 'пустой', NULL, NULL);
+INSERT INTO `a_image` (`ID`, `Kind`, `BigFile`, `Width`, `Height`, `Alt`, `SmallFile`, `ThumbnailFile`) VALUES
+(1, 'Мультфильм', 'emptymult', 228, 171, 'пустой мультфильм', 'emptymult', ''),
+(2, 'Игрушка', 'emptytoy', 400, 400, 'фото отсутствует', 'emptytoy', 'emptytoy');
 
 -- --------------------------------------------------------
 
@@ -136,7 +139,6 @@ CREATE TABLE IF NOT EXISTS `a_product` (
   `Name` varchar(128) NOT NULL,
   `Description` varchar(1024) DEFAULT NULL,
   `Keywords` varchar(1024) DEFAULT NULL,
-  `Image_ID` int(10) unsigned DEFAULT NULL,
   `Priority` int(11) DEFAULT NULL,
   `PublishFrom` date DEFAULT NULL,
   `Price` decimal(19,2) NOT NULL,
@@ -151,7 +153,14 @@ CREATE TABLE IF NOT EXISTS `a_product` (
   KEY `IX_Name` (`Name`),
   KEY `IX_Priority` (`Priority`),
   KEY `IX_Publish` (`PublishFrom`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+
+--
+-- Дамп данных таблицы `a_product`
+--
+
+INSERT INTO `a_product` (`ID`, `Catalog_ID`, `Name`, `Description`, `Keywords`, `Priority`, `PublishFrom`, `Price`, `Quantity`, `Manufacture`, `Material`, `Dimension`, `Weight`, `Deadline`, `Popularity`) VALUES
+(1, 2, 'Маша', 'Маша', 'Маша', 1, '2014-01-16', '1000.00', 1, 'Россия', 'плюш', '20х20х30', '0.5', 4, 2);
 
 -- --------------------------------------------------------
 
@@ -187,17 +196,23 @@ CREATE TABLE IF NOT EXISTS `l_basket` (
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `l_product_image`
+-- Структура таблицы `l_image`
 --
 
-CREATE TABLE IF NOT EXISTS `l_product_image` (
+CREATE TABLE IF NOT EXISTS `l_image` (
   `ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `Product_ID` int(10) unsigned NOT NULL,
   `Image_ID` int(10) unsigned NOT NULL,
-  `Priority` int(11) DEFAULT NULL,
-  PRIMARY KEY (`ID`),
-  KEY `IX_Priority` (`Priority`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  `Priority` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+
+--
+-- Дамп данных таблицы `l_image`
+--
+
+INSERT INTO `l_image` (`ID`, `Product_ID`, `Image_ID`, `Priority`) VALUES
+(1, 1, 0, 0);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

@@ -15,10 +15,12 @@ require_once PATH.'www/'.MODEL;
 $db = new DbRover($_SESSION['login'], $_SESSION['password']);
 
 //Проверка POST-параметра 
-if (isset($_POST['delete']))  {
+if (isset($_POST['delete'])) {
   //Определение ID строки для удаления
   $iddel = htmlspecialchars($_POST['del']);
-  $db->DataOffOnId('A_CATALOG', $iddel);
+  $db->DataOffOnId(MULTS, $iddel);
+  $id_img = $db->ReceiveFieldOnCondition(MULTS, 'Image_ID', 'ID', '=', $iddel);
+  if ($id_img > 0) header("Location: ".ADMINURL."image.php?act=del&id=".$id_img);
 }
 
 //Возвращение на страницу catalog.php
