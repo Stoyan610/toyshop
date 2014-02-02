@@ -16,14 +16,14 @@ require_once 'half_index.php';
 //Подключение модели - обработчика базы данных, и создание его объекта (с подключением к БД)
 require_once PATH.'www/'.MODEL;
 //Создание объекта, соответствующего таблице, и подключение класса обработчика соответствующей таблицы
-require_once PATH.'mainadmin/class/catalog_class.php';
+require_once PATH.'mainadmin/class/product_class.php';
 
 //Уничтожить объект, если он был создан на предыдущей страницы
 if (isset($creator)) {
   unset($creator);
 }
 
-$creator = new Catalog($_SESSION['login'], $_SESSION['password']);
+$creator = new Product($_SESSION['login'], $_SESSION['password']);
 
 if (!isset($_GET['act'])) {
   $creator->GetTable();
@@ -36,6 +36,12 @@ else {
       $id = htmlspecialchars($_GET['id']);
       unset($_GET['id']);
       $creator->ChangeImage($id);
+    break;
+    }
+    case 'addimg': {
+      $id = htmlspecialchars($_GET['id']);
+      unset($_GET['id']);
+      $creator->AddImage($id);
     break;
     }
     case 'edit': {

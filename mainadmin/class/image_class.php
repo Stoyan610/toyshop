@@ -6,207 +6,142 @@ require_once PATH.'mainadmin/class/admin_class.php';
 
 class Images extends Admin {
   protected $tbl;
-  protected $tbl_big;
-
+  
   public function __construct($user, $pass) {
     parent::__construct($user, $pass);
-    $this->tbl = 'A_IMAGE';
-    $this->tbl_big = 'L_IMAGE';
+    $this->tbl = IMG;
   }
   
-  //Получение фото по ID 
-  public function GetImage($id) {
-    $img_name = $this->db->ReceiveFieldOnCondition($this->tbl, 'FileName', 'ID', '=', $id);
-    return $img_name[0];
+  //Вывод преложения для получения требуемой информации из данной таблицы БД 
+  public function GetTable() {
+    $stl = "style='font-size: 120%; font-weight: bold;'";
+    echo "<a href='image.php?act=add' ".$stl.">Добавить изображение</a><br /><br /><form name='getkind' action='image.php' method='get'><table name='getkind' cellspacing='0' cellpadding='5' border='1'>";
+    echo "<tr><td ".$stl.">Выбор типа изображений<br />для вывода в таблице</td><td><input type='radio' name='act' value='get_cat' />Мультфильмы<br /><input type='radio' name='act' value='get_prod' />Игрушки<br /><input type='radio' name='act' value='get_all' checked/>Все изображения</td></tr>";
+    echo "<tr><td colspan='2' align='right'><input type='submit' name='gettable' value='Выбор сделан' /></td></tr></table></form><br />";
   }
   
-  //Получение изображений мультфильмов из данной таблицы БД 
-  private function GetCatalogTable() {
-    $arr_table = $this->db->ReceiveAllOnCondition($this->tbl, 'Width', '=', 0);
-    if (!$arr_table)     echo "<table name='picture' cellspacing='0' cellpadding='3' border='1'><tr align='center' style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'><td>ID</td><td>FileName</td><td>Width</td><td>Height</td><td>Alt</td></tr><tr align='center'><td colspan='5'></td><td><a href='image.php?act=add'>Добавить изображение</a></td></tr></table><br />";
-      else {
+  //Вывод информации требуемого вида из данной таблицы БД 
+  public function GetTableOnKind($kind) {
+    echo '<h2>Таблица - Все изображения по выбору "'.$kind.'"</h2>';
+    $stl = "style='font-size: 120%; font-weight: bold;'";
+    echo "<a href='image.php?act=add' ".$stl.">Добавить изображение</a><br /><br />";
+    $arr_table = $this->db->ReceiveAllOnCondition($this->tbl, 'Kind', ' LIKE ', $kind.'%');
+    if (!$arr_table)     echo "<p>Таблица пуста - изображений нет</p>";
+    else {
       $lines = count($arr_table);
-      echo "<table name='picture' cellspacing='0' cellpadding='3' border='1'><tr align='center' style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'>";
-      foreach ($arr_table[0] as $key => $val)     echo "<td>".$key."</td>";
-      echo "<td></td><td></td></tr>";
+      echo "<table name='picture' cellspacing='0' cellpadding='3' border='1'><tr align='center' style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'><td>ID</td><td>Тип</td><td>Изображение</td><td>Большой файл</td><td>Ширина</td><td>Высота</td><td>Описание</td><td>Маленький файл</td><td>Файл-ноготок</td><td></td><td></td></tr>";
       for ($i = 0; $i < $lines; $i++) {
         echo "<tr align='center'>";
         foreach ($arr_table[$i] as $key => $val) {
-          if ($key == 'FileName')       echo "<td><img src='".SITEURL.VIEW.PAGE.PICT."mult114x86/".$val.".jpg' alt='".$val."' height='86' width='114' /><br />".$val."</td>";
-          else echo "<td>".$val."</td>";
+          echo "<td>".$val."</td>";
+          if ($key == 'Kind') {
+            if ($val == 'Игрушка') {
+              $pic = $arr_table[$i]['ThumbnailFile'];
+              echo "<td><img src='".SITEURL.PICT."toy70x70/".$pic.".jpg' alt='".$pic."' width='70' height='70' /></td>";
+            }
+             else {
+               $pic = $arr_table[$i]['SmallFile'];
+               echo "<td><img src='".SITEURL.PICT."mult114x86/".$pic.".jpg' alt='".$pic."' width='114' height='86' /></td>";
+             }
+          }
         }
-        echo "<td><a href='image.php?act=edit_cat&id=".$arr_table[$i]['ID']."'>Редактировать данные</a></td><td><a href='image.php?act=del_cat&id=".$arr_table[$i]['ID']."'>Удалить изображение</a></td></tr>";
+        echo "<td><a href='image.php?act=edit&id=".$arr_table[$i]['ID']."'>Редактировать изображение</a></td><td><a href='image.php?act=del&id=".$arr_table[$i]['ID']."'>Удалить изображение</a></td></tr>";
       }
-      echo "<tr align='center' style='background-color: #4BF831;'>";
-      echo "<td colspan='6'></td><td><a href='image.php?act=add_cat'>Добавить изображение</a></td></tr></table><br />";
-    } 
+      echo "</table><br />";
+    }
   }
-
   
   
-  //Получение массива для посторения таблицы
-  private function GetTableArray() {
-    $arr_toy = $this->db->GetUniqField($this->tbl_big, 'Product_ID');
-    $arr_table = array();
-    foreach ($arr_toy as $toy) {
-      $rows = $this->db->СountDataOnCondition($this->tbl_big, 'Product_ID', '=', $toy);
-      $arr_big = $this->db->ReceiveAllOnCondition($this->tbl_big, 'Product_ID', '=', $toy);
-      $arr_table[$toy]['Name'] = $this->db->ReceiveFieldOnCondition('A_PRODUCT', 'Name', 'ID', '=', $toy);
-      for ($i = 0; $i < $rows; $i++) {
-        $arr_table[$toy][$i]['ID'] = $arr_big[$i]['ID'];
-        $arr_table[$toy][$i]['Image_ID'] = $arr_big[$i]['Image_ID'];
-        $arr_table[$toy][$i]['FileName'] = $this->GetImage($arr_big[$i]['Image_ID']);
-        $arr_table[$toy][$i]['Alt'] = $this->db->ReceiveFieldOnCondition($this->tbl, 'Alt', 'ID', '=', $arr_big[$i]['Image_ID']);
-        $arr_table[$toy][$i]['Priority'] = $arr_big[$i]['Priority'];
+  //Надо бы протестировать
+  //Проверка изображения на независимость от активных ссылок
+  private function WhetherActive($id, $kind) {
+    $today = time();
+    if ($kind == 'Игрушка') {
+      $prod_id = $this->db->ReceiveFieldOnCondition(LIMG, 'Product_ID', 'Image_ID', '=', $id);
+      if (!$prod_id)    return TRUE;
+      else {
+        $num = count($prod_id);
+        for ($i = 0; $i < $num; $i++) {
+          $date = $this->db->ReceiveFieldOnCondition(TOYS, 'PublishFrom', 'ID', '=', $prod_id[$i]);
+          $a = date_parse($date);
+          $date = mktime(0, 0, 1, $a['month'], $a['day'], $a['year']);
+          if ($date > $today)    return FALSE;
+          else     return TRUE;
+        }
       }
     }
-    return $arr_table;
-  }
-  
-  
-  
-  //Получение фото игрушек из данной таблицы БД 
-  private function GetProductTable() {
-    $arr_big = $this->db->ReceiveAll($this->tbl_big);
-    if (!$arr_big)     echo "<table name='picture' cellspacing='0' cellpadding='3' border='1'><tr align='center' style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'><td>Name</td><td>ID</td><td>Image_ID</td><td>FileName</td><td>Alt</td><td>Priority</td></tr><tr align='center'><td colspan='7'></td><td><a href='image.php?act=add'>Добавить фото</a></td></tr></table><br />";
     else {
-      $arr_table = $this->GetTableArray();
-      
-      
-      /*
-      foreach ($arr_big as $key => $value) {
-        $arr_img[$key] = $this->db->ReceiveAllOnId($this->tbl, $arr_big[$key]['Image_ID']);
+      $date = $this->db->ReceiveFieldOnCondition(MULTS, 'PublishFrom', 'Image_ID', '=', $id);
+      if (!$prod_id)    return TRUE;
+      else {
+        $a = date_parse($date);
+        $date = mktime(0, 0, 1, $a['month'], $a['day'], $a['year']);
+        if ($date > $today)    return FALSE;
+        else     return TRUE;
       }
-      $lines = count($arr_table);
-      echo "<table name='picture' cellspacing='0' cellpadding='3' border='1'><tr align='center' style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'>";
-      foreach ($arr_table[0] as $key => $val)     echo "<td>".$key."</td>";
-      echo "<td></td><td></td></tr>";
-      for ($i = 0; $i < $lines; $i++) {
-        echo "<tr align='center'>";
-        foreach ($arr_table[$i] as $key => $val) {
-          if ($key == 'FileName') {
-            if ($this->GetSize($arr_table[$i]['ID']) == 0)     echo "<td><img src='".SITEURL.VIEW.PAGE.PICT."mult114x86/".$val.".jpg' alt='".$val."' height='86' width='114' /><br />".$val."</td>";
-            else     echo "<td><img src='".SITEURL.VIEW.PAGE.PICT."toy135x135/".$val.".jpg' alt='".$val."' height='135' width='135' /><br />".$val."</td>";
-          }
-          else echo "<td>".$val."</td>";
-        }
-        echo "<td><a href='image.php?act=edit&id=".$arr_table[$i]['ID']."'>Редактировать данные</a></td><td><a href='image.php?act=del&id=".$arr_table[$i]['ID']."'>Удалить изображение</a></td></tr>";
-      }
-      echo "<tr align='center' style='background-color: #4BF831;'>";
-      echo "<td colspan='6'></td><td><a href='image.php?act=add'>Добавить изображение</a></td></tr></table><br />";
-     
-    */
-      
-      
-    } 
+    }
   }
-
-
-
-
-  //Получение полной информации из данной таблицы БД 
-  public function GetTable() {
-    echo '<br /><h2>Таблица 1 - Все изображения мультфильмов</h2>';
-    $this->GetCatalogTable();
-    echo '<br /><h2>Таблица 1 - Все фото игрушек</h2>';
-    $this->GetProductTable();
-  }
-
-  
-  
-  
   
   //Удаление записи в таблице БД
   public function DeleteItem($id){
-    
-  }
-  
-  /*
-    echo '<br /><h2>Это изображение будет удалено</h2>';
+    echo '<h2>Это изображение будет удалено</h2>';
     $arr_table = $this->db->ReceiveAllOnId($this->tbl, $id);
-    if (!$arr_table) {
-      exit('Нечего удалять');
-    }
-    echo "<table name='delpic' cellspacing='0' cellpadding='3' border='1'><tr align='center' style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'>";
-    foreach ($arr_table as $key => $val)    echo "<td>".$key."</td>";
-    echo "<td></td></tr><tr align='center'>";
-    foreach ($arr_table as $key => $val) {
-      if ($key == 'FileName') {
-        if ($this->GetSize($arr_table['ID']) == 0)     echo "<td><img src='".SITEURL.VIEW.PAGE.PICT."mult114x86/".$val.".jpg' alt='".$val."' height='86' width='114' /><br />".$val."</td>";
-        else     echo "<td><img src='".SITEURL.VIEW.PAGE.PICT."toy135x135/".$val.".jpg' alt='".$val."' height='135' width='135' /><br />".$val."</td>";
-          }
-      else echo "<td>".$val."</td>";
-    }
-    echo "<td><form name='delete' action='delimage.php' method='post'><input type='radio' name='del' value='".$arr_table['ID']."' />Удалить<br /><input type='radio' name='del' value='0' />Отменить<br /><input type='submit' name='delete' value='Подтверждаю действие' /></form></td></tr></table><br />";
+    if (!$arr_table)     exit('Нечего удалять - такого изображения нет');
+    $pic = $arr_table['SmallFile'];
+    $kind = $arr_table['Kind'];
+    if ($this->WhetherActive($id, $kind)) {
+      echo "<table name='delpic' cellspacing='0' cellpadding='3' border='1'><tr align='center' style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'><td>ID</td><td>Тип</td><td>Изображение</td><td>Большой файл</td><td>Ширина</td><td>Высота</td><td>Описание</td><td>Маленький файл</td><td>Файл-ноготок</td><td></td><td></td></tr><tr align='center'>";
+      foreach ($arr_table as $key => $val) {
+        echo "<td>".$val."</td>";
+        if (($key == 'Kind') && ($kind == 'Игрушка'))      echo "<td><img src='".SITEURL.PICT."toy135x135/".$pic.".jpg' alt='".$pic."' width='135' height='135' /></td>";
+        elseif (($key == 'Kind') && ($kind != 'Игрушка'))     echo "<td><img src='".SITEURL.PICT."mult114x86/".$pic.".jpg' alt='".$pic."' width='114' height='86' /></td>";
+      }
+        echo "<td><form name='delete' action='delimage.php' method='post'><input type='hidden' name='del' value='".$id."' /><input type='submit' name='delete' value='Подтверждаю удаление' /></form></td><td><form name='cancel' action='delimage.php' method='post'><input type='submit' name='cancel' value='Отмена' /></form></td></tr></table><br />";
+      }
+      else {
+        echo "<p>К сожалению, удалить изображение  `".$arr_table['Name']."`  невозможно, так как с ним связаны активные мультфильмы или игрушки</p>";
+        if ($kind == 'Игрушка')     echo "<a href='product.php?act=part&field=Image_ID&value=".$id."'>Показать список соответствующих игрушек?</a> ";
+        else    echo "<a href='catalog.php?act=part&Image_ID=".$id."'>Показать список соответствующих мультфильмов?</a> ";
+        echo "или <a href='image.php'>Вернуться к списку изображений?</a>";
+      }
   }
-  */
   
   //Добавление новой записи в таблицу БД
   public function InsertItem() {
-    
-  }
-  /*
-    echo '<br /><h2>Новая запись - изображение</h2>';
-    echo "<form name='addpicture' action='addimage.php' method='post'>";
+    echo '<h2>Новая запись - изображение</h2>';
     echo "<table name='addpicture' cellspacing='0' cellpadding='5' border='1'>";
+    echo "<form name='addimage' action='addimage.php' method='post' enctype='multipart/form-data'>";
+    $stl = "style='font-size: 120%; font-weight: bold;'";
     //Выбрать файл
-    echo "<tr><td style='font-size: 120%; font-weight: bold;'>Загружаемый файл<br />(возможные форматы: jpg, jpeg, png)</td><td><input type='file' name='ImageFile' /></td></tr>"; 
-    echo "<tr><td style='font-size: 120%; font-weight: bold;'>Тип изображения</td><td><input type='radio' name='Type' value='mult' />Постер мультфильма<br /><input type='radio' name='Type' value='toy' />Фото игрушки</td></tr>";
-    echo "<tr><td style='font-size: 120%; font-weight: bold;'>Имя сохраняемого изображения<br />(латиницей)</td><td><input type='text' name='FileName' value='' /></td></tr>";
-    echo "<tr><td style='font-size: 120%; font-weight: bold;'>Описание</td><td><input type='text' name='Alt' value='' /></td></tr>";
-    echo "<tr><td><input type='radio' name='do' value='add' />Добавить<br /><input type='radio' name='do' value='esc' />Отменить</td><td><input type='submit' name='add' value='Подтверждаю действие' /></td></tr></table></form><br />";
+    echo "<tr><td ".$stl.">Загружаемый файл<br />(только формата jpg)</td><td><input id='file' type='file' name='ImageFile' onchange='checkjpg()' /></td></tr>";
+    echo "<tr><td ".$stl.">Тип изображения</td><td><input type='radio' name='Type' value='Мультфильм' checked />Постер мультфильма<br /><input type='radio' name='Type' value='Игрушка' />Фото игрушки</td></tr><tr><td ".$stl.">Описание</td><td><input id='alt' type='text' name='Alt' value='' required /></td></tr><tr><td ".$stl.">Имя файла большого изображения<br />(латиницей)</td><td><input id='big' type='text' name='BigFile' value='' required /></td></tr><tr><td ".$stl.">Имя файла маленького изображения<br />(латиницей)</td><td><input id='small' type='text' name='SmallFile' value='' required /></td></tr><tr><td ".$stl.">Имя файла изображения-ноготка<br />(латиницей)</td><td><input id='nail' type='text' name='ThumbnailFile' value='' required /></td></tr>";
+    echo "<tr><td colspan='2' align='right'><input onmouseover='valid()' type='submit' name='add' value='Подтверждаю добавление' /></td></tr></form><tr><td colspan='2' align='right'><form name='cancel' action='addimage.php' method='post'><input type='submit' name='cancel' value='Отмена' /></form></td></tr></table><br />";
   }
-  
-  */
-   
   
   //Изменение записи в таблице БД
   public function EditItem($id) {
-    
+    echo '<h2>Изменение записи - изображения</h2>';
+    $arr_table = $this->db->ReceiveAllOnId($this->tbl, $id);
+    if (!$arr_table)     exit('Нечего редактировать - такого изображения нет');
+    $pic = $arr_table['SmallFile'];
+    $kind = $arr_table['Kind'];
+    echo "<table name='editpic' cellspacing='0' cellpadding='3' border='1'><tr align='center' style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'><td>ID</td><td>Тип изображения</td><td>Изображение</td><td>Описание</td><td></td><td></td></tr><tr><form name='edit' action='editimage.php' method='post'>";
+    foreach ($arr_table as $key => $val) {
+      if ($key == 'ID') {
+        echo "<td>".$val."<input type='hidden' name='ID' value='".$val."' /></td>";
+      }
+      if ($key == 'Kind') {
+        echo "<td>".$val."</td>";
+        if ($kind == 'Игрушка')      echo "<td><img src='".SITEURL.PICT."toy135x135/".$pic.".jpg' alt='".$pic."' width='135' height='135' /></td>";
+        else     echo "<td><img src='".SITEURL.PICT."mult114x86/".$pic.".jpg' alt='".$pic."' width='114' height='86' /></td>";
+      }
+      if ($key == 'Alt') {
+        echo "<td><input type='text' name='Alt' value='".$val."' size='100' /></td>";
+      }
+    }
+    echo "<td><input type='submit' name='edit' value='Подтверждаю изменения' /></td></form><td><form name='cancel' action='editimage.php' method='post'><input type='submit' name='cancel' value='Отмена' /></form></td></tr></table><br />";
   }
   
-  /*
-  echo '<br /><h2>'.$id.' - Изменение данных записи - изображения</h2>';
-    //Подготовка массива для заполнения таблицы изменений. Для мультфильмов может меняться только Alt, для игрушек - Alt и Priority
-    $arr_img = $this->db->ReceiveAllOnId($this->tbl, $id);
-    //В случае мультфильмов
-    if ($arr_img['Width'] == 0) {
-      $arr_table = array('ID' => 'ID', 'FileName' => 'Изображение', 'Width' => 'Ширина', 'Height' => 'Высота', 'Alt', 'Описание');
-      foreach ($arr_img as $key => $val) {
-        $arr_total[$key] = array($arr_table[$key], $val);
-      }
-      //Вывод таблицы-формы
-      echo "<form name='editimg' action='editimage.php' method='post'><table name='editimg' cellspacing='0' cellpadding='5' border='1'>";
-      foreach ($arr_total as $key => $val) {
-        echo "<tr><td style='font-size: 120%; font-weight: bold;'>".$val[0]."</td><td>";
-        if ($key == 'FileName')       echo "<td><img src='".SITEURL.VIEW.PAGE.PICT."mult114x86/".$val[1].".jpg' alt='".$val[1]."' height='86' width='114' /><br />".$val[1]."</td></tr>";
-        elseif ($key == 'ID')      echo "<input type='text' name='".$key."' value='".$val[1]."' readonly /></td></tr>";
-        elseif ($key == 'Alt')      echo "<input type='text' name='".$key."' value='".$val[1]."' /></td></tr>";
-        else      echo "<td>".$val[1]."</td></tr>";
-      }
-      echo "<tr><td><input type='radio' name='do' value='change' />Изменить<br /><input type='radio' name='do' value='esc' />Отменить</td><td><input type='submit' name='edit' value='Подтверждаю действие' /></td></tr></table></form><br />";
-    }
-    //В случае игрушек
-    else {
-      $arr_table = array('ID' => 'ID', 'FileName' => 'Изображение', 'Width' => 'Ширина', 'Height' => 'Высота', 'Alt', 'Описание', 'L_ID' => 'ID большого фото', 'Product_ID' => 'Название игрушки', 'Priority' => 'Приоритет');
-      $arr_l_image = $this->db->ReceiveAllOnCondition('L_IMAGE', 'Image_ID', '=', $arr_img['ID']);
-      if (!$arr_l_image) exit ('Нет соответствия больших фото товару - проверить таблицу L_IMAGE');
-      $rows = count($arr_l_image);
-      foreach ($arr_table as $key => $val) {
-        if ($key == '') {
-          
-        }
-        
-        $arr_total[$key] = array($val, $arr_img[$key]);
-      }
-      
-      
-    }
-  }
-  
-*/  
-  
-
 }
 
 ?>

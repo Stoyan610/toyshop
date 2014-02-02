@@ -63,9 +63,6 @@ switch ($table) {
 //Подключение html файла для подключения таблиц
 require_once 'half_index.php';
 
-echo 'Вроде всё работает.';
-echo '<br />';
-
 ?>
   
 </body>

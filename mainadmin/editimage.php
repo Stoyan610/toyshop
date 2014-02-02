@@ -15,20 +15,13 @@ require_once PATH.'www/'.MODEL;
 $db = new DbRover($_SESSION['login'], $_SESSION['password']);
 
 //Проверка POST-параметра 
-if (isset($_POST['add'])) {
-  //Формирование массива полей и значений для добавления в БД
+if (isset($_POST['edit'])) {
+  $id = htmlspecialchars($_POST['ID']);
   $fields_values = array();
-  $fields_values['ID'] = NULL;
-  $fields_values['Name'] = htmlspecialchars($_POST['Name']);
-  $fields_values['Description'] = htmlspecialchars($_POST['Description']);
-  $fields_values['Keywords'] = htmlspecialchars($_POST['Keywords']);
-  $fields_values['Image_ID'] = htmlspecialchars($_POST['ImageID']);
-  $fields_values['Priority'] = htmlspecialchars($_POST['Priority']);
-  $fields_values['PublishFrom'] = htmlspecialchars($_POST['PublishFrom']);
-  $db->DataIn(MULTS, $fields_values);
+  $fields_values['Alt'] = htmlspecialchars($_POST['Alt']);
+  $db->ChangeDataOnId(IMG, $fields_values, $id);
 }
 
-//Возвращение на страницу catalog.php
-header("Location: ".ADMINURL."catalog.php");
-
+//Возвращение на страницу image.php
+header("Location: ".ADMINURL."image.php");
 ?>

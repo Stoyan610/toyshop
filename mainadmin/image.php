@@ -29,29 +29,42 @@ if (!isset($_GET['act'])) {
   $creator->GetTable();
 }
 else {
-  
-  
-  
-  
   $act = htmlspecialchars($_GET['act']);
   unset($_GET['act']);
   switch ($act) {
-    case 'edit_cat': {
-      $id = htmlspecialchars($_GET['id']);
-      unset($_GET['id']);
-      $creator->EditItem($id);
+    case 'get_cat': {
+      $kind = 'Мульт';
+      $creator->GetTableOnKind($kind);
     break;
     }
-    case 'del_cat': {
+    case 'get_prod': {
+      $kind = 'Игр';
+      $creator->GetTableOnKind($kind);
+    break;
+    }
+    case 'get_all': {
+      $kind = NULL;
+      $creator->GetTableOnKind($kind);
+    break;
+    }
+    case 'add': {
+      $creator->InsertItem();
+    break;
+    }
+    case 'del': {
       $id = htmlspecialchars($_GET['id']);
       unset($_GET['id']);
       $creator->DeleteItem($id);
     break;
     }
-    case 'add_cat': {
-      $creator->InsertItem();
+    case 'edit': {
+      $id = htmlspecialchars($_GET['id']);
+      unset($_GET['id']);
+      $creator->EditItem($id);
     break;
     }
+    
+    
     default: {
       exit ('Это сделать невозможно');
     }

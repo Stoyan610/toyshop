@@ -20,14 +20,15 @@ defined('ACCESS') or die('Access denied');
 </script>
 <style>
   body {background-color: #B3FFA5;}
+	.list {display: inline-block; padding: 0 45px 0 0;}
 </style>
 </head>
 <body>
 
   <ol>
-    <li><a href="admin_controller.php?table=a_catalog">Категории</a></li>
-    <li><a href="admin_controller.php?table=a_product">Товары</a></li>
-    <li><a href="admin_controller.php?table=a_image">Изображения</a></li>
+    <div class='list'><li><a href="admin_controller.php?table=a_catalog">Категории</a></li></div>
+    <div class='list'><li><a href="admin_controller.php?table=a_product">Товары</a></li></div>
+    <div class='list'><li><a href="admin_controller.php?table=a_image">Изображения</a></li></div>
     <!-- ........................... -->
   </ol>
   
