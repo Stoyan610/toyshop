@@ -86,9 +86,7 @@ class DbRover {
 		$result = $this->Choice($table, array("COUNT('ID')"));
 		return $result[0]["COUNT('ID')"];
   }
-  
-  
-  
+    
   //Получение количества записей в базе, если известно условие на значение поля
 	public function СountDataOnCondition($table, $infield, $sign, $invalue) {
 		$cond = "`".$infield."`".$sign."'".addslashes($invalue)."'";
@@ -108,10 +106,15 @@ class DbRover {
 		return $this->Choice($table, "DISTINCT `".$field."`");
   }
   
-  
-  
+    
   
   //------------------------------
+  //Получение ID последней вставленной записи
+	public function IdOfLast($table) {
+		$result = $this->choice($table, array("MAX('ID')"));
+		return $result[0]["MAX('ID')"];
+	}
+  
   //Получение всех записей и их сортировка
 	public function ReceiveAll($table, $sort='', $vozr=TRUE) {
     return $this->Choice($table, array("*"), '', $sort, $vozr);
@@ -139,14 +142,24 @@ class DbRover {
 		for ($i = 0; $i < $num; $i++) $output[$i] = $result[$i][$outfield];
 		return $output;
 	}
+  
+  //------------------------------
+  //Получение информации в одном поле из записи, если известно условие на значение другого поля в этой записи
+	public function ReceiveFieldOnManyConditions($table, $outfield, $condition) {
+		$result = $this->Choice($table, array($outfield), $condition);
+    $num = count($result);
+		if ($num < 1) return FALSE;
+		$output = array();
+		for ($i = 0; $i < $num; $i++) $output[$i] = $result[$i][$outfield];
+		return $output;
+	}
+  
   //------------------------------
   //Получение случайной информации в одном поле из записи, если известно условие на значение другого поля в этой записи
 	public function ReceiveRandomOnCondition($table, $outfield, $infield, $sign, $invalue, $limit) {
 		$cond = "`".$infield."`".$sign."'".addslashes($invalue)."'";
     return $this->choice($table, array($outfield), $cond, "RAND()", "", $limit);
   }
-  
-  
   
   //Получение всех полей записи, если известно условие на значение другого поля в этой записи
 	public function ReceiveAllOnCondition($table, $infield, $sign, $invalue) {
@@ -197,6 +210,15 @@ class DbRover {
 		if ((!is_int($id)) && (!((is_string($id)) && (preg_match("~^(0|(-?\s?[1-9]\d*))$~", $id)))))    return FALSE;
     $table = "`".$table."`";
 		$zapros = "DELETE FROM ".$table." WHERE `ID`='".$id."'";
+    $this->connection->query($zapros);
+  }  
+  
+  //------------------------------
+  //Удалить запись по условию
+	public function DataOffOnCondition($table, $infield, $sign, $invalue) {
+		if (СountDataOnCondition($table, $infield, $sign, $invalue) == 0)     return FALSE;
+    $table = "`".$table."`";
+    $zapros = "DELETE FROM ".$table." WHERE `".$infield."`".$sign."'".addslashes($invalue)."'";
     $this->connection->query($zapros);
   }  
   

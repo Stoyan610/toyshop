@@ -17,6 +17,8 @@ define('TEMPLATE', 'views/pages/templates/');
 define('CLASSES', 'views/pages/classes/');
 //Путь к картинкам
 define('PICT', 'views/pages/pictures/');
+//Путь к загружаемым картинкам
+define('LOAD', 'views/pages/pictures/originalimage/');
 //Путь к стилям
 define('STYL', 'views/pages/styles/');
 //Путь к скриптам
@@ -41,6 +43,8 @@ define('TOYS', 'a_product');
 define('MULTS', 'a_catalog');
 //Таблицы базы данных - таблица изображений
 define('IMG', 'a_image');
+//Таблицы базы данных - таблица больших изображений
+define('LIMG', 'l_image');
 //Таблицы базы данных - таблица контента
 define('INFO', 'a_content');
 

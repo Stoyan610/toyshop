@@ -15,17 +15,16 @@ require_once PATH.'www/'.MODEL;
 $db = new DbRover($_SESSION['login'], $_SESSION['password']);
 
 //Проверка POST-параметра 
-if (isset($_POST['changing'])) {
+if (isset($_POST['delete'])) {
   //Определение ID строки для удаления
-  $img_id = htmlspecialchars($_POST['img']);
-  $id = htmlspecialchars($_POST['mult_id']);
-  unset($_POST['changing']);
-  unset($_POST['img']);
-  unset($_POST['mult_id']);
-  $db->ChangeFieldOnId(MULTS, 'Image_ID', $img_id, $id);
-}
+  $iddel = htmlspecialchars($_POST['del']);
+  unset($_POST['delete']);
+  unset($_POST['del']);
+  $db->DataOffOnId(TOYS, $iddel);
+  $db->DataOffOnCondition(LIMG, 'Product_ID', '=', $iddel);
+}  
 
-//Возвращение на страницу catalog.php
-header("Location: ".ADMINURL."catalog.php");
+//Возвращение на страницу product.php
+header("Location: ".ADMINURL."product.php");
 
 ?>

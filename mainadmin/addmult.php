@@ -25,6 +25,13 @@ if (isset($_POST['add'])) {
   $fields_values['Image_ID'] = htmlspecialchars($_POST['ImageID']);
   $fields_values['Priority'] = htmlspecialchars($_POST['Priority']);
   $fields_values['PublishFrom'] = htmlspecialchars($_POST['PublishFrom']);
+  unset($_POST['add']);
+  unset($_POST['Name']);
+  unset($_POST['Description']);
+  unset($_POST['Keywords']);
+  unset($_POST['ImageID']);
+  unset($_POST['Priority']);
+  unset($_POST['PublishFrom']);
   $db->DataIn(MULTS, $fields_values);
 }
 

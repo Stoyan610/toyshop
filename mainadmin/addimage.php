@@ -76,14 +76,20 @@ if (isset($_POST['add'])) {
   $fields_values = array();
   $fields_values['ID'] = NULL;
   $fields_values['Kind'] = htmlspecialchars($_POST['Type']);
+  unset($_POST['add']);
+  unset($_POST['Type']);
   
   $image_file = ImageSafe();
   
   $fields_values['BigFile'] = htmlspecialchars($_POST['BigFile']);
+  unset($_POST['BigFile']);
   $fields_values['SmallFile'] = htmlspecialchars($_POST['SmallFile']);
+  unset($_POST['SmallFile']);
   $fields_values['Alt'] = htmlspecialchars($_POST['Alt']);
+  unset($_POST['Alt']);
   if ($fields_values['Kind'] == 'Игрушка') {
     $fields_values['ThumbnailFile'] = htmlspecialchars($_POST['ThumbnailFile']);
+    unset($_POST['ThumbnailFile']);
     $sizes = ImageHandlerBig($image_file, $fields_values['BigFile']);
     $fields_values['Width'] = $sizes['width'];
     $fields_values['Height'] = $sizes['height'];

@@ -18,6 +18,8 @@ $db = new DbRover($_SESSION['login'], $_SESSION['password']);
 if (isset($_POST['delete'])) {
   //Определение ID строки для удаления
   $iddel = htmlspecialchars($_POST['del']);
+  unset($_POST['delete']);
+  unset($_POST['del']);
   
   //Удаление файла изображения
   function ImageDeleter ($image_file, $dir_storage='') {

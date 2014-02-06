@@ -4,10 +4,9 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/Applications/MAMP/htdocs/toyshop.local/www/model/db_rover.php</file>
-            <file>file:/Applications/MAMP/htdocs/toyshop.local/mainadmin/js/misc.js</file>
-            <file>file:/Applications/MAMP/htdocs/toyshop.local/mainadmin/catalog.php</file>
-            <file>file:/Applications/MAMP/htdocs/toyshop.local/mainadmin/class/catalog_class.php</file>
-            <file>file:/Applications/MAMP/htdocs/toyshop.local/mainadmin/addmult.php</file>
+            <file>file:/Applications/MAMP/htdocs/toyshop.local/mainadmin/product.php</file>
+            <file>file:/Applications/MAMP/htdocs/toyshop.local/mainadmin/class/product_class.php</file>
+            <file>file:/Applications/MAMP/htdocs/toyshop.local/mainadmin/edittoy.php</file>
         </group>
     </open-files>
 </project-private>

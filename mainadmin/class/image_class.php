@@ -29,7 +29,7 @@ class Images extends Admin {
     if (!$arr_table)     echo "<p>Таблица пуста - изображений нет</p>";
     else {
       $lines = count($arr_table);
-      echo "<table name='picture' cellspacing='0' cellpadding='3' border='1'><tr align='center' style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'><td>ID</td><td>Тип</td><td>Изображение</td><td>Большой файл</td><td>Ширина</td><td>Высота</td><td>Описание</td><td>Маленький файл</td><td>Файл-ноготок</td><td></td><td></td></tr>";
+      echo "<table name='picture' cellspacing='0' cellpadding='3' border='1'><colgroup><col span='9' /><col span='1' width='240px' /></colgroup><tr align='center' style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'><td>ID</td><td>Тип</td><td>Изображение</td><td>Большой файл</td><td>Ширина</td><td>Высота</td><td>Описание</td><td>Маленький файл</td><td>Файл-ноготок</td><td></td></tr>";
       for ($i = 0; $i < $lines; $i++) {
         echo "<tr align='center'>";
         foreach ($arr_table[$i] as $key => $val) {
@@ -45,14 +45,12 @@ class Images extends Admin {
              }
           }
         }
-        echo "<td><a href='image.php?act=edit&id=".$arr_table[$i]['ID']."'>Редактировать изображение</a></td><td><a href='image.php?act=del&id=".$arr_table[$i]['ID']."'>Удалить изображение</a></td></tr>";
+        echo "<td><ol><li><a href='image.php?act=edit&id=".$arr_table[$i]['ID']."'>Редактировать изображение</a></li><li><a href='image.php?act=del&id=".$arr_table[$i]['ID']."'>Удалить изображение</a></li></ol></td></tr>";
       }
       echo "</table><br />";
     }
   }
-  
-  
-  //Надо бы протестировать
+
   //Проверка изображения на независимость от активных ссылок
   private function WhetherActive($id, $kind) {
     $today = time();
@@ -63,20 +61,20 @@ class Images extends Admin {
         $num = count($prod_id);
         for ($i = 0; $i < $num; $i++) {
           $date = $this->db->ReceiveFieldOnCondition(TOYS, 'PublishFrom', 'ID', '=', $prod_id[$i]);
-          $a = date_parse($date);
+          $a = date_parse($date[0]);
           $date = mktime(0, 0, 1, $a['month'], $a['day'], $a['year']);
-          if ($date > $today)    return FALSE;
+          if ($date <= $today)    return FALSE;
           else     return TRUE;
         }
       }
     }
     else {
       $date = $this->db->ReceiveFieldOnCondition(MULTS, 'PublishFrom', 'Image_ID', '=', $id);
-      if (!$prod_id)    return TRUE;
+      if (!$date)    return TRUE;
       else {
-        $a = date_parse($date);
+        $a = date_parse($date[0]);
         $date = mktime(0, 0, 1, $a['month'], $a['day'], $a['year']);
-        if ($date > $today)    return FALSE;
+        if ($date <= $today)    return FALSE;
         else     return TRUE;
       }
     }
@@ -90,19 +88,18 @@ class Images extends Admin {
     $pic = $arr_table['SmallFile'];
     $kind = $arr_table['Kind'];
     if ($this->WhetherActive($id, $kind)) {
-      echo "<table name='delpic' cellspacing='0' cellpadding='3' border='1'><tr align='center' style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'><td>ID</td><td>Тип</td><td>Изображение</td><td>Большой файл</td><td>Ширина</td><td>Высота</td><td>Описание</td><td>Маленький файл</td><td>Файл-ноготок</td><td></td><td></td></tr><tr align='center'>";
+      echo "<table name='delpic' cellspacing='0' cellpadding='3' border='1'><tr align='center' style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'><td>ID</td><td>Тип</td><td>Изображение</td><td>Большой файл</td><td>Ширина</td><td>Высота</td><td>Описание</td><td>Маленький файл</td><td>Файл-ноготок</td></tr><tr align='center'>";
       foreach ($arr_table as $key => $val) {
         echo "<td>".$val."</td>";
         if (($key == 'Kind') && ($kind == 'Игрушка'))      echo "<td><img src='".SITEURL.PICT."toy135x135/".$pic.".jpg' alt='".$pic."' width='135' height='135' /></td>";
         elseif (($key == 'Kind') && ($kind != 'Игрушка'))     echo "<td><img src='".SITEURL.PICT."mult114x86/".$pic.".jpg' alt='".$pic."' width='114' height='86' /></td>";
       }
-        echo "<td><form name='delete' action='delimage.php' method='post'><input type='hidden' name='del' value='".$id."' /><input type='submit' name='delete' value='Подтверждаю удаление' /></form></td><td><form name='cancel' action='delimage.php' method='post'><input type='submit' name='cancel' value='Отмена' /></form></td></tr></table><br />";
+        echo "</tr></table><br /><form name='delete' action='delimage.php' method='post'><input type='hidden' name='del' value='".$id."' /><input type='submit' name='delete' value='Подтверждаю удаление' /></form><br /><form name='cancel' action='delimage.php' method='post'><input type='submit' name='cancel' value='Отмена' /></form>";
       }
       else {
-        echo "<p>К сожалению, удалить изображение  `".$arr_table['Name']."`  невозможно, так как с ним связаны активные мультфильмы или игрушки</p>";
+        echo "<p>К сожалению, удалить изображение <b>`".$arr_table['Alt']."`</b> невозможно, так как с ним связаны активные мультфильмы или игрушки</p>";
         if ($kind == 'Игрушка')     echo "<a href='product.php?act=part&field=Image_ID&value=".$id."'>Показать список соответствующих игрушек?</a> ";
-        else    echo "<a href='catalog.php?act=part&Image_ID=".$id."'>Показать список соответствующих мультфильмов?</a> ";
-        echo "или <a href='image.php'>Вернуться к списку изображений?</a>";
+        else    echo "<a href='catalog.php?act=part&Image_ID=".$id."'>Показать список соответствующих мультфильмов?</a> или<br /><a href='image.php'>Вернуться к списку изображений?</a>";
       }
   }
   

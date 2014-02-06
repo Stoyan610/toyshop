@@ -17,8 +17,11 @@ $db = new DbRover($_SESSION['login'], $_SESSION['password']);
 //Проверка POST-параметра 
 if (isset($_POST['edit'])) {
   $id = htmlspecialchars($_POST['ID']);
+  unset($_POST['edit']);
+  unset($_POST['ID']);
   $fields_values = array();
   $fields_values['Alt'] = htmlspecialchars($_POST['Alt']);
+  unset($_POST['Alt']);
   $db->ChangeDataOnId(IMG, $fields_values, $id);
 }
 

@@ -41,18 +41,15 @@ class Catalog extends Admin {
     if (!$arr_table)     echo "<p>Таблица пуста</p><a href='catalog.php?act=add' style='font-size: 120%; font-weight: bold;'>Добавить мультфильм</a><br /><br />";
     else {
       $lines = count($arr_table);
-      echo "<a href='catalog.php?act=add' style='font-size: 120%; font-weight: bold;'>Добавить мультфильм</a><br /><br /><table name='mult' cellspacing='0' cellpadding='3' border='1'><tr align='center' style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'><td>ID</td><td>Название</td><td>Описание</td><td>Ключевые слова</td><td>Изображение</td><td>Приоритет</td><td>Дата публикации</td><td></td><td></td><td></td></tr>";
+      echo "<a href='catalog.php?act=add' style='font-size: 120%; font-weight: bold;'>Добавить мультфильм</a><br /><br /><table name='mult' cellspacing='0' cellpadding='3' border='1'><colgroup><col span='7' /><col span='1' width='240px' /></colgroup><tr align='center' style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'><td>ID</td><td>Название</td><td>Описание</td><td>Ключевые слова</td><td>Изображение</td><td>Приоритет</td><td>Дата публикации</td><td></td></tr>";
       for ($i = 0; $i < $lines; $i++) {
         echo "<tr align='center'>";
         $this->GetImgCells($arr_table[$i]);
-        echo "<td><a href='catalog.php?act=changeimg&id=".$arr_table[$i]['ID']."'>Заменить изображение</a></td><td><a href='catalog.php?act=edit&id=".$arr_table[$i]['ID']."'>Редактировать мультфильм</a></td><td><a href='catalog.php?act=del&id=".$arr_table[$i]['ID']."'>Удалить мультфильм</a></td></tr>";
+        echo "<td><ol><li><a href='catalog.php?act=changeimg&id=".$arr_table[$i]['ID']."'>Заменить изображение</a></li><li><a href='catalog.php?act=edit&id=".$arr_table[$i]['ID']."'>Редактировать мультфильм</a></li><li><a href='catalog.php?act=del&id=".$arr_table[$i]['ID']."'>Удалить мультфильм</a></li></ol></td></tr>";
       }
       echo "</table><br />";
     }
   }
-
-  
-//НАДО ПРОВЕРИТЬ !!!
  
   //Вывод информации требуемого вида из данной таблицы БД 
   public function GetTableOnImage($Image_ID) {
@@ -61,18 +58,15 @@ class Catalog extends Admin {
     if (!$arr_table)     echo "<p>Таблица пуста - изображение можно удалять</p><a href='image.php?act=del&id=".$Image_ID."'>Удалить выбранное изображение</a>";
     else {
       $lines = count($arr_table);
-      echo "<table name='multonpic' cellspacing='0' cellpadding='3' border='1'><tr align='center' style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'><td>ID</td><td>Название</td><td>Описание</td><td>Ключевые слова</td><td>Изображение</td><td>Приоритет</td><td>Дата публикации</td><td></td><td></td></tr>";
+      echo "<table name='multonpic' cellspacing='0' cellpadding='3' border='1'><colgroup><col span='7' /><col span='1' width='240px' /></colgroup><tr align='center' style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'><td>ID</td><td>Название</td><td>Описание</td><td>Ключевые слова</td><td>Изображение</td><td>Приоритет</td><td>Дата публикации</td><td></td></tr>";
       for ($i = 0; $i < $lines; $i++) {
         echo "<tr align='center'>";
         $this->GetImgCells($arr_table[$i]);
-        echo "<td><a href='catalog.php?act=changeimg&id=".$arr_table[$i]['ID']."'>Заменить изображение</a></td><td><a href='catalog.php?act=del&id=".$arr_table[$i]['ID']."'>Удалить мультфильм</a></td></tr>";
+        echo "<td><ol><li><a href='catalog.php?act=changeimg&id=".$arr_table[$i]['ID']."'>Заменить изображение</a></li><li><a href='catalog.php?act=del&id=".$arr_table[$i]['ID']."'>Удалить мультфильм</a></li></ol></td></tr>";
       }
       echo "</table><br />";
     }
   }
-  
-  
-  
   
   //Проверка мультфильма на независимость от ссылок
   private function WhetherProduct($id) {
@@ -85,9 +79,9 @@ class Catalog extends Admin {
     $arr_table = $this->db->ReceiveAllOnId($this->tbl, $id);
     if (!$this->WhetherProduct($id)) {
       if (!$arr_table)     exit('Нечего удалять');
-      echo "<table name='delmult' cellspacing='0' cellpadding='3' border='1'><tr align='center' style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'><td>ID</td><td>Название</td><td>Описание</td><td>Ключевые слова</td><td>Изображение</td><td>Приоритет</td><td>Дата публикации</td><td></td><td></td></tr><tr>";
+      echo "<table name='delmult' cellspacing='0' cellpadding='3' border='1'><tr align='center' style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'><td>ID</td><td>Название</td><td>Описание</td><td>Ключевые слова</td><td>Изображение</td><td>Приоритет</td><td>Дата публикации</td></tr><tr>";
       $this->GetImgCells($arr_table);
-      echo "<td><form name='delete' action='delmult.php' method='post'><input type='hidden' name='del' value='".$id."' /><input type='submit' name='delete' value='Подтверждаю удаление' /></form></td><td><form name='cancel' action='delmult.php' method='post'><input type='submit' name='cancel' value='Отмена' /></form></td></tr></table><br />";
+      echo "</tr></table><br /><form name='delete' action='delmult.php' method='post'><input type='hidden' name='del' value='".$id."' /><input type='submit' name='delete' value='Подтверждаю удаление' /></form><br /><form name='cancel' action='delmult.php' method='post'><input type='submit' name='cancel' value='Отмена' /></form>";
     }
     else     echo "<p>К сожалению, удалить мультфильм  `".$arr_table['Name']."`  невозможно, так как с ним связаны существующие игрушки</p><a href='product.php?act=part&field=Catalog_ID&value=".$id."'>Показать список соответствующих игрушек?</a> или <a href='catalog.php'>Вернуться к списку мультфильмов?</a>";
   }
@@ -136,7 +130,7 @@ class Catalog extends Admin {
     $str_id = implode('~', $arr_id);
     $str_pic = implode('~', $arr_pic);
     
-    echo "<tr><td ".$stl.">Изображение<input id='imageid' type='hidden' name='ImageID' value='0' /></td><td id='pictures' ondblclick='galery()'>Для выбора изображения дважды кликни здесь<div id='hide0' hidden>".SITEURL.PICT."</div><div id='hide1' hidden>".$str_id."</div><div id='hide2' hidden>".$str_pic."</div><input type='hidden' name='Image_ID' value='' /></td></tr>";
+    echo "<tr><td ".$stl.">Изображение<input id='imageid' type='hidden' name='ImageID' value='0' /></td><td id='pictures' ondblclick='galery()'><span style='text-decoration: underline;' >Для выбора изображения дважды кликни здесь</span><div id='hide0' hidden>".SITEURL.PICT."</div><div id='hide1' hidden>".$str_id."</div><div id='hide2' hidden>".$str_pic."</div><input type='hidden' name='Image_ID' value='' /></td></tr>";
     echo "<tr><td colspan='2' align='right'><input type='submit' name='add' value='Подтверждаю добавление' /></td></tr></form><tr><td colspan='2' align='right'><form name='cancel' action='addmult.php' method='post'><input type='submit' name='cancel' value='Отмена' /></form></td></tr></table><br />";
   }
   

@@ -27,6 +27,16 @@ function getimage(i) {
   $("#imageid").val(i);
 }
 
+function gettoyimg(i) {
+  var point = "#" + i;
+  var Str = $(point).attr("src");
+  var smp = /[^\/]+(?=\.jpg)/;
+  var Str0 = Str.match(smp);
+  var one_td = "<img src='" + Str + "' alt='" + Str0 + "' width='70' height='70' />";
+  $("#toys").replaceWith(one_td);
+  $("#imageid").val(i);
+}
+
 function checkjpg() {
   var vv = $("#file").val();
   var tpl = /\.jpe?g$/;

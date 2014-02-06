@@ -60,15 +60,14 @@ else {
       $creator->InsertItem();
     break;
     }
-    
     case 'part': {
-      $Image_ID = htmlspecialchars($_GET['Image_ID']);
-      unset($_GET['Image_ID']);
-      $creator->GetTableOnImage($Image_ID);
+      $field = htmlspecialchars($_GET['field']);
+      unset($_GET['field']);
+      $value = htmlspecialchars($_GET['value']);
+      unset($_GET['value']);
+      $creator->GetTableOnField($field, $value);
     break;
     }
-    
-    
     default: {
       exit ('Это сделать невозможно');
     }
