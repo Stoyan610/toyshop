@@ -80,7 +80,8 @@ elseif (isset($_POST['adding'])) {
   $check = $db->ReceiveFieldOnManyConditions(LIMG, 'Priority', "`Product_ID`='".$fields_values['Product_ID']."' AND `Image_ID`='".$fields_values['Image_ID']."'");
   if (!$check)   $db->DataIn(LIMG, $fields_values);
   //Получение массива данной игрушки
-  $img = $db->ReceiveAllOnCondition(LIMG, 'Product_ID', '=', $fields_values['Product_ID']);
+  $field_list = array('ID', 'Image_ID', 'Priority');
+  $img = $db->ReceiveFewFieldsOnCondition(LIMG, $field_list, 'Product_ID', '=', $fields_values['Product_ID']);
   $img = PriorityOrder($img);
   $maxnum = count($img);
   for ($num = 0; $num < $maxnum; $num++) {

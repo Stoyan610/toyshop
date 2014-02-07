@@ -6,10 +6,14 @@ require_once PATH.'mainadmin/class/admin_class.php';
 
 class Product extends Admin {
   protected $tbl;
+  protected $allfields;
+  protected $limgfields;
 
   public function __construct($user, $pass) {
     parent::__construct($user, $pass);
     $this->tbl = TOYS;
+    $this->allfields = array('ID', 'Name', 'Catalog_ID', 'Description', 'Keywords', 'Priority', 'PublishFrom', 'Price', 'Quantity', 'Deadline', 'Manufacture', 'Material', 'Dimension', 'Weight', 'Popularity'); 
+    $this->limgfields = array('ID', 'Product_ID', 'Image_ID', 'Priority'); 
   }
   
   //Получение фото по ID игрушки 
@@ -59,7 +63,7 @@ class Product extends Admin {
     echo '<h2>Таблица - Все игрушки по популярности</h2>';
     $stl = "style='font-size: 120%; font-weight: bold;'";
     $stl0 = "style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'";
-    $arr_table = $this->db->ReceiveAll($this->tbl, 'Popularity', FALSE);
+    $arr_table = $this->db->ReceiveFields($this->tbl, $this->allfields, 'Popularity', FALSE);
     if (!$arr_table)     echo "<p>Таблица пуста</p><a href='product.php?act=add' ".$stl.">Добавить игрушку</a><br /><br />";
     else {
       $lines = count($arr_table);
@@ -72,43 +76,48 @@ class Product extends Admin {
       echo "</table><br />";
     }
   }
-
   
   //Вывод информации требуемого вида из данной таблицы БД 
   public function GetTableOnField($field, $value) {
+    $stl = "style='font-size: 120%; font-weight: bold;'";
+    $stl0 = "style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'";
     if ($field == 'Catalog_ID') {
       echo '<h2>Таблица - Все игрушки с выбранным мультфильмом</h2>';
-      
+      $arr_table = $this->db->ReceiveFewFieldsOnCondition($this->tbl, $this->allfields, $field, '=', $value);
+      if (!$arr_table)     echo "<p>Таблица пуста - мультфильм можно удалять</p><a href='catalog.php?act=del&id=".$value."'>Удалить выбранный мультфильм</a>";
+      else {
+        $lines = count($arr_table);
+        echo "<table name='toy' cellspacing='0' cellpadding='3' border='1'><colgroup><col span='13' /><col span='1' width='240px' /></colgroup><tr align='center' ".$stl0."><td>ID</td><td>Имя</td><td>Фото</td><td>Мульт.</td><td>Описание</td><td>Ключ. слова</td><td>Пр-тет</td><td>Дата пуб-ции</td><td>Цена</td><td>Есть</td><td>Срок</td><td>Страна<br />Материал<br />Размеры<br />Вес</td><td>Поп-сть</td><td></td></tr>";
+        for ($i = 0; $i < $lines; $i++) {
+          echo "<tr align='center'>";
+          $this->GetImgCells($arr_table[$i]);
+          echo "<td><ol><li><a href='product.php?act=changeimg&id=".$arr_table[$i]['ID']."'>Заменить изображения</a></li><li><a href='product.php?act=del&id=".$arr_table[$i]['ID']."'>Удалить игрушку</a></li></ol></td></tr>";
+        }
+        echo "</table><br />";
+      }
     }
     elseif ($field == 'Image_ID') {
       echo '<h2>Таблица - Все игрушки с выбранным изображением</h2>';
-      
-    }
-    
-  }
-  
-/* 
-    $arr_table = $this->db->ReceiveAllOnCondition($this->tbl, 'Image_ID', '=', $Image_ID);
-    if (!$arr_table)     echo "<p>Таблица пуста - изображение можно удалять</p><a href='image.php?act=del&id=".$Image_ID."'>Удалить выбранное изображение</a>";
-    else {
-      $lines = count($arr_table);
-      echo "<table name='multonpic' cellspacing='0' cellpadding='3' border='1'><tr align='center' style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'><td>ID</td><td>Название</td><td>Описание</td><td>Ключевые слова</td><td>Изображение</td><td>Приоритет</td><td>Дата публикации</td><td></td><td></td></tr>";
-      for ($i = 0; $i < $lines; $i++) {
-        echo "<tr align='center'>";
-        $this->GetImgCells($arr_table[$i]);
-        echo "<td><a href='catalog.php?act=changeimg&id=".$arr_table[$i]['ID']."'>Заменить изображение</a></td><td><a href='catalog.php?act=del&id=".$arr_table[$i]['ID']."'>Удалить мультфильм</a></td></tr>";
+      $product_id = $this->db->ReceiveFieldOnCondition(LIMG, 'Product_ID', $field, '=', $value);
+      $arr_table = $this->db->ReceiveFewFieldsOnCondition($this->tbl, $this->allfields, 'ID', '=', $product_id[0]);
+      if (!$arr_table)     echo "<p>Таблица пуста - фото можно удалять</p><a href='image.php?act=del&id=".$value."'>Удалить выбранное изображение</a>";
+      else {
+        $lines = count($arr_table);
+        echo "<table name='toy' cellspacing='0' cellpadding='3' border='1'><colgroup><col span='13' /><col span='1' width='240px' /></colgroup><tr align='center' ".$stl0."><td>ID</td><td>Имя</td><td>Фото</td><td>Мульт.</td><td>Описание</td><td>Ключ. слова</td><td>Пр-тет</td><td>Дата пуб-ции</td><td>Цена</td><td>Есть</td><td>Срок</td><td>Страна<br />Материал<br />Размеры<br />Вес</td><td>Поп-сть</td><td></td></tr>";
+        for ($i = 0; $i < $lines; $i++) {
+          echo "<tr align='center'>";
+          $this->GetImgCells($arr_table[$i]);
+          echo "<td><ol><li><a href='product.php?act=changeimg&id=".$arr_table[$i]['ID']."'>Заменить изображения</a></li><li><a href='product.php?act=del&id=".$arr_table[$i]['ID']."'>Удалить игрушку</a></li></ol></td></tr>";
+        }
+        echo "</table><br />";
       }
-      echo "</table><br />";
     }
-  
-*/
-
-  
+  }
   
   //Удаление записи в таблице БД
   public function DeleteItem($id){
     echo '<h2>Эта запись будет удалена</h2>';
-    $arr_table = $this->db->ReceiveAllOnId($this->tbl, $id);
+    $arr_table = $this->db->ReceiveFieldsOnId($this->tbl, $this->allfields, $id);
     if (!$arr_table)     exit('Нечего удалять');
     $stl = "style='font-size: 120%; font-weight: bold;'";
     $stl0 = "style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'";
@@ -120,7 +129,7 @@ class Product extends Admin {
   //Изменение записи в таблице БД
   public function EditItem($id) {
     echo '<h2>Изменение данных записи - игрушки</h2>';
-    $arr_table = $this->db->ReceiveAllOnId($this->tbl, $id);
+    $arr_table = $this->db->ReceiveFieldsOnId($this->tbl, $this->allfields, $id);
     $stl = "style='font-size: 120%; font-weight: bold;'";
     echo "<table name='edittoy' cellspacing='0' cellpadding='5' border='1'><form name='edittoy' action='edittoy.php' method='post'>";
     echo "<tr><td ".$stl.">ID</td><td><input type='text' name='ID' value='".$arr_table['ID']."' readonly /></td></tr><tr><td ".$stl.">Название</td><td><input type='text' name='Name' value='".$arr_table['Name']."' /></td></tr>";
@@ -144,7 +153,7 @@ class Product extends Admin {
   public function ChangeImage($Product_ID) {
     echo '<h2>Редактированите приоритетов или удаление картинок данной игрушки</h2>';
     //Получение массива изображений данной игрушки
-    $arr_img = $this->db->ReceiveAllOnCondition(LIMG, 'Product_ID', '=', $Product_ID);
+    $arr_img = $this->db->ReceiveFewFieldsOnCondition(LIMG, $this->limgfields, 'Product_ID', '=', $Product_ID);
     echo "<h3><a href='product.php?act=addimg&id=".$Product_ID."'>Добавить изображение</a></h3>";
     if (!$arr_img)     echo "<p>Нет фото у данной игрушки</p><a href='product.php'>Вернуться к списку игрушек</a>";
     else {
@@ -174,7 +183,8 @@ class Product extends Admin {
   public function AddImage($Product_ID) {
     echo '<h2>Добавление картинок к данной игрушке</h2>';
     //Получение массива изображений игрушек
-    $arr_img = $this->db->ReceiveAllOnCondition(IMG, 'Kind', ' LIKE ', 'Игр%');
+    $field_list = array('ID', 'ThumbnailFile');
+    $arr_img = $this->db->ReceiveFewFieldsOnCondition(IMG, $field_list, 'Kind', ' LIKE ', 'Игр%');
     if (!$arr_img)     echo "<p>Не из чего выбирать</p><a href='image.php'>К списку изображений</a>";
     $stl = "style='display: inline-block; width: 150px; vertical-align: top; text-align: center;'";
     echo "<form name='change' action='imgchtoy.php' method='post'><div id='toys'>";

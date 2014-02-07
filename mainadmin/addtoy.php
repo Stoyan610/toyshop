@@ -51,9 +51,6 @@ if (isset($_POST['add'])) {
   $db->DataIn(TOYS, $fields_values);
 }
 
-//Получение ID поседней добавленной игрушки
-$id = $db->IdOfLast(TOYS);
-
 //Возвращение на страницу product.php
 header("Location: ".ADMINURL."product.php");
 

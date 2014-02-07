@@ -6,10 +6,12 @@ require_once PATH.'mainadmin/class/admin_class.php';
 
 class Images extends Admin {
   protected $tbl;
+  protected $allfields;
   
   public function __construct($user, $pass) {
     parent::__construct($user, $pass);
     $this->tbl = IMG;
+    $this->allfields = array('ID', 'Kind', 'BigFile', 'Width', 'Height', 'Alt', 'SmallFile', 'ThumbnailFile'); 
   }
   
   //Вывод преложения для получения требуемой информации из данной таблицы БД 
@@ -25,7 +27,7 @@ class Images extends Admin {
     echo '<h2>Таблица - Все изображения по выбору "'.$kind.'"</h2>';
     $stl = "style='font-size: 120%; font-weight: bold;'";
     echo "<a href='image.php?act=add' ".$stl.">Добавить изображение</a><br /><br />";
-    $arr_table = $this->db->ReceiveAllOnCondition($this->tbl, 'Kind', ' LIKE ', $kind.'%');
+    $arr_table = $this->db->ReceiveFewFieldsOnCondition($this->tbl, $this->allfields, 'Kind', ' LIKE ', $kind.'%');
     if (!$arr_table)     echo "<p>Таблица пуста - изображений нет</p>";
     else {
       $lines = count($arr_table);
@@ -83,7 +85,7 @@ class Images extends Admin {
   //Удаление записи в таблице БД
   public function DeleteItem($id){
     echo '<h2>Это изображение будет удалено</h2>';
-    $arr_table = $this->db->ReceiveAllOnId($this->tbl, $id);
+    $arr_table = $this->db->ReceiveFieldsOnId($this->tbl, $this->allfields, $id);
     if (!$arr_table)     exit('Нечего удалять - такого изображения нет');
     $pic = $arr_table['SmallFile'];
     $kind = $arr_table['Kind'];
@@ -118,11 +120,11 @@ class Images extends Admin {
   //Изменение записи в таблице БД
   public function EditItem($id) {
     echo '<h2>Изменение записи - изображения</h2>';
-    $arr_table = $this->db->ReceiveAllOnId($this->tbl, $id);
+    $arr_table = $this->db->ReceiveFieldsOnId($this->tbl, $this->allfields, $id);
     if (!$arr_table)     exit('Нечего редактировать - такого изображения нет');
     $pic = $arr_table['SmallFile'];
     $kind = $arr_table['Kind'];
-    echo "<table name='editpic' cellspacing='0' cellpadding='3' border='1'><tr align='center' style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'><td>ID</td><td>Тип изображения</td><td>Изображение</td><td>Описание</td><td></td><td></td></tr><tr><form name='edit' action='editimage.php' method='post'>";
+    echo "<table name='editpic' cellspacing='0' cellpadding='3' border='1'><tr align='center' style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'><td>ID</td><td>Тип изображения</td><td>Изображение</td><td>Описание</td><td></td><td></td></tr><tr align='center'><form name='edit' action='editimage.php' method='post'>";
     foreach ($arr_table as $key => $val) {
       if ($key == 'ID') {
         echo "<td>".$val."<input type='hidden' name='ID' value='".$val."' /></td>";

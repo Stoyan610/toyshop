@@ -48,6 +48,10 @@ switch ($table) {
     header('Location: image.php');
     exit;
   }
+  case 'a_client': {
+    header('Location: client.php');
+    exit;
+  }
   
   //....................................
   

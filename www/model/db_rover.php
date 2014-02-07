@@ -80,58 +80,57 @@ class DbRover {
 		return $data_arr;
 	}
   
-  //------------------------------
+  //------------- СПРАВОЧНЫЕ -----------------
   //Получение количества записей в базе
 	public function СountData($table) {
 		$result = $this->Choice($table, array("COUNT('ID')"));
 		return $result[0]["COUNT('ID')"];
   }
-    
   //Получение количества записей в базе, если известно условие на значение поля
 	public function СountDataOnCondition($table, $infield, $sign, $invalue) {
 		$cond = "`".$infield."`".$sign."'".addslashes($invalue)."'";
     $result = $this->Choice($table, array("COUNT('ID')"), $cond);
 		return $result[0]["COUNT('ID')"];
   }
-  
   //Получение количества уникальных записей (с неповторяющимся значением поля)
 	public function СountUniqField($table, $field) {
 		$result = $this->Choice($table, array("COUNT(DISTINCT `".$field."`)"));
     $count = $result[0]["COUNT(DISTINCT ".$field.")"];
 		return $count;
   }
-  
   //Получение уникальных (неповторяющихся) значений поля
 	public function GetUniqField($table, $field) {
 		return $this->Choice($table, "DISTINCT `".$field."`");
   }
-  
-    
-  
-  //------------------------------
   //Получение ID последней вставленной записи
 	public function IdOfLast($table) {
 		$result = $this->choice($table, array("MAX('ID')"));
 		return $result[0]["MAX('ID')"];
 	}
   
-  //Получение всех записей и их сортировка
-	public function ReceiveAll($table, $sort='', $vozr=TRUE) {
-    return $this->Choice($table, array("*"), '', $sort, $vozr);
+  //------------- ВЫБОРКА ИНФОРМАЦИИ ПО НЕСКОЛЬКИМ ПОЛЯМ -----------------
+  //Получение нескольких записей и их сортировка
+	public function ReceiveFields($table, $field_list, $sort='', $vozr=TRUE) {
+    return $this->Choice($table, $field_list, '', $sort, $vozr);
   }
-
-  //------------------------------
-  //Получение информации в одном поле из записи по условию - на выходе массив с ключами ID
-	public function ReceiveIDFieldsOnCondition($table, $outfield, $condition='') {
-		$result = $this->Choice($table, array($outfield, 'ID'), $condition);
-    $num = count($result);
-		if ($num < 1) return FALSE;
-		$output = array();
-		for ($i = 0; $i < $num; $i++) $output[$result[$i]['ID']] = $result[$i][$outfield];
-		return $output;
-	}
+  //Получение нескольких полей записи по ID этой записи
+	public function ReceiveFieldsOnId($table, $field_list, $id) {
+		if ((!is_int($id)) && (!((is_string($id)) && (preg_match("~^(0|(-?\s?[1-9]\d*))$~", $id)))))    return FALSE;
+		$result = $this->Choice($table, array('ID'), "`ID`='".$id."'");
+		if (count($result) === 0)     return FALSE;
+    $arr = $this->Choice($table, $field_list, "`ID`='".$id."'");
+		return $arr[0];
+  }
+  //Получение нескольких полей записи, если известно условие на значение другого поля в этой записи
+	public function ReceiveFewFieldsOnCondition($table, $field_list, $infield, $sign, $invalue) {
+		$cond = "`".$infield."`".$sign."'".addslashes($invalue)."'";
+    $result = $this->Choice($table, $field_list, $cond);
+		if (count($result) === 0)     return FALSE;
+    $arr = $this->Choice($table, array("*"), $cond);
+		return $arr;
+  }
   
-  //------------------------------
+  //------------- ВЫБОРКА ИНФОРМАЦИИ ПО ОДНОМУ ПОЛЮ -----------------
   //Получение информации в одном поле из записи, если известно условие на значение другого поля в этой записи
 	public function ReceiveFieldOnCondition($table, $outfield, $infield, $sign, $invalue, $limit='') {
 		$cond = "`".$infield."`".$sign."'".addslashes($invalue)."'";
@@ -142,9 +141,7 @@ class DbRover {
 		for ($i = 0; $i < $num; $i++) $output[$i] = $result[$i][$outfield];
 		return $output;
 	}
-  
-  //------------------------------
-  //Получение информации в одном поле из записи, если известно условие на значение другого поля в этой записи
+  //Получение информации в одном поле из записи, если известны условия
 	public function ReceiveFieldOnManyConditions($table, $outfield, $condition) {
 		$result = $this->Choice($table, array($outfield), $condition);
     $num = count($result);
@@ -153,36 +150,27 @@ class DbRover {
 		for ($i = 0; $i < $num; $i++) $output[$i] = $result[$i][$outfield];
 		return $output;
 	}
+  //Получение информации в одном поле из записи по условию - на выходе массив с ключами ID
+	public function ReceiveIDFieldsOnCondition($table, $outfield, $condition='') {
+		$result = $this->Choice($table, array($outfield, 'ID'), $condition);
+    $num = count($result);
+		if ($num < 1) return FALSE;
+		$output = array();
+		for ($i = 0; $i < $num; $i++) $output[$result[$i]['ID']] = $result[$i][$outfield];
+		return $output;
+	}
   
-  //------------------------------
+  
+  /*
   //Получение случайной информации в одном поле из записи, если известно условие на значение другого поля в этой записи
 	public function ReceiveRandomOnCondition($table, $outfield, $infield, $sign, $invalue, $limit) {
 		$cond = "`".$infield."`".$sign."'".addslashes($invalue)."'";
     return $this->choice($table, array($outfield), $cond, "RAND()", "", $limit);
   }
-  
-  //Получение всех полей записи, если известно условие на значение другого поля в этой записи
-	public function ReceiveAllOnCondition($table, $infield, $sign, $invalue) {
-		$cond = "`".$infield."`".$sign."'".addslashes($invalue)."'";
-    $result = $this->Choice($table, array('ID'), $cond);
-		if (count($result) === 0)     return FALSE;
-    $arr = $this->Choice($table, array("*"), $cond);
-		return $arr;
-  }
+  */
   
   
-  
-  //------------------------------
-  //Получение всех полей записи по ID этой записи
-	public function ReceiveAllOnId($table, $id) {
-		if ((!is_int($id)) && (!((is_string($id)) && (preg_match("~^(0|(-?\s?[1-9]\d*))$~", $id)))))    return FALSE;
-		$result = $this->Choice($table, array('ID'), "`ID`='".$id."'");
-		if (count($result) === 0)     return FALSE;
-    $arr = $this->Choice($table, array("*"), "`ID`='".$id."'");
-		return $arr[0];
-  }
-  
-  //------------------------------
+  //------------- ОБРАБОТКА ИНФОРМАЦИИ -----------------
   //Вставка новой записи в таблицу
   public function DataIn($table, $fields_values) {
 		//Подготовка названия таблицы для запроса
@@ -204,7 +192,6 @@ class DbRover {
     $this->connection->query($zapros);
 	}
   
-  //------------------------------
   //Удалить запись по ID этой записи
 	public function DataOffOnId($table, $id) {
 		if ((!is_int($id)) && (!((is_string($id)) && (preg_match("~^(0|(-?\s?[1-9]\d*))$~", $id)))))    return FALSE;
@@ -212,8 +199,6 @@ class DbRover {
 		$zapros = "DELETE FROM ".$table." WHERE `ID`='".$id."'";
     $this->connection->query($zapros);
   }  
-  
-  //------------------------------
   //Удалить запись по условию
 	public function DataOffOnCondition($table, $infield, $sign, $invalue) {
 		if (СountDataOnCondition($table, $infield, $sign, $invalue) == 0)     return FALSE;
@@ -222,7 +207,6 @@ class DbRover {
     $this->connection->query($zapros);
   }  
   
-  //------------------------------
   //Изменить запись по ID записи
   public function ChangeDataOnId($table, $input, $id) {
     if ((!is_int($id)) && (!((is_string($id)) && (preg_match("~^(0|(-?\s?[1-9]\d*))$~", $id)))))    return FALSE;
@@ -235,9 +219,7 @@ class DbRover {
     $zapros = "UPDATE ".$table." SET ".$what." WHERE `ID` = ".$id;
     $this->connection->query($zapros);
   }
-
-  //------------------------------
-  //Изменить поле по ID записи
+  //Изменить одно поле по ID записи
   public function ChangeFieldOnId($table, $field, $val, $id) {
     if ((!is_int($id)) && (!((is_string($id)) && (preg_match("~^(0|(-?\s?[1-9]\d*))$~", $id)))))    return FALSE;
     $table = "`".$table."`";
@@ -245,8 +227,6 @@ class DbRover {
     $zapros = "UPDATE ".$table." SET ".$what." WHERE `ID` = ".$id;
     $this->connection->query($zapros);
   }
-
-
 
 
   public function __destruct() {

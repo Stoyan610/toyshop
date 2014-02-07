@@ -4,57 +4,36 @@ defined('ACCESS') or die('Access denied');
 //Подключение абстрактного класса админки
 require_once PATH.'mainadmin/class/admin_class.php';
 
-class Catalog extends Admin {
+class Client extends Admin {
   protected $tbl;
   protected $allfields;
-  protected $smallfields;
-
+  
   public function __construct($user, $pass) {
     parent::__construct($user, $pass);
-    $this->tbl = MULTS;
-    $this->allfields = array('ID', 'Name', 'Description', 'Keywords', 'Image_ID', 'Priority', 'PublishFrom');
-    $this->smallfields = array('ID', 'SmallFile');
+    $this->tbl = CLNTS;
+    $this->allfields = array('ID', 'Name', 'Phone', 'Mail', 'Created', 'Changed');
   }
-  
-  //Получение фото по ID 
-  private function GetImage($id) {
-    $kind = $this->db->ReceiveFieldOnCondition(IMG, 'Kind', 'ID', '=', $id);
-    if (($kind[0] == 'Мультфильм') && ($id != 0)) {
-      $img_name = $this->db->ReceiveFieldOnCondition(IMG, 'SmallFile', 'ID', '=', $id);
-      $img = $img_name[0];
-    }
-    else    $img = 'emptymult';
-    return $img;
-  }
-  
-  //Подпрограмма выведения ячеек с маленьким изображением мультфильмов
-  private function GetImgCells ($arr) {
-    foreach ($arr as $key => $val) {
-      if ($key == 'Image_ID') {
-        $pic = $this->GetImage($arr['Image_ID']);
-        echo "<td><img src='".SITEURL.PICT."mult114x86/".$pic.".jpg' alt='".$pic."' width='114' height='86' /></td>";
-      }
-      else echo "<td>".$val."</td>";
-    }
-  }
-  
+
   //Получение полной информации из данной таблицы БД 
   public function GetTable() {
-    echo '<h2>Таблица - Все мультфильмы по приоритету</h2>';
-    $arr_table = $this->db->ReceiveFields($this->tbl, $this->allfields,'Priority', FALSE);
-    if (!$arr_table)     echo "<p>Таблица пуста</p><a href='catalog.php?act=add' style='font-size: 120%; font-weight: bold;'>Добавить мультфильм</a><br /><br />";
+    echo '<h2>Таблица - Все клиенты по дате изменения</h2>';
+    $arr_table = $this->db->ReceiveFields($this->tbl, $this->allfields,'Changed', FALSE);
+    if (!$arr_table)     exit ("Таблица пуста");
     else {
       $lines = count($arr_table);
-      echo "<a href='catalog.php?act=add' style='font-size: 120%; font-weight: bold;'>Добавить мультфильм</a><br /><br /><table name='mult' cellspacing='0' cellpadding='3' border='1'><colgroup><col span='7' /><col span='1' width='240px' /></colgroup><tr align='center' style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'><td>ID</td><td>Название</td><td>Описание</td><td>Ключевые слова</td><td>Изображение</td><td>Приоритет</td><td>Дата публикации</td><td></td></tr>";
+      echo "<table name='client' cellspacing='0' cellpadding='3' border='1'><colgroup><col span='6' /><col span='1' width='200px' /></colgroup><tr align='center' style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'><td>ID</td><td>Имя</td><td>Телефон</td><td>Почта</td><td>Дата создания</td><td>Дата изменения</td><td></td></tr>";
       for ($i = 0; $i < $lines; $i++) {
         echo "<tr align='center'>";
-        $this->GetImgCells($arr_table[$i]);
-        echo "<td><ol><li><a href='catalog.php?act=changeimg&id=".$arr_table[$i]['ID']."'>Заменить изображение</a></li><li><a href='catalog.php?act=edit&id=".$arr_table[$i]['ID']."'>Редактировать мультфильм</a></li><li><a href='catalog.php?act=del&id=".$arr_table[$i]['ID']."'>Удалить мультфильм</a></li></ol></td></tr>";
+        foreach ($arr_table[$i] as $val)     echo "<td>".$val."</td>";
+        echo "<td><ol><li><a href='client.php?act=edit&id=".$arr_table[$i]['ID']."'>Редактировать данные</a></li><li><a href='client.php?act=del&id=".$arr_table[$i]['ID']."'>Удалить клиента</a></li></ol></td></tr>";
       }
       echo "</table><br />";
     }
   }
- 
+
+  
+    
+/* 
   //Вывод информации требуемого вида из данной таблицы БД 
   public function GetTableOnImage($Image_ID) {
     echo '<h2>Таблица - Все мультфильмы с выбранным изображением</h2>';
@@ -76,10 +55,15 @@ class Catalog extends Admin {
   private function WhetherProduct($id) {
     return $this->db->ReceiveIDFieldsOnCondition(TOYS, 'Name', '`Catalog_ID` = '.$id);
   }
-  
+
+*/
+
   //Удаление записи в таблице БД
   public function DeleteItem($id){
-    echo '<h2>Эта запись будет удалена</h2>';
+    echo '<h2>Эта запись будет удалена</h2>'.$id;
+    
+  }
+/*
     $arr_table = $this->db->ReceiveFieldsOnId($this->tbl, $this->allfields, $id);
     if (!$this->WhetherProduct($id)) {
       if (!$arr_table)     exit('Нечего удалять');
@@ -88,11 +72,14 @@ class Catalog extends Admin {
       echo "</tr></table><br /><form name='delete' action='delmult.php' method='post'><input type='hidden' name='del' value='".$id."' /><input type='submit' name='delete' value='Подтверждаю удаление' /></form><br /><form name='cancel' action='delmult.php' method='post'><input type='submit' name='cancel' value='Отмена' /></form>";
     }
     else     echo "<p>К сожалению, удалить мультфильм  `".$arr_table['Name']."`  невозможно, так как с ним связаны существующие игрушки</p><a href='product.php?act=part&field=Catalog_ID&value=".$id."'>Показать список соответствующих игрушек?</a> или <a href='catalog.php'>Вернуться к списку мультфильмов?</a>";
-  }
+*/  
   
   //Изменение записи в таблице БД
   public function EditItem($id) {
-    echo '<h2>Изменение данных записи - мультфильма</h2>';
+    echo '<h2>Изменение данных записи - клиента </h2>'.$id;
+    
+  }
+/*
     $arr_table = $this->db->ReceiveFieldsOnId($this->tbl, $this->allfields, $id);
     $stl = "style='font-size: 120%; font-weight: bold;'";
     echo "<table name='editmult' cellspacing='0' cellpadding='5' border='1'><form name='editmult' action='editmult.php' method='post'>";
@@ -114,10 +101,13 @@ class Catalog extends Admin {
     }
     echo "<br /><input type='hidden' name='mult_id' value='".$id."' /><input type='submit' name='changing' value='Подтверждаю выбор изображения' /></form><br /><form name='cancel' action='imgchmult.php' method='post'><input type='submit' name='cancel' value='Отмена' /></form>";
   }
-  
+*/   
   //Добавление новой записи в таблицу БД
   public function InsertItem() {
     echo '<h2>Новая запись - мультфильм</h2>';
+
+  }
+/*
     $stl = "style='font-size: 120%; font-weight: bold;'";
     echo "<table name='addmult' cellspacing='0' cellpadding='5' border='1'><form name='editmult' action='addmult.php' method='post'>";
     echo "<tr></tr><tr><td ".$stl.">Название</td><td><input type='text' name='Name' value='' /></td></tr><tr><td ".$stl.">Описание</td><td><input type='text' name='Description' value='' size='100' /></td></tr><tr><td ".$stl.">Ключевые слова</td><td><input type='text' name='Keywords' value='' size='50' /></td></tr><tr><td ".$stl.">Приоритет</td><td><input type='text' name='Priority' value='' /></td></tr><tr><td ".$stl.">Дата публикации</td><td><input type='text' id='pick' name='PublishFrom' value='' /></td></tr>";
@@ -137,7 +127,7 @@ class Catalog extends Admin {
     echo "<tr><td ".$stl.">Изображение<input id='imageid' type='hidden' name='ImageID' value='0' /></td><td id='pictures' ondblclick='galery()'><span style='text-decoration: underline;' >Для выбора изображения дважды кликни здесь</span><div id='hide0' hidden>".SITEURL.PICT."</div><div id='hide1' hidden>".$str_id."</div><div id='hide2' hidden>".$str_pic."</div><input type='hidden' name='Image_ID' value='' /></td></tr>";
     echo "<tr><td colspan='2' align='right'><input type='submit' name='add' value='Подтверждаю добавление' /></td></tr></form><tr><td colspan='2' align='right'><form name='cancel' action='addmult.php' method='post'><input type='submit' name='cancel' value='Отмена' /></form></td></tr></table><br />";
   }
-  
+*/  
 }
 
 ?>

@@ -28,7 +28,8 @@ if (isset($_POST['delete'])) {
   }
   
   //Удаление соответствующих файлов изображений
-  $imginfo = $db->ReceiveAllOnId(IMG, $iddel);
+  $field_list = array('Kind', 'BigFile', 'SmallFile', 'ThumbnailFile');
+  $imginfo = $db->ReceiveFieldsOnId(IMG, $field_list, $iddel);
   $kind = $imginfo['Kind'];
   if ($kind == 'Игрушка') {
     $big = $imginfo['BigFile'];
