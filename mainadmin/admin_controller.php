@@ -52,9 +52,18 @@ switch ($table) {
     header('Location: client.php');
     exit;
   }
-  
-  //....................................
-  
+  case 'a_order': {
+    header('Location: order.php');
+    exit;
+  }
+  case 'a_content': {
+    header('Location: content.php');
+    exit;
+  }
+  case 'j_feedback': {
+    header('Location: feedback.php');
+    exit;
+  }
   case '': {
     break;
   } 

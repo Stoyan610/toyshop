@@ -14,17 +14,37 @@ if (empty($_SESSION['login'])) {
 require_once PATH.'www/'.MODEL;
 $db = new DbRover($_SESSION['login'], $_SESSION['password']);
 
-//Проверка POST-параметра 
+//Выбор удаляемого объекта
+$item = htmlspecialchars($_POST['choice']);
+unset($_POST['choice']);
+
+//Проверка POST-параметра 'delete' 
 if (isset($_POST['delete'])) {
-  //Определение ID строки для удаления
-  $iddel = htmlspecialchars($_POST['del']);
   unset($_POST['delete']);
+  $iddel = htmlspecialchars($_POST['del']);
   unset($_POST['del']);
-  $db->DataOffOnId(TOYS, $iddel);
-  $db->DataOffOnCondition(LIMG, 'Product_ID', '=', $iddel);
+  switch ($item) {
+    case 'product': {
+      $db->DataOffOnId(TOYS, $iddel);
+      $db->DataOffOnCondition(LIMG, 'Product_ID', '=', $iddel);
+      break;
+    }
+    case 'catalog': {
+      $db->DataOffOnId(MULTS, $iddel);
+      break;
+    }
+    case 'client': {
+      $db->DataOffOnId(CLNTS, $iddel);
+      break;
+    }
+
+      
+    default:
+      break;
+  }
 }  
 
-//Возвращение на страницу product.php
-header("Location: ".ADMINURL."product.php");
+//Возвращение на страницу запроса
+header("Location: ".ADMINURL.$item.".php");
 
 ?>

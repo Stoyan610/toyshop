@@ -29,14 +29,14 @@ class DbRover {
 		$flag = FALSE;
     $field_num = count($field_list);
     for ($i=0; $i<$field_num; $i++) {
-			if (($field_list[$i] != '*') && (!stripos($field_list[$i],"COUNT(`")) && (!stripos($field_list[$i],"SUM(`")) && (!stripos($field_list[$i],"AVG(`")) && (!stripos($field_list[$i],"MIN(`")) && (!stripos($field_list[$i],"MAX(`")) && (!stripos($field_list[$i],"DISTINCT `")))        $field_list[$i] = "`".$field_list[$i]."`";
+      if (($field_list[$i] != '*') && (stripos($field_list[$i],"COUNT(`") === FALSE) && (stripos($field_list[$i],"SUM(`") === FALSE) && (stripos($field_list[$i],"AVG(`") === FALSE) && (stripos($field_list[$i],"MIN(`") === FALSE) && (stripos($field_list[$i],"MAX(`") === FALSE) && (stripos($field_list[$i],"DISTINCT `") === FALSE))        $field_list[$i] = "`".$field_list[$i]."`";
 			else {
 				$fields = $field_list[$i];
 				$flag = TRUE;
 				break;
 			}
 		}
-    if ($flag == FALSE) $fields = implode(",", $field_list);
+    if ($flag === FALSE) $fields = implode(",", $field_list);
     return $fields;
 	}
   
@@ -83,19 +83,19 @@ class DbRover {
   //------------- СПРАВОЧНЫЕ -----------------
   //Получение количества записей в базе
 	public function СountData($table) {
-		$result = $this->Choice($table, array("COUNT('ID')"));
-		return $result[0]["COUNT('ID')"];
+		$result = $this->Choice($table, array("COUNT(`ID`)"));
+		return $result[0]["COUNT(`ID`)"];
   }
   //Получение количества записей в базе, если известно условие на значение поля
 	public function СountDataOnCondition($table, $infield, $sign, $invalue) {
 		$cond = "`".$infield."`".$sign."'".addslashes($invalue)."'";
-    $result = $this->Choice($table, array("COUNT('ID')"), $cond);
-		return $result[0]["COUNT('ID')"];
+    $result = $this->Choice($table, array("COUNT(`ID`)"), $cond);
+    return $result[0]["COUNT(`ID`)"];
   }
   //Получение количества уникальных записей (с неповторяющимся значением поля)
 	public function СountUniqField($table, $field) {
 		$result = $this->Choice($table, array("COUNT(DISTINCT `".$field."`)"));
-    $count = $result[0]["COUNT(DISTINCT ".$field.")"];
+    $count = $result[0]["COUNT(DISTINCT `".$field."`)"];
 		return $count;
   }
   //Получение уникальных (неповторяющихся) значений поля
@@ -104,8 +104,8 @@ class DbRover {
   }
   //Получение ID последней вставленной записи
 	public function IdOfLast($table) {
-		$result = $this->choice($table, array("MAX('ID')"));
-		return $result[0]["MAX('ID')"];
+		$result = $this->choice($table, array("MAX(`ID`)"));
+		return $result[0]["MAX(`ID`)"];
 	}
   
   //------------- ВЫБОРКА ИНФОРМАЦИИ ПО НЕСКОЛЬКИМ ПОЛЯМ -----------------
@@ -126,7 +126,7 @@ class DbRover {
 		$cond = "`".$infield."`".$sign."'".addslashes($invalue)."'";
     $result = $this->Choice($table, $field_list, $cond);
 		if (count($result) === 0)     return FALSE;
-    $arr = $this->Choice($table, array("*"), $cond);
+    $arr = $this->Choice($table, $field_list, $cond);
 		return $arr;
   }
   
@@ -201,7 +201,7 @@ class DbRover {
   }  
   //Удалить запись по условию
 	public function DataOffOnCondition($table, $infield, $sign, $invalue) {
-		if (СountDataOnCondition($table, $infield, $sign, $invalue) == 0)     return FALSE;
+		if ($this -> СountDataOnCondition($table, $infield, $sign, $invalue) == 0)   return FALSE;
     $table = "`".$table."`";
     $zapros = "DELETE FROM ".$table." WHERE `".$infield."`".$sign."'".addslashes($invalue)."'";
     $this->connection->query($zapros);

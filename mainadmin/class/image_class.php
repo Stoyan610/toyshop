@@ -124,7 +124,7 @@ class Images extends Admin {
     if (!$arr_table)     exit('Нечего редактировать - такого изображения нет');
     $pic = $arr_table['SmallFile'];
     $kind = $arr_table['Kind'];
-    echo "<table name='editpic' cellspacing='0' cellpadding='3' border='1'><tr align='center' style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'><td>ID</td><td>Тип изображения</td><td>Изображение</td><td>Описание</td><td></td><td></td></tr><tr align='center'><form name='edit' action='editimage.php' method='post'>";
+    echo "<table name='editing' cellspacing='0' cellpadding='3' border='1'><tr align='center' style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'><td>ID</td><td>Тип изображения</td><td>Изображение</td><td>Описание</td><td></td><td></td></tr><tr align='center'><form name='editing' action='editing.php' method='post'>";
     foreach ($arr_table as $key => $val) {
       if ($key == 'ID') {
         echo "<td>".$val."<input type='hidden' name='ID' value='".$val."' /></td>";
@@ -138,7 +138,7 @@ class Images extends Admin {
         echo "<td><input type='text' name='Alt' value='".$val."' size='100' /></td>";
       }
     }
-    echo "<td><input type='submit' name='edit' value='Подтверждаю изменения' /></td></form><td><form name='cancel' action='editimage.php' method='post'><input type='submit' name='cancel' value='Отмена' /></form></td></tr></table><br />";
+    echo "<td><input type='hidden' name='choice' value='image' /><input type='submit' name='edit' value='Подтверждаю изменения' /></td></form><td><form name='cancel' action='editing.php' method='post'><input type='hidden' name='choice' value='image' /><input type='submit' name='cancel' value='Отмена' /></form></td></tr></table><br />";
   }
   
 }

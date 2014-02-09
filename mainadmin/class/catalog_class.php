@@ -83,9 +83,9 @@ class Catalog extends Admin {
     $arr_table = $this->db->ReceiveFieldsOnId($this->tbl, $this->allfields, $id);
     if (!$this->WhetherProduct($id)) {
       if (!$arr_table)     exit('Нечего удалять');
-      echo "<table name='delmult' cellspacing='0' cellpadding='3' border='1'><tr align='center' style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'><td>ID</td><td>Название</td><td>Описание</td><td>Ключевые слова</td><td>Изображение</td><td>Приоритет</td><td>Дата публикации</td></tr><tr align='center'>";
+      echo "<table name='deleting' cellspacing='0' cellpadding='3' border='1'><tr align='center' style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'><td>ID</td><td>Название</td><td>Описание</td><td>Ключевые слова</td><td>Изображение</td><td>Приоритет</td><td>Дата публикации</td></tr><tr align='center'>";
       $this->GetImgCells($arr_table);
-      echo "</tr></table><br /><form name='delete' action='delmult.php' method='post'><input type='hidden' name='del' value='".$id."' /><input type='submit' name='delete' value='Подтверждаю удаление' /></form><br /><form name='cancel' action='delmult.php' method='post'><input type='submit' name='cancel' value='Отмена' /></form>";
+      echo "</tr></table><br /><form name='deleting' action='deleting.php' method='post'><input type='hidden' name='del' value='".$id."' /><input type='hidden' name='choice' value='catalog' /><input type='submit' name='delete' value='Подтверждаю удаление' /></form><br /><form name='cancel' action='deleting.php' method='post'><input type='hidden' name='choice' value='catalog' /><input type='submit' name='cancel' value='Отмена' /></form>";
     }
     else     echo "<p>К сожалению, удалить мультфильм  `".$arr_table['Name']."`  невозможно, так как с ним связаны существующие игрушки</p><a href='product.php?act=part&field=Catalog_ID&value=".$id."'>Показать список соответствующих игрушек?</a> или <a href='catalog.php'>Вернуться к списку мультфильмов?</a>";
   }
@@ -95,9 +95,9 @@ class Catalog extends Admin {
     echo '<h2>Изменение данных записи - мультфильма</h2>';
     $arr_table = $this->db->ReceiveFieldsOnId($this->tbl, $this->allfields, $id);
     $stl = "style='font-size: 120%; font-weight: bold;'";
-    echo "<table name='editmult' cellspacing='0' cellpadding='5' border='1'><form name='editmult' action='editmult.php' method='post'>";
+    echo "<table name='editing' cellspacing='0' cellpadding='5' border='1'><form name='editing' action='editing.php' method='post'>";
     echo "<tr><td ".$stl.">ID</td><td><input type='text' name='ID' value='".$arr_table['ID']."' readonly /></td></tr><tr><td ".$stl.">Название</td><td><input type='text' name='Name' value='".$arr_table['Name']."' /></td></tr><tr><td ".$stl.">Описание</td><td><input type='text' name='Description' value='".$arr_table['Description']."' size='100' /></td></tr><tr><td ".$stl.">Ключевые слова</td><td><input type='text' name='Keywords' value='".$arr_table['Keywords']."' size='50' /></td></tr><tr><td ".$stl.">Приоритет</td><td><input type='text' name='Priority' value='".$arr_table['Priority']."' /></td></tr><tr><td ".$stl.">Дата публикации</td><td><input type='text' id='pick' name='PublishFrom' value='".$arr_table['PublishFrom']."' /></td></tr>";
-    echo "<tr><td colspan='2' align='right'><input type='submit' name='edit' value='Подтверждаю изменения' /></td></tr></form><tr><td colspan='2' align='right'><form name='cancel' action='editmult.php' method='post'><input type='submit' name='cancel' value='Отмена' /></form></td></tr></table><br />";
+    echo "<tr><td colspan='2' align='right'><input type='hidden' name='choice' value='catalog' /><input type='submit' name='edit' value='Подтверждаю изменения' /></td></tr></form><tr><td colspan='2' align='right'><form name='cancel' action='editing.php' method='post'><input type='hidden' name='choice' value='catalog' /><input type='submit' name='cancel' value='Отмена' /></form></td></tr></table><br />";
   }
    
   //Замена изображения в записи
@@ -119,7 +119,7 @@ class Catalog extends Admin {
   public function InsertItem() {
     echo '<h2>Новая запись - мультфильм</h2>';
     $stl = "style='font-size: 120%; font-weight: bold;'";
-    echo "<table name='addmult' cellspacing='0' cellpadding='5' border='1'><form name='editmult' action='addmult.php' method='post'>";
+    echo "<table name='adding' cellspacing='0' cellpadding='5' border='1'><form name='adding' action='adding.php' method='post'>";
     echo "<tr></tr><tr><td ".$stl.">Название</td><td><input type='text' name='Name' value='' /></td></tr><tr><td ".$stl.">Описание</td><td><input type='text' name='Description' value='' size='100' /></td></tr><tr><td ".$stl.">Ключевые слова</td><td><input type='text' name='Keywords' value='' size='50' /></td></tr><tr><td ".$stl.">Приоритет</td><td><input type='text' name='Priority' value='' /></td></tr><tr><td ".$stl.">Дата публикации</td><td><input type='text' id='pick' name='PublishFrom' value='' /></td></tr>";
     //Получение массива изображений мультфильмов
     $arr_img = $this->db->ReceiveFewFieldsOnCondition(IMG, $this->smallfields, 'Kind', ' LIKE ', 'Мульт%');
@@ -134,8 +134,8 @@ class Catalog extends Admin {
     $str_id = implode('~', $arr_id);
     $str_pic = implode('~', $arr_pic);
     
-    echo "<tr><td ".$stl.">Изображение<input id='imageid' type='hidden' name='ImageID' value='0' /></td><td id='pictures' ondblclick='galery()'><span style='text-decoration: underline;' >Для выбора изображения дважды кликни здесь</span><div id='hide0' hidden>".SITEURL.PICT."</div><div id='hide1' hidden>".$str_id."</div><div id='hide2' hidden>".$str_pic."</div><input type='hidden' name='Image_ID' value='' /></td></tr>";
-    echo "<tr><td colspan='2' align='right'><input type='submit' name='add' value='Подтверждаю добавление' /></td></tr></form><tr><td colspan='2' align='right'><form name='cancel' action='addmult.php' method='post'><input type='submit' name='cancel' value='Отмена' /></form></td></tr></table><br />";
+    echo "<tr><td ".$stl.">Изображение<input id='imageid' type='hidden' name='Image_ID' value='0' /></td><td id='pictures' ondblclick='galery()'><span style='text-decoration: underline;' >Для выбора изображения дважды кликни здесь</span><div id='hide0' hidden>".SITEURL.PICT."</div><div id='hide1' hidden>".$str_id."</div><div id='hide2' hidden>".$str_pic."</div></td></tr>";
+    echo "<tr><td colspan='2' align='right'><input type='hidden' name='choice' value='catalog' /><input type='submit' name='add' value='Подтверждаю добавление' /></td></tr></form><tr><td colspan='2' align='right'><form name='cancel' action='adding.php' method='post'><input type='hidden' name='choice' value='catalog' /><input type='submit' name='cancel' value='Отмена' /></form></td></tr></table><br />";
   }
   
 }

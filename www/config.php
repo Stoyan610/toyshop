@@ -49,6 +49,8 @@ define('LIMG', 'l_image');
 define('CLNTS', 'a_client');
 //Таблицы базы данных - таблица заказов
 define('ORDS', 'a_order');
+//Таблицы базы данных - таблица корзины
+define('BASKET', 'l_basket');
 //Таблицы базы данных - таблица контента
 define('INFO', 'a_content');
 //Таблицы базы данных - таблица отзывов

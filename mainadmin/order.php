@@ -16,14 +16,15 @@ require_once 'half_index.php';
 //Подключение модели - обработчика базы данных, и создание его объекта (с подключением к БД)
 require_once PATH.'www/'.MODEL;
 //Создание объекта, соответствующего таблице, и подключение класса обработчика соответствующей таблицы
-require_once PATH.'mainadmin/class/client_class.php';
+require_once PATH.'mainadmin/class/order_class.php';
 
 //Уничтожить объект, если он был создан на предыдущей страницы
 if (isset($creator)) {
   unset($creator);
 }
 
-$creator = new Client($_SESSION['login'], $_SESSION['password']);
+$creator = new Order($_SESSION['login'], $_SESSION['password']);
+
 if (!isset($_GET['act'])) {
   $creator->GetTable();
 }
@@ -37,21 +38,49 @@ else {
       $creator->EditItem($id);
     break;
     }
+    
+/*    
+    case 'changeimg': {
+      $id = htmlspecialchars($_GET['id']);
+      unset($_GET['id']);
+      $creator->ChangeImage($id);
+    break;
+    }
+    case 'addimg': {
+      $id = htmlspecialchars($_GET['id']);
+      unset($_GET['id']);
+      $creator->AddImage($id);
+    break;
+    }
+    
     case 'del': {
       $id = htmlspecialchars($_GET['id']);
       unset($_GET['id']);
       $creator->DeleteItem($id);
     break;
     }
-    
-    
+    case 'add': {
+      $creator->InsertItem();
+    break;
+    }
+    case 'part': {
+      $field = htmlspecialchars($_GET['field']);
+      unset($_GET['field']);
+      $value = htmlspecialchars($_GET['value']);
+      unset($_GET['value']);
+      $creator->GetTableOnField($field, $value);
+    break;
+    }
+
+*/
     default: {
       exit ('Это сделать невозможно');
     }
+    
   }
 }
-
+ 
 ?>
-   
+  
 </body>
 </html>
