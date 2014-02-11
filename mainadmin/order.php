@@ -7,8 +7,7 @@ require_once 'config_address.php';
 require_once PATH.'www/config.php';
 //Проверка - если зашёл без логина, то на выход
 if (empty($_SESSION['login'])) {
-  $goback = $_SERVER['HTTP_REFERER'];
-  header("Location: ".$goback);
+  header("Location: ".SITEURL);
   exit;
 }
 //Подключение html файла для подключения таблиц
@@ -46,33 +45,33 @@ else {
       $creator->ChangeImage($id);
     break;
     }
-    case 'addimg': {
+    
+*/    
+    case 'basket': {
       $id = htmlspecialchars($_GET['id']);
       unset($_GET['id']);
-      $creator->AddImage($id);
+      $creator->GetBasket($id);
     break;
     }
-    
     case 'del': {
       $id = htmlspecialchars($_GET['id']);
       unset($_GET['id']);
       $creator->DeleteItem($id);
     break;
     }
+    
     case 'add': {
       $creator->InsertItem();
     break;
     }
+    
     case 'part': {
-      $field = htmlspecialchars($_GET['field']);
-      unset($_GET['field']);
-      $value = htmlspecialchars($_GET['value']);
-      unset($_GET['value']);
-      $creator->GetTableOnField($field, $value);
+      $Client_ID = htmlspecialchars($_GET['Client_ID']);
+      unset($_GET['Client_ID']);
+      $creator->GetTableOnField($Client_ID);
     break;
     }
 
-*/
     default: {
       exit ('Это сделать невозможно');
     }

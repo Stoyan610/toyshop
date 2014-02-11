@@ -46,7 +46,7 @@ class Client extends Admin {
       foreach ($arr_table as $val)     echo "<td>".$val."</td>";
       echo "</tr></table><br /><form name='deleting' action='deleting.php' method='post'><input type='hidden' name='del' value='".$id."' /><input type='hidden' name='choice' value='client' /><input type='submit' name='delete' value='Подтверждаю удаление' /></form><br /><form name='cancel' action='deleting.php' method='post'><input type='hidden' name='choice' value='client' /><input type='submit' name='cancel' value='Отмена' /></form>";
     }
-    else     echo "<p>К сожалению, удалить клиента `".$arr_table['Name']."`  невозможно, так как с ним связаны существующие заказы</p><a href='order.php?act=part&field=Client_ID&value=".$id."'>Показать список соответствующих заказов?</a> или <a href='client.php'>Вернуться к списку клиентов?</a>";
+    else     echo "<p>К сожалению, удалить клиента `".$arr_table['Name']."`  невозможно, так как с ним связаны существующие заказы</p><a href='order.php?act=part&Client_ID=".$id."'>Показать список соответствующих заказов?</a> или <a href='client.php'>Вернуться к списку клиентов?</a>";
   }
  
   //Изменение записи в таблице БД

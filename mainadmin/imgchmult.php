@@ -5,9 +5,8 @@ define('ACCESS', TRUE);//Подключение конфигурационног
 require_once 'config_address.php';
 require_once PATH.'www/config.php';
 //Проверка - если зашёл без логина, то на выход
-$goback = $_SERVER['HTTP_REFERER'];
 if (empty($_SESSION['login'])) {
-  header("Location: ".$goback);
+  header("Location: ".SITEURL);
   exit;
 }
 //Подключение модели - обработчика базы данных, и создание его объекта (с подключением к БД)

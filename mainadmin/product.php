@@ -7,8 +7,7 @@ require_once 'config_address.php';
 require_once PATH.'www/config.php';
 //Проверка - если зашёл без логина, то на выход
 if (empty($_SESSION['login'])) {
-  $goback = $_SERVER['HTTP_REFERER'];
-  header("Location: ".$goback);
+  header("Location: ".SITEURL);
   exit;
 }
 //Подключение html файла для подключения таблиц

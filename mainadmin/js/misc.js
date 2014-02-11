@@ -84,3 +84,114 @@ function checknum(id) {
   var num = parseFloat(result[0] + "." + result[1]);
   $("#"+id).val(num);
 }
+
+function checkall() {
+  var r = true;
+  var smp_eml = /^([a-z0-9][\w\.-]*[a-z0-9])@((?:[a-z0-9]+[\.-]?)*[a-z0-9]\.[a-z]{2,})$/;
+  var smp_phn = /^\+\d{1,3}\(\d{2,5}\)\d{1,3}(\-\d{2}){2}$/;
+  var mail = $("#mail").val();
+  if (!smp_eml.test(mail)) {
+    alert("Е-мейл некорректный");
+    $("#mail").val('');
+    r = false;
+  }
+  var phone = $("#phone").val();
+  phone = phone.replace(/\D/g, "");
+  var lng = phone.length;
+  if ((lng > 11) || (lng < 7)) {
+    alert("Телефон некорректный");
+    $("#phone").val('');
+    r = false;
+  }
+  else {
+    var arr_phone = phone.split("");
+    switch(lng) {
+      case 7: {
+          phone = "+7(495)" + arr_phone[0] + arr_phone[1] + arr_phone[2] + "-" + arr_phone[3] + arr_phone[4] + "-" + arr_phone[5] + arr_phone[6];
+          break;
+      }
+      case 8: {
+          phone = "+7(49" + arr_phone[0] + ")" + arr_phone[1] + arr_phone[2] + arr_phone[3] + "-" + arr_phone[4] + arr_phone[5] + "-" + arr_phone[6] + arr_phone[7];
+          break;
+      }
+      case 9: {
+         phone = "+7(9" + arr_phone[0] + arr_phone[1] + ")" + arr_phone[2] + arr_phone[3] + arr_phone[4] + "-" + arr_phone[5] + arr_phone[6] + "-" + arr_phone[7] + arr_phone[8];
+          break;
+      }
+      case 10: {
+          phone = "+7(" + arr_phone[0] + arr_phone[1] + arr_phone[2] + ")" + arr_phone[3] + arr_phone[4] + arr_phone[5] + "-" + arr_phone[6] + arr_phone[7] + "-" + arr_phone[8] + arr_phone[9];
+          break;
+      }
+      case 11: {
+          phone = "+7(" + arr_phone[1] + arr_phone[2] + arr_phone[3] + ")" + arr_phone[4] + arr_phone[5] + arr_phone[6] + "-" + arr_phone[7] + arr_phone[8] + "-" + arr_phone[9] + arr_phone[10];
+          break;
+      }
+    }
+    $("#phone").val(phone);
+    var stroka = phone + " - Телефон понят правильно ?";
+    if (!confirm(stroka))  r = false;
+  }
+  return r;
+}
+
+function toylist() {
+  var sitepict = $("#hide0").text();
+  var toylist = $("#hide1").text();
+  var mid_arr = new Array();
+  var arr_toys = new Array();
+  mid_arr = toylist.split("^");
+  var n = mid_arr.length;
+  for (var i =0; i < n; i++) {
+    arr_toys[i] = mid_arr[i].split("~");
+  }
+  var k;
+  var new_td = "<td id='chosen'>";
+  var str;
+  var str;
+  for (var i = 0; i < n; i++) {
+    new_td += "<div id='" + i + "' style='display: inline-block; width: 130px; text-align: center; vertical-align: top;'><span id='0-" + i + "' hidden>" + arr_toys[i][0] + "</span><span id='4-" + i + "' hidden>" + arr_toys[i][4] + "</span>";
+    str = "<img src='" + sitepict + arr_toys[i][5] + ".jpg' alt='" + arr_toys[i][5] + "' width='70' height='70' /><br /><span id='1-" + i + "'>" + arr_toys[i][1] + "</span><br /><span id='2-" + i + "'>" + arr_toys[i][2] + "</span> руб.<br /><input type='text' name='" + i + "' value=''  size='3' /> шт<br />максимум <span id='3-" + i + "'>" + arr_toys[i][3] + "</span>";
+    new_td += str;
+    new_td += "</div>";
+  }
+  new_td += "<br /><button onclick='gettoys(" + n + ")'>Выбрано</button></td>";
+  $("#products").replaceWith(new_td);
+}
+
+function gettoys(n) {
+  var l;
+  var lng = 0;
+  var a;
+  var choice = new Array();
+  var arr_b = new Array();
+  var deadline = $("#DTime").val();
+  for (var i = 0; i < n; i++) {
+    a = $("#" + i + " input").val();
+    if (a != "") {
+      arr_b[lng] = [$("#0-" + i).text(), $("#1-" + i).text(), $("#2-" + i).text(), $("#3-" + i).text(), $("#4-" + i).text()];
+      var k = Number(a);
+      var m = Number(arr_b[lng][3]);
+      if (k > m) {
+        a = arr_b[lng][3];
+      }
+      l = arr_b[lng].push(a);
+      var str_b = arr_b[lng].join("~");
+      var z = Number(arr_b[lng][4]);
+      var x = Math.max(deadline, z);
+      deadline = x;
+      lng = choice.push(str_b);
+    }
+  }
+  var bigstr = choice.join("^");
+  if (bigstr == "") {
+    alert("Ни одной игрушки не выбрано. Если не нужен новый заказ, нажмите `Отмена`.");
+    return;
+  }
+  var newest_td = "<td>";
+  for (var i = 0; i < lng; i++) {
+    newest_td += "<div style='display: inline-block; width: 130px; text-align: center; vertical-align: top;'>" + arr_b[i][0] + "<br />" + arr_b[i][1] + "<br />" + arr_b[i][2] + " руб.<br />" + arr_b[i][5] + " шт из " + arr_b[i][3] + "</div>";
+  }
+  $("#chosen").replaceWith(newest_td);
+  $("#toysinfo").val(bigstr);
+  $("#DTime").val(deadline);
+}

@@ -5,12 +5,6 @@ define('ACCESS', TRUE);
 //Подключение конфигурационного файла
 require_once 'config_address.php';
 require_once PATH.'www/config.php';
-//Проверка - если зашёл не через форму, то на выход
-if ((empty($_SESSION['login']))&&(empty($_POST['send']))) {
-  $goback = $_SERVER['HTTP_REFERER'];
-  header("Location: ".$goback);
-  exit;
-}
 
 if (isset($_POST['send'])) {
   $_SESSION['login'] = htmlspecialchars($_POST['log']);
@@ -28,6 +22,13 @@ if (mysqli_connect_errno()) {
   header("Location: ".$goback);
   exit;
 }
+
+//Проверка - если зашёл без логина, то на выход
+if (empty($_SESSION['login'])) {
+  header("Location: ".SITEURL);
+  exit;
+}
+
 //Отключить соединение - будет подключаться через объект модели
 if ($admin_connect) $admin_connect->close();
 //Проверка имени таблицы, Обработка GET-данных, и присваивание странице название рабочей таблицы
