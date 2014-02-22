@@ -86,7 +86,7 @@ function checknum(id) {
 }
 
 function checkall() {
-  var r = true;
+  var r = mustbe();
   var smp_eml = /^([a-z0-9][\w\.-]*[a-z0-9])@((?:[a-z0-9]+[\.-]?)*[a-z0-9]\.[a-z]{2,})$/;
   var smp_phn = /^\+\d{1,3}\(\d{2,5}\)\d{1,3}(\-\d{2}){2}$/;
   var mail = $("#mail").val();
@@ -133,8 +133,7 @@ function checkall() {
   }
   return r;
 }
-
-function toylist() {
+function toylistservice(td, tdend, flag) {
   var sitepict = $("#hide0").text();
   var toylist = $("#hide1").text();
   var mid_arr = new Array();
@@ -145,7 +144,7 @@ function toylist() {
     arr_toys[i] = mid_arr[i].split("~");
   }
   var k;
-  var new_td = "<td id='chosen'>";
+  var new_td = td;
   var str;
   var str;
   for (var i = 0; i < n; i++) {
@@ -154,11 +153,19 @@ function toylist() {
     new_td += str;
     new_td += "</div>";
   }
-  new_td += "<br /><button onclick='gettoys(" + n + ")'>Выбрано</button></td>";
+  new_td += "<br /><button onclick='gettoys" + flag + "(" + n + ")'>Выбрано</button>" + tdend;
   $("#products").replaceWith(new_td);
 }
 
-function gettoys(n) {
+function toylist() {
+  toylistservice("<td id='chosen'>", "</td>", "1");
+}
+
+function toylist2() {
+  toylistservice("<tr id='chosen'><td colspan='4'>", "</td></tr>", "2");
+}
+
+function gettoys1(n) {
   var l;
   var lng = 0;
   var a;
@@ -194,4 +201,64 @@ function gettoys(n) {
   $("#chosen").replaceWith(newest_td);
   $("#toysinfo").val(bigstr);
   $("#DTime").val(deadline);
+}
+
+function gettoys2(n) {
+  var l;
+  var lng = 0;
+  var a;
+  var choice = new Array();
+  var arr_b = new Array();
+  for (var i = 0; i < n; i++) {
+    a = $("#" + i + " input").val();
+    if (a != "") {
+      arr_b[lng] = [$("#0-" + i).text(), $("#1-" + i).text(), $("#2-" + i).text(), $("#3-" + i).text(), $("#4-" + i).text()];
+      var k = Number(a);
+      var m = Number(arr_b[lng][3]);
+      if (k > m) {
+        a = arr_b[lng][3];
+      }
+      l = arr_b[lng].push(a);
+      var str_b = arr_b[lng].join("~");
+      lng = choice.push(str_b);
+    }
+  }
+  var bigstr = choice.join("^");
+  if (bigstr == "")    alert("Ни одной игрушки не добавлено");
+  var newest_td = "";
+  for (var i = 0; i < lng; i++) {
+    newest_td += "<tr><td>" + arr_b[i][1] + "</td><td>" + arr_b[i][2] + " руб.</td><td>" + arr_b[i][5] + " шт</td><td></td><tr>";
+  }
+  $("#toysinfo").val(bigstr);
+  $("#chosen").replaceWith(newest_td);
+}
+
+function mustbe() {
+  var ann;
+  ann = $("#req1").val();
+  if (ann == '') {
+    alert("Поля, отмеченные * , обязательны к заполнению !");
+    return false;
+  }
+  ann = $("#req_text").val();
+  if (ann == '') {
+    alert("Текстовое поле, отмеченное * , тоже обязательно к заполнению !");
+    return false;
+  }
+  return true;
+}
+
+function mustbeimg() {
+  var ann;
+  ann = $("#alt").val();
+  if (ann == '') {
+    alert("Поля, отмеченные * , обязательны к заполнению !");
+    return false;
+  }
+  ann = $("#big").val();
+  if (ann == '') {
+    alert("Все поля, отмеченные * , обязательны к заполнению !");
+    return false;
+  }
+  return true;
 }

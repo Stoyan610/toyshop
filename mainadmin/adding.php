@@ -23,10 +23,9 @@ function checkphone($phone) {
 function checkmail($mail) {
   $r = TRUE;
   $smp_eml = "~^([a-z0-9][\w\.-]*[a-z0-9])@((?:[a-z0-9]+[\.-]?)*[a-z0-9]\.[a-z]{2,})$~";
-  if (preg_match($smp_eml, $mail) == 0)     $r = FALSE;
+  if (($mail != "") && (preg_match($smp_eml, $mail) == 0))     $r = FALSE;
   return $r;
 }
-
 
 //Выбор добавляемого объекта
 $item = htmlspecialchars($_POST['choice']);
@@ -65,8 +64,8 @@ if (isset($_POST['add'])) {
         unset($_POST[$val]);
       }
       //Проверка телефона и почты
-      if (checkphone(!$cln_fields_values['Phone'])) exit('Телефон не корректен');
-      if (checkmail(!$cln_fields_values['Mail'])) exit('Почта не корректна');
+      if (!checkphone($cln_fields_values['Phone'])) exit('Телефон не корректен');
+      if (!checkmail($cln_fields_values['Mail'])) exit('Почта не корректна');
       $cond = "`Name` = '".$cln_fields_values['Name']."' AND `Phone` = '".$cln_fields_values['Phone']."' AND `Mail` = '".$cln_fields_values['Mail']."'";
       $arrid = $db->ReceiveFieldOnManyConditions(CLNTS, 'ID', $cond);
       if ($arrid !== FALSE)     $Client_ID = $arrid[0];
@@ -101,7 +100,16 @@ if (isset($_POST['add'])) {
       }
       break;
     }
-    
+    case 'content': {
+      //Формирование массива полей и значений для добавления в БД
+      $arr = array('Category', 'Title', 'Brief', 'Text', 'Revision', 'PublishFrom');
+      foreach ($arr as $val) {
+        $fields_values[$val] = htmlspecialchars($_POST[$val]);
+        unset($_POST[$val]);
+      }
+      $db->DataIn(INFO, $fields_values);
+      break;
+    }
     
     
     default:

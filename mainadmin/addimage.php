@@ -22,9 +22,7 @@ $db = new DbRover($_SESSION['login'], $_SESSION['password']);
     $size = $_FILES['ImageFile']['size'];
     if (($type != "image/jpg") && ($type != "image/jpeg")) exit;    //Проверка MIME-type
     if ($size > 2097152) exit;                                      //Проверка размера (< 2 MB)
-	  $image_file = PATH.'www/'.LOAD.$_FILES['ImageFile']['name'];
-    move_uploaded_file($_FILES['ImageFile']['tmp_name'], $image_file);
-  
+	  $image_file = $_FILES['ImageFile']['tmp_name'];  
     return $image_file;
   }
 

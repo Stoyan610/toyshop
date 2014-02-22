@@ -17,8 +17,6 @@ define('TEMPLATE', 'views/pages/templates/');
 define('CLASSES', 'views/pages/classes/');
 //Путь к картинкам
 define('PICT', 'views/pages/pictures/');
-//Путь к загружаемым картинкам
-define('LOAD', 'views/pages/pictures/originalimage/');
 //Путь к стилям
 define('STYL', 'views/pages/styles/');
 //Путь к скриптам

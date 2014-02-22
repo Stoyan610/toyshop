@@ -25,7 +25,7 @@ defined('ACCESS') or die('Access denied');
 </head>
 <body>
 
-  <ol>
+  <ul>
     <div class='list'><li><a href="admin_controller.php?table=a_catalog">Категории</a></li></div>
     <div class='list'><li><a href="admin_controller.php?table=a_product">Товары</a></li></div>
     <div class='list'><li><a href="admin_controller.php?table=a_image">Изображения</a></li></div>
@@ -33,5 +33,5 @@ defined('ACCESS') or die('Access denied');
     <div class='list'><li><a href="admin_controller.php?table=a_order">Заказы</a></li></div>
     <div class='list'><li><a href="admin_controller.php?table=a_content">Контент</a></li></div>
     <div class='list'><li><a href="admin_controller.php?table=j_feedback">Отзывы</a></li></div>
-  </ol>
+  </ul>
   

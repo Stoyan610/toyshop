@@ -41,6 +41,10 @@ if (isset($_POST['delete'])) {
       $db->DataOffOnCondition(BASKET, 'Order_ID', '=', $iddel);
       break;
     }
+    case 'content': {
+      $db->DataOffOnId(INFO, $iddel);
+      break;
+    }
 
       
     default:

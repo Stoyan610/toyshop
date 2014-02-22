@@ -109,11 +109,11 @@ class Images extends Admin {
   public function InsertItem() {
     echo '<h2>Новая запись - изображение</h2>';
     echo "<table name='addpicture' cellspacing='0' cellpadding='5' border='1'>";
-    echo "<form name='addimage' action='addimage.php' method='post' enctype='multipart/form-data'>";
+    echo "<form name='addimage' action='addimage.php' method='post' enctype='multipart/form-data' onSubmit='return mustbeimg()'>";
     $stl = "style='font-size: 120%; font-weight: bold;'";
     //Выбрать файл
     echo "<tr><td ".$stl.">Загружаемый файл<br />(только формата jpg)</td><td><input id='file' type='file' name='ImageFile' onchange='checkjpg()' /></td></tr>";
-    echo "<tr><td ".$stl.">Тип изображения</td><td><input type='radio' name='Type' value='Мультфильм' checked />Постер мультфильма<br /><input type='radio' name='Type' value='Игрушка' />Фото игрушки</td></tr><tr><td ".$stl.">Описание</td><td><input id='alt' type='text' name='Alt' value='' required /></td></tr><tr><td ".$stl.">Имя файла большого изображения<br />(латиницей)</td><td><input id='big' type='text' name='BigFile' value='' required /></td></tr><tr><td ".$stl.">Имя файла маленького изображения<br />(латиницей)</td><td><input id='small' type='text' name='SmallFile' value='' required /></td></tr><tr><td ".$stl.">Имя файла изображения-ноготка<br />(латиницей)</td><td><input id='nail' type='text' name='ThumbnailFile' value='' required /></td></tr>";
+    echo "<tr><td ".$stl.">Тип изображения</td><td><input type='radio' name='Type' value='Мультфильм' checked />Постер мультфильма<br /><input type='radio' name='Type' value='Игрушка' />Фото игрушки</td></tr><tr><td ".$stl.">Описание</td><td><input id='alt' type='text' name='Alt' value='' /> (* - обязательно)</td></tr><tr><td ".$stl.">Имя файла большого изображения<br />(латиницей)</td><td><input id='big' type='text' name='BigFile' value='' /> (* - обязательно)</td></tr><tr><td ".$stl.">Имя файла маленького изображения<br />(латиницей)</td><td><input id='small' type='text' name='SmallFile' value='' /> (* - обязательно)</td></tr><tr><td ".$stl.">Имя файла изображения-ноготка<br />(латиницей)</td><td><input id='nail' type='text' name='ThumbnailFile' value='' /></td></tr>";
     echo "<tr><td colspan='2' align='right'><input onmouseover='valid()' type='submit' name='add' value='Подтверждаю добавление' /></td></tr></form><tr><td colspan='2' align='right'><form name='cancel' action='addimage.php' method='post'><input type='submit' name='cancel' value='Отмена' /></form></td></tr></table><br />";
   }
   

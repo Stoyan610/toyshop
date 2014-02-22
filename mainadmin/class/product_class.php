@@ -206,8 +206,8 @@ class Product extends Admin {
   public function InsertItem() {
     echo '<h2>Новая запись - игрушка</h2>';
     $stl = "style='font-size: 120%; font-weight: bold;'";
-    echo "<table name='adding' cellspacing='0' cellpadding='5' border='1'><form name='adding' action='adding.php' method='post'>";
-    echo "<tr><td ".$stl.">Название</td><td><input type='text' name='Name' value='' required /></td></tr>";
+    echo "<table name='adding' cellspacing='0' cellpadding='5' border='1'><form name='adding' action='adding.php' method='post' onSubmit='return mustbe()'>";
+    echo "<tr><td ".$stl.">Название</td><td><input id='req1' type='text' name='Name' value='' /> (* - обязательно)</td></tr>";
     //Получение массива названий мультфильмов
     $arr_mult = $this->db->ReceiveIDFieldsOnCondition(MULTS, 'Name');
     $arr_mult['0'] = '';
