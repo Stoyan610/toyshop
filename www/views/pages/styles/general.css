@@ -72,7 +72,7 @@ img{
 	border: 1px solid #77BB77;
 	border-radius: 10px;
 }
-.menu, #inmenu , #footer {
+.menu, #inmenu , #footer, a {
 	font-family: 'Comic Sans MS', Verdana, 'Lucida Sans Unicode';
 	text-decoration: none;
 	color: #333333;

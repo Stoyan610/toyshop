@@ -141,6 +141,16 @@ class DbRover {
 		for ($i = 0; $i < $num; $i++) $output[$i] = $result[$i][$outfield];
 		return $output;
 	}
+  //Получение информации в одном поле из записи, если известно условие на значение другого поля в этой записи
+	public function ReceiveFieldOnFullCondition($table, $outfield, $infield, $sign, $invalue, $sort='', $vozr=TRUE, $limit='') {
+		$cond = "`".$infield."`".$sign."'".addslashes($invalue)."'";
+    $result = $this->Choice($table, array($outfield), $cond, $sort, $vozr, $limit);
+    $num = count($result);
+		if ($num < 1) return FALSE;
+		$output = array();
+		for ($i = 0; $i < $num; $i++) $output[$i] = $result[$i][$outfield];
+		return $output;
+	}
   //Получение информации в одном поле из записи, если известны условия
 	public function ReceiveFieldOnManyConditions($table, $outfield, $condition) {
 		$result = $this->Choice($table, array($outfield), $condition);

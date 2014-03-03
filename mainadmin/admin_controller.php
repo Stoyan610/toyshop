@@ -18,8 +18,7 @@ $admin_connect = @new mysqli(HOST, $_SESSION['login'], $_SESSION['password'], DB
 if (mysqli_connect_errno()) {
   unset($_SESSION['login']);
   unset($_SESSION['password']);
-  $goback = $_SERVER['HTTP_REFERER'];
-  header("Location: ".$goback);
+  header("Location: ".SITEURL);
   exit;
 }
 

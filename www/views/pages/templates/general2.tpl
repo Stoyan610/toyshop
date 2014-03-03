@@ -1,8 +1,8 @@
 </head>
 <body>
 
-<script type='text/javascript' src='%site_url%/js/jquery-1.10.2.min.js'></script>
-<script type='text/javascript' src='%site_url%/js/sldr.js'></script>
+<script type='text/javascript' src='%site_url%js/jquery-1.10.2.min.js'></script>
+<script type='text/javascript' src='%site_url%js/sldr.js'></script>
 
 	<div id='overheader'>
 		<div id='wndw'>
@@ -22,8 +22,8 @@
 					<col span='1' />
 				</colgroup>
 				<tr align='center'>
-					<td><a href='%site_url%/index.php' title='Идём домой'><img height='34px' width='34px' src='%site_url%/pictures/home.png' alt='Домашняя страничка' /></a></td>
-					<td><a href='%site_url%/index.php?page=catalogue' class='menu'>КАТАЛОГ</a></td>
-					<td><a href='%site_url%/index.php?page=delivery' class='menu'>О ДОСТАВКЕ</a></td>
-					<td><a href='%site_url%/index.php?page=comments' class='menu'>ОТЗЫВЫ</a></td>
-					<td><a href='%site_url%/index.php?page=contacts' class='menu'>КОНТАКТЫ</a></td>				
+					<td><a href='%site_url%index.php' title='Идём домой'><img height='34px' width='34px' src='%site_url%pictures/home.png' alt='Домашняя страничка' /></a></td>
+					<td><a href='%site_url%index.php?page=catalogue' class='menu'>КАТАЛОГ</a></td>
+					<td><a href='%site_url%index.php?page=delivery' class='menu'>О ДОСТАВКЕ</a></td>
+					<td><a href='%site_url%index.php?page=comments' class='menu'>ОТЗЫВЫ</a></td>
+					<td><a href='%site_url%index.php?page=contacts' class='menu'>КОНТАКТЫ</a></td>				

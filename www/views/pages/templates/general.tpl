@@ -5,5 +5,5 @@
 <meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
 <meta name='description' content='%present_page_description%' />
 <meta name='keywords' content='%present_page_key_words%' />
-<link rel='shortcut icon' type='image/x-icon' href='%site_url%/pictures/favicon.ico' />
-<link rel='stylesheet' type='text/css' href='%site_url%/styles/general.css' />
+<link rel='shortcut icon' type='image/x-icon' href='%site_url%pictures/favicon.ico' />
+<link rel='stylesheet' type='text/css' href='%site_url%styles/general.css' />

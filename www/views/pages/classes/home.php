@@ -3,8 +3,6 @@
 //Запрет прямого обращения
 defined('ACCESS') or die('Access denied');
 
-echo '№ 6 - Класс создателя домашней страницы подключен<br />';
-
 //Подключение абстрактного класса обработчика шаблонов
 require_once 'template_handler.php';
 
@@ -16,9 +14,40 @@ class Home extends TemplateHandler {
 
   public function __construct($n_item) {
     parent::__construct($n_item);
-    $this->subst['%greeting%'] = $this->GetGreeting();
-    $this->mults = $this->GetMult();
+    //$this->subst['%greeting%'] = $this->GetGreeting();
+    //$this->mults = $this->GetMult();
   }
+  
+  //Получение содержания для meta тега описания страницы
+  public function DescrPage() {
+    return 'Home Page Description...';
+  }
+  //Получение содержания для meta тега ключевых слов страницы
+  public function KeywordsPage() {
+    return 'Home Page Key Words...';
+  }  
+  
+//--------!!!!!!!!!--------   Эта функция готова...  -------!!!!!!!!!--------
+  //Получение строки html для составления домашней страницы
+  public function CreatePage() {
+    //Создание массива для замены
+    for ($i = 0; $i < 6; $i++) {
+      $key = '%multname-'.$i.'%';
+      $this->subst[$key] = $this->mults[$i];
+    }
+    
+    /*
+    $this->homebody = $this->ReplaceTemplate($this->subst, 'homebody');
+    $home_html = $this->general_1."<link rel='stylesheet' type='text/css' href='styles/home.css' />".$this->general_2.$this->basket.$this->homebody.$this->general_3;
+    */
+      
+    $home_html = $this->general_1."<link rel='stylesheet' type='text/css' href='".PAGE."styles/home.css' />".$this->general_2.$this->basket.$this->general_3;
+    return $home_html;
+  }
+  
+  
+  
+/*  
   //Эта функция готова...
   //Получение строки-приветствия html из файла tpl и замена в ней параметров
   protected function GetGreeting() {
@@ -28,18 +57,6 @@ class Home extends TemplateHandler {
     $this->greeting['%article_body%'] = $this->db->ReceiveFieldOnCondition(INFO, 'Text', 'Category', '=', 'Приветствие');
     return $this->GetReplacedTemplate($this->greeting, 'greeting');
   }
-  
-  
-  //Получение содержания для meta тега описания страницы
-  public function DescrPage() {
-    
-    return 'Home Page Description...';
-  }
-  //Получение содержания для meta тега ключевых слов страницы
-  public function KeywordsPage() {
-    
-    return 'Home Page Key Words...';
-  }  
   
   
   //Эта функция готова...
@@ -67,20 +84,6 @@ class Home extends TemplateHandler {
     }
     return $mults;
   }
-  //Эта функция готова...
-  //Получение строки html для составления домашней страницы
-  public function CreatePage() {
-    //Создание массива для замены
-    for ($i = 0; $i < 6; $i++) {
-      $key = '%multname-'.$i.'%';
-      $this->subst[$key] = $this->mults[$i];
-    }
-    $this->homebody = $this->GetReplacedTemplate($this->subst, 'homebody');
-    $home_html = $this->general_1."<link rel='stylesheet' type='text/css' href='styles/home.css' />".$this->general_2.$this->basket.$this->homebody.$this->general_3;
-    return $home_html;
-  }
-  
-  
   
   
   //Пробная публичная функция
@@ -91,6 +94,8 @@ class Home extends TemplateHandler {
     return $arr;
   }
   
+ */
+ 
   
   /*public function __destruct() {
   }
