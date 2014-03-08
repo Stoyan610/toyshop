@@ -1,0 +1,17 @@
+﻿/*В главном каталоге и во втором уровне*/
+.imgleft {
+	margin: 0;
+	border: 10px solid #FDFDFD;
+	border-radius: 10px;
+}
+.imgleft:hover {
+	border-color: green;
+}
+.catp {
+	font-family: 'Comic Sans MS', Verdana, 'Lucida Sans Unicode';
+	color: #656565;
+	font-weight: bold;
+}
+.catp:hover {
+	color: green;
+}

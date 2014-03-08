@@ -13,14 +13,14 @@ class Catalog extends Admin {
     parent::__construct($user, $pass);
     $this->tbl = MULTS;
     $this->allfields = array('ID', 'Name', 'Description', 'Keywords', 'Image_ID', 'Priority', 'PublishFrom');
-    $this->smallfields = array('ID', 'SmallFile');
+    $this->smallfields = array('ID', 'FileName');
   }
   
   //Получение фото по ID 
   private function GetImage($id) {
     $kind = $this->db->ReceiveFieldOnCondition(IMG, 'Kind', 'ID', '=', $id);
     if (($kind[0] == 'Мультфильм') && ($id != 0)) {
-      $img_name = $this->db->ReceiveFieldOnCondition(IMG, 'SmallFile', 'ID', '=', $id);
+      $img_name = $this->db->ReceiveFieldOnCondition(IMG, 'FileName', 'ID', '=', $id);
       $img = $img_name[0];
     }
     else    $img = 'emptymult';
@@ -109,7 +109,7 @@ class Catalog extends Admin {
     echo "<form name='change' action='imgchmult.php' method='post'>";
     foreach ($arr_img as $row) {
       $img_id = $row['ID'];
-      $pic = $row['SmallFile'];
+      $pic = $row['FileName'];
       echo "<div ".$stl."><img src='".SITEURL.PICT."mult114x86/".$pic.".jpg' alt='".$pic."' width='114' height='86' /><br /><input type='radio' name='img' value='".$img_id."' />".$row['Alt']."</div>";
     }
     echo "<br /><input type='hidden' name='mult_id' value='".$id."' /><input type='submit' name='changing' value='Подтверждаю выбор изображения' /></form><br /><form name='cancel' action='imgchmult.php' method='post'><input type='submit' name='cancel' value='Отмена' /></form>";
@@ -119,8 +119,8 @@ class Catalog extends Admin {
   public function InsertItem() {
     echo '<h2>Новая запись - мультфильм</h2>';
     $stl = "style='font-size: 120%; font-weight: bold;'";
-    echo "<table name='adding' cellspacing='0' cellpadding='5' border='1'><form name='adding' action='adding.php' method='post'>";
-    echo "<tr></tr><tr><td ".$stl.">Название</td><td><input type='text' name='Name' value='' /></td></tr><tr><td ".$stl.">Описание</td><td><input type='text' name='Description' value='' size='100' /></td></tr><tr><td ".$stl.">Ключевые слова</td><td><input type='text' name='Keywords' value='' size='50' /></td></tr><tr><td ".$stl.">Приоритет</td><td><input type='text' name='Priority' value='' /></td></tr><tr><td ".$stl.">Дата публикации</td><td><input type='text' id='pick' name='PublishFrom' value='' /></td></tr>";
+    echo "<table name='adding' cellspacing='0' cellpadding='5' border='1'><form name='adding' action='adding.php' method='post' onSubmit='return mustbe()'>";
+    echo "<tr></tr><tr><td ".$stl.">Название</td><td><input id='req1' type='text' name='Name' value='' /> (* - обязательно)</td></tr><tr><td ".$stl.">Описание</td><td><input type='text' name='Description' value='' size='100' /></td></tr><tr><td ".$stl.">Ключевые слова</td><td><input type='text' name='Keywords' value='' size='50' /></td></tr><tr><td ".$stl.">Приоритет</td><td><input type='text' name='Priority' value='' /></td></tr><tr><td ".$stl.">Дата публикации</td><td><input type='text' id='pick' name='PublishFrom' value='' /></td></tr>";
     //Получение массива изображений мультфильмов
     $arr_img = $this->db->ReceiveFewFieldsOnCondition(IMG, $this->smallfields, 'Kind', ' LIKE ', 'Мульт%');
     $arr_id = Array();
@@ -129,7 +129,7 @@ class Catalog extends Admin {
     $arr_pic[0] = 'emptymult';
     foreach ($arr_img as $value) {
       $arr_id[] = $value['ID'];
-      $arr_pic[] = $value['SmallFile'];
+      $arr_pic[] = $value['FileName'];
     }
     $str_id = implode('~', $arr_id);
     $str_pic = implode('~', $arr_pic);

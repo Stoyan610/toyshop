@@ -27,22 +27,19 @@ if (isset($_POST['delete'])) {
   }
   
   //Удаление соответствующих файлов изображений
-  $field_list = array('Kind', 'BigFile', 'SmallFile', 'ThumbnailFile');
+  $field_list = array('Kind', 'FileName');
   $imginfo = $db->ReceiveFieldsOnId(IMG, $field_list, $iddel);
   $kind = $imginfo['Kind'];
   if ($kind == 'Игрушка') {
-    $big = $imginfo['BigFile'];
-    ImageDeleter($big, 'toy400x400/');
-    $small = $imginfo['SmallFile'];
-    ImageDeleter($small, 'toy135x135/');
-    $nail = $imginfo['ThumbnailFile'];
-    ImageDeleter($small, 'toy70x70/');
+    $filename = $imginfo['FileName'];
+    ImageDeleter($filename, 'toy400x400/');
+    ImageDeleter($filename, 'toy135x135/');
+    ImageDeleter($filename, 'toy70x70/');
   }
   else {
-    $big = $imginfo['BigFile'];
-    ImageDeleter($big, 'mult228x171/');
-    $small = $imginfo['SmallFile'];
-    ImageDeleter($small, 'mult114x86/');
+    $filename = $imginfo['FileName'];
+    ImageDeleter($filename, 'mult228x171/');
+    ImageDeleter($filename, 'mult114x86/');
   }
   
   $db->DataOffOnId(IMG, $iddel);

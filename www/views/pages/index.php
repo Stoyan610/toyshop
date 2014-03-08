@@ -4,16 +4,8 @@ session_start();
 //Запрет прямого обращения
 defined('ACCESS') or die('Access denied');
 
-//Проверка, сколько товаров в корзине
-if (!isset($_SESSION['items'])) $_SESSION['items'] = 0;
-$n_item = $_SESSION['items'];
-
 //Проверка кода страницы. Обработка GET-данных, и преобразование html-кодов в html-сущности, и присваивание странице название файла страницы
-if (!isset($_GET['page'])) $page = 'home.php';
-else {
-  $page = htmlspecialchars($_GET['page']).'php';
-  unset($_GET['page']);
-}
+$page = $_SESSION['page'];
 
 //Подключение класса обработчика шаблонов
 require_once CLASSES.$page;
@@ -24,19 +16,27 @@ if (isset($pager)) unset($pager);
 switch ($page) {
   case 'home.php': {
     $pager = new Home($n_item);
-    
-        //Просто проверка
-        echo $pager->CreatePage();
-        echo '<br />';
-        
-        
-    
     break;
   }
-  case 'cartoon.php': {
-    $pager = new Cartoon($n_item);
+  case 'catalogue.php': {
+    $pager = new Catalogue($n_item);
     break;
   }
+  case 'catalogue-next.php': {
+    $pager = new CatalogueFilm($n_item);
+    break;
+  }
+  
+  case 'toyitem.php': {
+    $pager = new ToyItem($n_item);
+    break;
+  }
+  
+  case 'order.php': {
+    $pager = new Order($n_item);
+    break;
+  }
+  
   
   //Далее по списку классов страниц
   
@@ -44,6 +44,8 @@ switch ($page) {
     break;
 }
 
+echo $pager->CreatePage();
+    
 
 
 

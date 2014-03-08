@@ -1,0 +1,103 @@
+﻿/*Только в товаре*/
+#multlist {
+	float: left;
+	height: 955px;
+	overflow: auto;
+	width: 176px;
+  margin-bottom: 5px;
+}
+#multlist div {
+	text-align: center;
+	background-color: #FDFDFD;
+	border: 10px solid #FDFDFD;
+	border-radius: 10px;
+	margin: 0 5px 5px 0;
+}
+.bg td {
+	font-family: 'Comic Sans MS', Verdana, 'Lucida Sans Unicode';
+	color: #656565;
+}
+.catp {
+	margin: 0;
+	font-size: 105%;
+}
+#big:hover {
+	border-color: green;
+}
+
+#changer {
+	margin: 0 0 8px 204px;
+	background-color: #FDFDFD;
+	border: 10px solid #FDFDFD;
+	border-radius: 10px;
+	text-align: center;
+	overflow: hidden;
+}
+#gap {
+	height: 70px;
+	overflow: hidden;
+}
+
+#item {
+	padding: 0 5%;
+	text-align: center;
+	overflow: hidden;
+}
+
+h1 {
+	text-align: center;
+}
+
+.bg td {
+	background-color: #FDFDFD;
+	border: 10px solid #FDFDFD;
+}
+#big {
+	border: 20px solid #FDFDFD;
+	border-radius: 20px;
+	margin: 0 0 10px;
+}
+#small {
+	text-align: center;
+	background-color: #FDFDFD;
+	border: 5px solid #FDFDFD;
+	border-radius: 5px;
+	width: 80px;
+}
+#small img {
+	margin: 2px 0;
+}
+#topleft {
+	border-radius: 10px 0 0 0;
+}
+#topright {
+	border-radius: 0 10px 0 0;
+}
+#bottomleft {
+	border-radius: 0 0 0 10px;
+}
+#bottomright {
+	border-radius: 0 0 10px 0;
+}
+
+#item td {
+	text-align: left;
+}
+#item table td:nth-of-type(odd) {
+	color: #005555;
+	font-size: 115%;
+	text-decoration: underline;
+	font-weight: bold;
+}
+#item form {
+	margin: 10px 0 0 0;
+}
+#price {
+	color: #B0257E;
+	font-size: 135%;
+	font-weight: bold;
+ }
+
+#footer {
+	clear: both;
+}

@@ -54,7 +54,7 @@ img{
 }
 
 #header, #footer {
-	margin: 7px auto;
+	margin: 7px auto 0;
 	background-color: #9ADD8D;
 	border: 1px solid #9ADD8D;
 	border-radius: 10px;

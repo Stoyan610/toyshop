@@ -10,7 +10,6 @@ abstract class TemplateHandler {
   protected $subst_gen_2;
   protected $subst_gen_3;
   protected $subst_basket;
-  
   public $general_1;
   public $general_2;
   public $general_3;
@@ -26,18 +25,14 @@ abstract class TemplateHandler {
     $this->subst_gen_2['%merry_go_round%'] = $this->GetMerryGoRound();
     $this->subst_gen_3['%site_map%'] = $this->GetSiteMap();
     $this->subst_gen_3['%SEO%'] = $this->GetSEO();
-    
     $this->general_1 = $this->ReplaceTemplate($this->subst_gen_1, 'general');
     $this->general_2 = $this->ReplaceTemplate($this->subst_gen_2, 'general2');
     $this->general_3 = $this->ReplaceTemplate($this->subst_gen_3, 'general3');
-    
     $this->subst_basket['%n_item%'] = $n_item;
     $this->subst_basket['%suffix%'] = $this->GetSuffix($n_item);
-    
     $this->basket = $this->ReplaceTemplate($this->subst_basket, 'basket');
   }
-    
-  
+   
   //Получение содержания для meta тега описания страницы
   abstract public function DescrPage();
   //Получение содержания для meta тега ключевых слов страницы
@@ -70,7 +65,13 @@ abstract class TemplateHandler {
     $toy4mgr = $this->GetToys4mgr();
     $str = '';
     for ($i = 0; $i < N_MGR; $i++) {
-      $this->subst_mgr['%toyname%'] = $toy4mgr[$i];
+      
+      
+      $this->subst_mgr['%toyid%'] = $toy4mgr[$i]['id'];
+      $this->subst_mgr['%toyfilename%'] = $toy4mgr[$i]['img'];
+      $this->subst_mgr['%toyname%'] = $toy4mgr[$i]['name'];
+      
+      
       $str .= $this->ReplaceTemplate($this->subst_mgr, 'merrygoround');
     }
     return $str;
@@ -82,15 +83,18 @@ abstract class TemplateHandler {
     //Получение общего числа всех игрушек в базе данных
     $toy_num = $this->db->СountDataOnCondition(TOYS, 'PublishFrom', '<', date("Y-m-d"));
     if ($toy_num == 0)    for ($i = 0; $i < N_MGR; $i++)    $toys[$i] = 'emptytoy';
+    
     elseif ($toy_num <= N_MGR) {
-      $arr = $this->db->ReceiveFieldOnCondition(TOYS, 'ID', 'PublishFrom', '<', date("Y-m-d"));
+      $arr = $this->db->ReceiveFewFieldsOnCondition(TOYS, array('ID', 'Name'), 'PublishFrom', '<', date("Y-m-d"));
       $n = count($arr);
       for ($i = 0; $i < N_MGR; $i++) {
         $x = $i % $n;
-        $cond = "`Product_ID` = ".$arr[$x]." AND  `Priority` = 0";
+        $cond = "`Product_ID` = ".$arr[$x]['ID']." AND  `Priority` = 0";
         $arr1 = $this->db->ReceiveFieldOnManyConditions(LIMG, 'Image_ID', $cond);
-        $img = $this->db->ReceiveFieldOnCondition(IMG, 'ThumbnailFile', 'ID', '=', $arr1[0]);
-        $toys[$i] = $img[0];
+        $img = $this->db->ReceiveFieldOnCondition(IMG, 'FileName', 'ID', '=', $arr1[0]);
+        $toys[$i]['img'] = $img[0];
+        $toys[$i]['id'] = $arr[$x]['ID'];
+        $toys[$i]['name'] = $arr[$x]['Name'];
       }
     }
     else {
@@ -98,8 +102,11 @@ abstract class TemplateHandler {
       for ($i = 0; $i < N_MGR; $i++) {
         $cond = "`Product_ID` = ".$arr[$i]." AND  `Priority` = 0";
         $arr1 = $this->db->ReceiveFieldOnManyConditions(LIMG, 'Image_ID', $cond);
-        $img = $this->db->ReceiveFieldOnCondition(IMG, 'ThumbnailFile', 'ID', '=', $arr1[0]);
-        $toys[$i] = $img[0];
+        $img = $this->db->ReceiveFieldOnCondition(IMG, 'FileName', 'ID', '=', $arr1[0]);
+        $toys[$i]['img'] = $img[0];
+        $toys[$i]['id'] = $arr[$i];
+        $name = $this->db->ReceiveFieldOnCondition(TOYS, 'Name', 'ID', '=', $arr[$i]);
+        $toys[$i]['name'] = $name[0];
       }
     }
     return $toys;

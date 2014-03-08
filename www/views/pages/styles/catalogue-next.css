@@ -1,0 +1,48 @@
+﻿/*Только во втором уровне каталога*/
+#multlist {
+	float: left;
+	height: 585px;
+	overflow: auto;
+	width: 176px;
+}
+#multlist div {
+	text-align: center;
+	background-color: #FDFDFD;
+	border: 10px solid #FDFDFD;
+	border-radius: 10px;
+	margin: 0 5px 5px 0;
+}
+.catp {
+	margin: 0;
+	font-size: 105%;
+}
+#multtoys {
+	overflow: hidden;
+}
+
+#changer {
+	margin: 0 0 8px 5px;
+	background-color: #FDFDFD;
+	border: 10px solid #FDFDFD;
+	border-radius: 10px;
+	text-align: center;
+	overflow: hidden;
+}
+#gap {
+	height: 70px;
+	overflow: hidden;
+}
+
+#toylist {
+	width: 100%;
+	height: 484px;
+	overflow: auto;
+}
+#toylist img {
+	border: 10px solid #FDFDFD;
+	border-radius: 10px;
+	margin: 0 0 8px 5px;
+}
+#toylist img:hover {
+	border-color: green;
+}

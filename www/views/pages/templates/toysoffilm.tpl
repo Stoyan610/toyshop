@@ -1,1 +1,1 @@
-<a href='%site_url%/toyitem.php?toy=%toyname%'><img class='imgright' height='135px' width='135px' src='%site_url%/pictures/toysmedium/%toyname%.jpg' title='%toyname%' alt='%toyname%' /></a>
+<a href='index.php?page=toyitem&toy=%toyid%'><img class='imgright' height='135px' width='135px' src='%site_url%pictures/toy135x135/%toyfilename%.jpg' title='%toyname%' alt='%toyname%' /></a>

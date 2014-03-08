@@ -11,7 +11,7 @@ class Images extends Admin {
   public function __construct($user, $pass) {
     parent::__construct($user, $pass);
     $this->tbl = IMG;
-    $this->allfields = array('ID', 'Kind', 'BigFile', 'Width', 'Height', 'Alt', 'SmallFile', 'ThumbnailFile'); 
+    $this->allfields = array('ID', 'Kind', 'FileName', 'Width', 'Height', 'Alt'); 
   }
   
   //Вывод преложения для получения требуемой информации из данной таблицы БД 
@@ -31,18 +31,18 @@ class Images extends Admin {
     if (!$arr_table)     echo "<p>Таблица пуста - изображений нет</p>";
     else {
       $lines = count($arr_table);
-      echo "<table name='picture' cellspacing='0' cellpadding='3' border='1'><colgroup><col span='9' /><col span='1' width='240px' /></colgroup><tr align='center' style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'><td>ID</td><td>Тип</td><td>Изображение</td><td>Большой файл</td><td>Ширина</td><td>Высота</td><td>Описание</td><td>Маленький файл</td><td>Файл-ноготок</td><td></td></tr>";
+      echo "<table name='picture' cellspacing='0' cellpadding='3' border='1'><colgroup><col span='9' /><col span='1' width='240px' /></colgroup><tr align='center' style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'><td>ID</td><td>Тип</td><td>Изображение</td><td>Имя файла</td><td>Ширина</td><td>Высота</td><td>Описание</td><td></td></tr>";
       for ($i = 0; $i < $lines; $i++) {
         echo "<tr align='center'>";
         foreach ($arr_table[$i] as $key => $val) {
           echo "<td>".$val."</td>";
           if ($key == 'Kind') {
             if ($val == 'Игрушка') {
-              $pic = $arr_table[$i]['ThumbnailFile'];
+              $pic = $arr_table[$i]['FileName'];
               echo "<td><img src='".SITEURL.PICT."toy70x70/".$pic.".jpg' alt='".$pic."' width='70' height='70' /></td>";
             }
              else {
-               $pic = $arr_table[$i]['SmallFile'];
+               $pic = $arr_table[$i]['FileName'];
                echo "<td><img src='".SITEURL.PICT."mult114x86/".$pic.".jpg' alt='".$pic."' width='114' height='86' /></td>";
              }
           }
@@ -87,10 +87,10 @@ class Images extends Admin {
     echo '<h2>Это изображение будет удалено</h2>';
     $arr_table = $this->db->ReceiveFieldsOnId($this->tbl, $this->allfields, $id);
     if (!$arr_table)     exit('Нечего удалять - такого изображения нет');
-    $pic = $arr_table['SmallFile'];
+    $pic = $arr_table['FileName'];
     $kind = $arr_table['Kind'];
     if ($this->WhetherActive($id, $kind)) {
-      echo "<table name='delpic' cellspacing='0' cellpadding='3' border='1'><tr align='center' style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'><td>ID</td><td>Тип</td><td>Изображение</td><td>Большой файл</td><td>Ширина</td><td>Высота</td><td>Описание</td><td>Маленький файл</td><td>Файл-ноготок</td></tr><tr align='center'>";
+      echo "<table name='delpic' cellspacing='0' cellpadding='3' border='1'><tr align='center' style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'><td>ID</td><td>Тип</td><td>Изображение</td><td>Имя файла</td><td>Ширина</td><td>Высота</td><td>Описание</td></tr><tr align='center'>";
       foreach ($arr_table as $key => $val) {
         echo "<td>".$val."</td>";
         if (($key == 'Kind') && ($kind == 'Игрушка'))      echo "<td><img src='".SITEURL.PICT."toy135x135/".$pic.".jpg' alt='".$pic."' width='135' height='135' /></td>";
@@ -113,7 +113,7 @@ class Images extends Admin {
     $stl = "style='font-size: 120%; font-weight: bold;'";
     //Выбрать файл
     echo "<tr><td ".$stl.">Загружаемый файл<br />(только формата jpg)</td><td><input id='file' type='file' name='ImageFile' onchange='checkjpg()' /></td></tr>";
-    echo "<tr><td ".$stl.">Тип изображения</td><td><input type='radio' name='Type' value='Мультфильм' checked />Постер мультфильма<br /><input type='radio' name='Type' value='Игрушка' />Фото игрушки</td></tr><tr><td ".$stl.">Описание</td><td><input id='alt' type='text' name='Alt' value='' /> (* - обязательно)</td></tr><tr><td ".$stl.">Имя файла большого изображения<br />(латиницей)</td><td><input id='big' type='text' name='BigFile' value='' /> (* - обязательно)</td></tr><tr><td ".$stl.">Имя файла маленького изображения<br />(латиницей)</td><td><input id='small' type='text' name='SmallFile' value='' /> (* - обязательно)</td></tr><tr><td ".$stl.">Имя файла изображения-ноготка<br />(латиницей)</td><td><input id='nail' type='text' name='ThumbnailFile' value='' /></td></tr>";
+    echo "<tr><td ".$stl.">Тип изображения</td><td><input type='radio' name='Type' value='Мультфильм' checked />Постер мультфильма<br /><input type='radio' name='Type' value='Игрушка' />Фото игрушки</td></tr><tr><td ".$stl.">Описание</td><td><input id='alt' type='text' name='Alt' value='' /> (* - обязательно)</td></tr><tr><td ".$stl.">Имя файла изображения<br />(латиницей)</td><td><input id='filename' type='text' name='FileName' value='' /> (* - обязательно)</td></tr>";
     echo "<tr><td colspan='2' align='right'><input onmouseover='valid()' type='submit' name='add' value='Подтверждаю добавление' /></td></tr></form><tr><td colspan='2' align='right'><form name='cancel' action='addimage.php' method='post'><input type='submit' name='cancel' value='Отмена' /></form></td></tr></table><br />";
   }
   
@@ -122,7 +122,7 @@ class Images extends Admin {
     echo '<h2>Изменение записи - изображения</h2>';
     $arr_table = $this->db->ReceiveFieldsOnId($this->tbl, $this->allfields, $id);
     if (!$arr_table)     exit('Нечего редактировать - такого изображения нет');
-    $pic = $arr_table['SmallFile'];
+    $pic = $arr_table['FileName'];
     $kind = $arr_table['Kind'];
     echo "<table name='editing' cellspacing='0' cellpadding='3' border='1'><tr align='center' style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'><td>ID</td><td>Тип изображения</td><td>Изображение</td><td>Описание</td><td></td><td></td></tr><tr align='center'><form name='editing' action='editing.php' method='post'>";
     foreach ($arr_table as $key => $val) {

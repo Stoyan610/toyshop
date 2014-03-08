@@ -14,8 +14,8 @@ class Home extends TemplateHandler {
 
   public function __construct($n_item) {
     parent::__construct($n_item);
-    //$this->subst['%greeting%'] = $this->GetGreeting();
-    //$this->mults = $this->GetMult();
+    $this->subst['%greeting%'] = $this->GetGreeting();
+    $this->mults = $this->GetMult();
   }
   
   //Получение содержания для meta тега описания страницы
@@ -25,81 +25,62 @@ class Home extends TemplateHandler {
   //Получение содержания для meta тега ключевых слов страницы
   public function KeywordsPage() {
     return 'Home Page Key Words...';
-  }  
-  
-//--------!!!!!!!!!--------   Эта функция готова...  -------!!!!!!!!!--------
-  //Получение строки html для составления домашней страницы
-  public function CreatePage() {
-    //Создание массива для замены
-    for ($i = 0; $i < 6; $i++) {
-      $key = '%multname-'.$i.'%';
-      $this->subst[$key] = $this->mults[$i];
-    }
-    
-    /*
-    $this->homebody = $this->ReplaceTemplate($this->subst, 'homebody');
-    $home_html = $this->general_1."<link rel='stylesheet' type='text/css' href='styles/home.css' />".$this->general_2.$this->basket.$this->homebody.$this->general_3;
-    */
-      
-    $home_html = $this->general_1."<link rel='stylesheet' type='text/css' href='".PAGE."styles/home.css' />".$this->general_2.$this->basket.$this->general_3;
-    return $home_html;
   }
   
-  
-  
-/*  
-  //Эта функция готова...
   //Получение строки-приветствия html из файла tpl и замена в ней параметров
   protected function GetGreeting() {
     //Получение текста приветствия из базы данных
-    $this->greeting['%title_of_article%'] = $this->db->ReceiveFieldOnCondition(INFO, 'Title', 'Category', '=', 'Приветствие');
-    $this->greeting['%hello%'] = $this->db->ReceiveFieldOnCondition(INFO, 'Brief', 'Category', '=', 'Приветствие');
-    $this->greeting['%article_body%'] = $this->db->ReceiveFieldOnCondition(INFO, 'Text', 'Category', '=', 'Приветствие');
-    return $this->GetReplacedTemplate($this->greeting, 'greeting');
+    $extract = $this->db->ReceiveFieldOnCondition(INFO, 'Title', 'Category', 'LIKE', '%ривет%');
+    $this->greeting['%title_of_article%'] = $extract[0];
+    $extract = $this->db->ReceiveFieldOnCondition(INFO, 'Brief', 'Category', 'LIKE', '%ривет%');
+    $this->greeting['%hello%'] = $extract[0];
+    $extract = $this->db->ReceiveFieldOnCondition(INFO, 'Text', 'Category', 'LIKE', '%ривет%');
+    $this->greeting['%article_body%'] = $extract[0];
+    return $this->ReplaceTemplate($this->greeting, 'greeting');
   }
   
-  
-  //Эта функция готова...
   //Получение массива из 6 названий случайных мультфильмов для домашней страницы
   protected function GetMult() {
     $mults = array();
     //Получение общего числа всех мультфильмов в базе данных
-    $mult_num = $this->db->СountData(MULTS);
-    if ($mult_num == 0)    for ($i = 0; $i < 6; $i++)    $mults = EMPTY_MULT;
-    if ($mult_num <= 6) {
-      $startmult = $this->db->ReceiveField(MULTS, 'Mult_Name');
-      $rep = ((6 % $mult_num) == 0) ? (6 - (6 % $mult_num)) / $mult_num : (6 - (6 % $mult_num)) / $mult_num + 1;
-      for ($i = 0; $i < $rep; $i++) $mults = array_merge($mults, $startmult);
-      while (count($mults) > 6) {
-        array_pop($mults);
+    $mult_num = $this->db->СountDataOnCondition(MULTS, 'PublishFrom', '<', date("Y-m-d"));
+    if ($mult_num == 0)    for ($i = 0; $i < 6; $i++)    $mults = 'emptymult';
+    elseif ($mult_num <= 6) {
+      $arr = $this->db->ReceiveFewFieldsOnCondition(MULTS, array('ID', 'Image_ID'), 'PublishFrom', '<', date("Y-m-d"));
+      $n = count($arr);
+      for ($i = 0; $i < 6; $i++) {
+        $x = $i % $n;
+        $img = $this->db->ReceiveFieldOnCondition(IMG, 'FileName', 'ID', '=', $arr[$x]['Image_ID']);
+        $mults[$i]['img'] = $img[0];
+        $mults[$i]['id'] = $arr[$x]['ID'];
       }
     }
     else {
-      $startmult = $this->db->ReceiveFieldOnCondition(MULTS, 'Mult_Name', 'Number_at_home', '>', 0, 6);
-      if (count($startmult) < 6) {
-        $restmult = $this->db->ReceiveRandomOnCondition(MULTS, 'Mult_Name', 'Number_at_home', '=', 0, (6 - count($startmult)));
-        $mults = array_merge($startmult, $restmult);
+      $arr = $this->db->ReceiveFewFieldsOnCondition(MULTS, array('ID', 'Image_ID'), 'PublishFrom', '<', date("Y-m-d"), 6);
+      for ($i = 0; $i < 6; $i++) {       
+        $img = $this->db->ReceiveFieldOnCondition(IMG, 'FileName', 'ID', '=', $arr[$i]['Image_ID']);
+        $mults[$i]['img'] = $img[0];
+        $mults[$i]['id'] = $arr[$i]['ID'];
       }
-      else      $mults = $startmult;
     }
     return $mults;
   }
   
-  
-  //Пробная публичная функция
-  public function GetSubst() {
-    $arr = array();
-    $arr[0] = $this->subst_basket['%n_item%'];
-    $arr[1] = $this->subst_basket['%suffix%'];
-    return $arr;
+  //--------!!!!!!!!!--------   Эта функция готова...  -------!!!!!!!!!--------
+  //Получение строки html для составления домашней страницы
+  public function CreatePage() {
+    //Создание массива мультфильмов для замены
+    for ($i = 0; $i < 6; $i++) {
+      $key = '%multname-'.$i.'%';
+      $this->subst[$key] = $this->mults[$i]['img'];
+      $key = '%multid-'.$i.'%';
+      $this->subst[$key] = $this->mults[$i]['id'];
+    }
+    $this->homebody = $this->ReplaceTemplate($this->subst, 'homebody');
+    $home_html = $this->general_1."<link rel='stylesheet' type='text/css' href='".PAGE."styles/home.css' />".$this->general_2.$this->basket.$this->homebody.$this->general_3;
+    return $home_html;
   }
-  
- */
- 
-  
-  /*public function __destruct() {
-  }
-  */
+
 }
 
 ?>

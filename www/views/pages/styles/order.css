@@ -1,0 +1,54 @@
+﻿/*Только в оформлении заказа*/
+.ord {
+	margin: 0 auto;
+	background-color: #FDFDFD;
+	border: 10px solid #FDFDFD;
+	border-radius: 10px;
+}
+.ord table td {
+	font-family: 'Comic Sans MS', Verdana, 'Lucida Sans Unicode';
+}
+.td1 {
+	font-size: 105%;
+	color: #656565;
+}
+.td2, .td2 input {
+	font-size: 125%;
+}
+.td2 input {
+text-align: right;
+}
+.td3 {
+	font-size: 140%;
+}
+.td3 span {
+	margin: 0 20px 0 0;
+}
+.td2, .td3 {
+	font-weight: bold;
+}
+.ord a {
+	text-decoration: none;
+	color: inherit;
+	margin: 0 20px 0 0;
+}
+.td2 img {
+	border: 5px solid #FDFDFD;
+	border-radius: 5px;
+}
+.td2 img:hover {
+	border-color: green;
+}
+.dim, #calc {
+	margin: 0 0 0 50px;
+}
+.ord input[type='text'] {
+	height: 35px;
+}
+.ord input[type='text'], .ord textarea {
+	font-family: 'Comic Sans MS', Verdana, 'Lucida Sans Unicode';
+	font-size: 140%;
+}
+.ord img:hover, #calc {
+	cursor: pointer;
+}

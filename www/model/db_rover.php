@@ -92,6 +92,11 @@ class DbRover {
     $result = $this->Choice($table, array("COUNT(`ID`)"), $cond);
     return $result[0]["COUNT(`ID`)"];
   }
+  //Получение количества записей в базе, если известно условие на значение поля
+	public function СountDataOnManyConditions($table, $condition) {
+		$result = $this->Choice($table, array("COUNT(`ID`)"), $condition);
+    return $result[0]["COUNT(`ID`)"];
+  }
   //Получение количества уникальных записей (с неповторяющимся значением поля)
 	public function СountUniqField($table, $field) {
 		$result = $this->Choice($table, array("COUNT(DISTINCT `".$field."`)"));
@@ -126,9 +131,15 @@ class DbRover {
 		$cond = "`".$infield."`".$sign."'".addslashes($invalue)."'";
     $result = $this->Choice($table, $field_list, $cond);
 		if (count($result) === 0)     return FALSE;
-    $arr = $this->Choice($table, $field_list, $cond);
-		return $arr;
+    return $result;
   }
+  //Получение информации нескольких полей записи, если известно условие на значение другого поля в этой записи
+	public function ReceiveFewFieldsOnFullCondition($table, $field_list, $infield, $sign, $invalue, $sort='', $vozr=TRUE, $limit='') {
+		$cond = "`".$infield."`".$sign."'".addslashes($invalue)."'";
+    $result = $this->Choice($table, $field_list, $cond, $sort, $vozr, $limit);
+    if (count($result) === 0)     return FALSE;
+    return $result;
+	}
   
   //------------- ВЫБОРКА ИНФОРМАЦИИ ПО ОДНОМУ ПОЛЮ -----------------
   //Получение информации в одном поле из записи, если известно условие на значение другого поля в этой записи
@@ -170,14 +181,15 @@ class DbRover {
 		return $output;
 	}
   
-  
-  /*
   //Получение случайной информации в одном поле из записи, если известно условие на значение другого поля в этой записи
 	public function ReceiveRandomOnCondition($table, $outfield, $infield, $sign, $invalue, $limit) {
 		$cond = "`".$infield."`".$sign."'".addslashes($invalue)."'";
-    return $this->choice($table, array($outfield), $cond, "RAND()", "", $limit);
+    $arr = $this->choice($table, array($outfield), $cond, "RAND()", "", $limit);
+    $n = count($arr);
+    $output = array();
+    for ($i = 0; $i < $n; $i++)     $output[$i] = $arr[$i][$outfield];
+    return $output;
   }
-  */
   
   
   //------------- ОБРАБОТКА ИНФОРМАЦИИ -----------------

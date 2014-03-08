@@ -1,4 +1,4 @@
-<h2>Игрушки - герои мультфильма "Мадагаскар"</h2>
+<h2>Игрушки - герои мультфильма "%activefilmname%"</h2>
 <div id='multlist'>		<!-- Кадр из мультфильма и ссылка на следующий уровень каталога  -->
 	%activefilm%	<!-- Шаблон вставки данного мультфильма. -->
 	%hiddenfilms%	<!-- Шаблон вставки остальных мультфильмов. -->
@@ -13,7 +13,7 @@
 				<col width='30px' span='1' />
 			</colgroup>
 			<tr valign='middle'>
-				<td><img id='arrowleft' class='dim' height='70px' width='30px' src='%site_url%/pictures/arrowleft.png' title='Предыдущая' alt='Назад' /></td>
+				<td><img id='arrowleft' class='dim' height='70px' width='30px' src='%site_url%pictures/arrowleft.png' title='Предыдущая' alt='Назад' /></td>
 				<td>
 					<div id='gap'>
 						<div id='toynails'>	<!-- Игрушки, соответствующие мультфильму, и ссылки на страницу игрушки  -->
@@ -21,12 +21,12 @@
 						</div>
 					</div>
 				</td>
-				<td><img id='arrowright' class='dim' height='70px' width='30px' src='%site_url%/pictures/arrowright.png' title='Следующая' alt='Вперёд' /></td>
+				<td><img id='arrowright' class='dim' height='70px' width='30px' src='%site_url%pictures/arrowright.png' title='Следующая' alt='Вперёд' /></td>
 			</tr>
 		</table>
 	</div>
 	
-<script type='text/javascript' src='%site_url%/js/changer.js'></script>
+<script type='text/javascript' src='%site_url%js/changer.js'></script>
 	
 	<div id='toylist'>	<!-- Игрушки, соответствующие мультфильму, и ссылки на страницу игрушки  -->
 		%toysoffilm%	<!-- Шаблон вставки игрушек, соответствующих мультфильму. -->

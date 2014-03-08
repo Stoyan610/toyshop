@@ -53,27 +53,14 @@ function valid() {
   var tpl = /^[-\w]*\w+[-\w]*$/;
   var ff = $("#file").val();
   if (ff == '') text += 'Не выбран файл-изображение\n'; 
-  var bb = $("#big").val();
+  var bb = $("#filename").val();
   if (bb != '') {
     var x = bb.match(tpl);
     if (x == null) {
       ind = false;
-      text += 'Какое-то странное указано имя файла большого изображения\n';
+      text += 'Какое-то странное указано имя файла изображения\n';
     }
   }
-  var ss = $("#small").val();
-  if (ss == '')     $("#small").val(bb);
-  else {
-    var x = ss.match(tpl);
-    if (x == null) text += 'Какое-то странное указано имя файла маленького изображения\n';
-  }
-  var nn = $("#nail").val();
-  if (nn == '')     $("#nail").val(bb);
-  else {
-    var x = nn.match(tpl);
-    if (x == null) text += 'Какое-то странное указано имя файла изображения-ноготка\n';
-  }
-
   if (text != '') alert(text);
 }
 

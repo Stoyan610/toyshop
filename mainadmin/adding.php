@@ -104,7 +104,8 @@ if (isset($_POST['add'])) {
       //Формирование массива полей и значений для добавления в БД
       $arr = array('Category', 'Title', 'Brief', 'Text', 'Revision', 'PublishFrom');
       foreach ($arr as $val) {
-        $fields_values[$val] = htmlspecialchars($_POST[$val]);
+        if (($val == 'Text') or ($val == 'Brief')) $fields_values[$val] = $_POST[$val];
+        else $fields_values[$val] = htmlspecialchars($_POST[$val]);
         unset($_POST[$val]);
       }
       $db->DataIn(INFO, $fields_values);

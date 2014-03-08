@@ -22,8 +22,8 @@
 					<col span='1' />
 				</colgroup>
 				<tr align='center'>
-					<td><a href='%site_url%index.php' title='Идём домой'><img height='34px' width='34px' src='%site_url%pictures/home.png' alt='Домашняя страничка' /></a></td>
-					<td><a href='%site_url%index.php?page=catalogue' class='menu'>КАТАЛОГ</a></td>
-					<td><a href='%site_url%index.php?page=delivery' class='menu'>О ДОСТАВКЕ</a></td>
-					<td><a href='%site_url%index.php?page=comments' class='menu'>ОТЗЫВЫ</a></td>
-					<td><a href='%site_url%index.php?page=contacts' class='menu'>КОНТАКТЫ</a></td>				
+					<td><a href='index.php' title='Идём домой'><img height='34px' width='34px' src='%site_url%pictures/home.png' alt='Домашняя страничка' /></a></td>
+					<td><a href='index.php?page=catalogue' class='menu'>КАТАЛОГ</a></td>
+					<td><a href='index.php?page=delivery' class='menu'>О ДОСТАВКЕ</a></td>
+					<td><a href='index.php?page=comments' class='menu'>ОТЗЫВЫ</a></td>
+					<td><a href='index.php?page=contacts' class='menu'>КОНТАКТЫ</a></td>				

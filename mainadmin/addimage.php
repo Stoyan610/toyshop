@@ -78,27 +78,22 @@ if (isset($_POST['add'])) {
   
   $image_file = ImageSafe();
   
-  $fields_values['BigFile'] = htmlspecialchars($_POST['BigFile']);
-  unset($_POST['BigFile']);
-  $fields_values['SmallFile'] = htmlspecialchars($_POST['SmallFile']);
-  unset($_POST['SmallFile']);
+  $fields_values['FileName'] = htmlspecialchars($_POST['FileName']);
+  unset($_POST['FileName']);
   $fields_values['Alt'] = htmlspecialchars($_POST['Alt']);
   unset($_POST['Alt']);
   if ($fields_values['Kind'] == 'Игрушка') {
-    $fields_values['ThumbnailFile'] = htmlspecialchars($_POST['ThumbnailFile']);
-    unset($_POST['ThumbnailFile']);
-    $sizes = ImageHandlerBig($image_file, $fields_values['BigFile']);
+    $sizes = ImageHandlerBig($image_file, $fields_values['FileName']);
     $fields_values['Width'] = $sizes['width'];
     $fields_values['Height'] = $sizes['height'];
-    ImageHandler($image_file, 135, 135, $fields_values['SmallFile'], 'toy135x135/');
-    ImageHandler($image_file, 70, 70, $fields_values['ThumbnailFile'], 'toy70x70/');
+    ImageHandler($image_file, 135, 135, $fields_values['FileName'], 'toy135x135/');
+    ImageHandler($image_file, 70, 70, $fields_values['FileName'], 'toy70x70/');
   }
   else {
-    $fields_values['ThumbnailFile'] = '';
-    ImageHandler($image_file, 228, 171, $fields_values['BigFile'], 'mult228x171/');
+    ImageHandler($image_file, 228, 171, $fields_values['FileName'], 'mult228x171/');
     $fields_values['Width'] = 228;
     $fields_values['Height'] = 171;
-    ImageHandler($image_file, 114, 86, $fields_values['SmallFile'], 'mult114x86/');
+    ImageHandler($image_file, 114, 86, $fields_values['FileName'], 'mult114x86/');
   }
   
   $db->DataIn(IMG, $fields_values);

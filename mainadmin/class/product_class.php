@@ -23,7 +23,7 @@ class Product extends Admin {
     $Image_ID = $arr_img[0];
     $kind = $this->db->ReceiveFieldOnCondition(IMG, 'Kind', 'ID', '=', $Image_ID);
     if (($kind[0] == 'Игрушка') && ($Image_ID != 0)) {
-      $img_name = $this->db->ReceiveFieldOnCondition(IMG, 'ThumbnailFile', 'ID', '=', $Image_ID);
+      $img_name = $this->db->ReceiveFieldOnCondition(IMG, 'FileName', 'ID', '=', $Image_ID);
       $img = $img_name[0];
     }
     else    $img = 'emptytoy';
@@ -171,7 +171,7 @@ class Product extends Admin {
           if ($key == 'ID')     echo "<input type='hidden' name='ID-".$num."' value='".$val."' />";
           if ($key == 'Image_ID') {
             if ($val == 0)    $pic[0] = 'emptytoy';
-            else    $pic = $this->db->ReceiveFieldOnCondition(IMG, 'ThumbnailFile', 'ID', '=', $val);
+            else    $pic = $this->db->ReceiveFieldOnCondition(IMG, 'FileName', 'ID', '=', $val);
             echo "<img src='".SITEURL.PICT."toy70x70/".$pic[0].".jpg' alt='".$pic[0]."' width='70' height='70' /><input type='hidden' name='Image_ID-".$num."' value='".$val."' /><br />";
           }
           if ($key == 'Priority')     echo "<input type='text' name='Priority-".$num."' value='".$val."' size='5' />&nbsp;Приор.<br />";
@@ -187,14 +187,14 @@ class Product extends Admin {
   public function AddImage($Product_ID) {
     echo '<h2>Добавление картинок к данной игрушке</h2>';
     //Получение массива изображений игрушек
-    $field_list = array('ID', 'ThumbnailFile');
+    $field_list = array('ID', 'FileName');
     $arr_img = $this->db->ReceiveFewFieldsOnCondition(IMG, $field_list, 'Kind', ' LIKE ', 'Игр%');
     if (!$arr_img)     echo "<p>Не из чего выбирать</p><a href='image.php'>К списку изображений</a>";
     $stl = "style='display: inline-block; width: 150px; vertical-align: top; text-align: center;'";
     echo "<form name='change' action='imgchtoy.php' method='post'><div id='toys'>";
     foreach ($arr_img as $row) {
       $img_id = $row['ID'];
-      $pic = $row['ThumbnailFile'];
+      $pic = $row['FileName'];
       echo "<div ".$stl."><img id='".$img_id."'src='".SITEURL.PICT."toy70x70/".$pic.".jpg' alt='".$pic."' width='70' height='70' onclick='gettoyimg(".$img_id.")' /></div>";
     }
     echo "</div><br /><input type='text' name='Priority' value='0' size='5' /> - Приоритет<br />";
