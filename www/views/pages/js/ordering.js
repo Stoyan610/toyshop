@@ -25,7 +25,8 @@ function confirmer() {
 	var flag = true;
 //Проверка имени клиента
 	var client = $(".ord input[name='name']").val();
-	if (client.length < 3) {
+    
+  if (client.length < 3) {
 		$(".ord input[name='name']").val("Слишком короткое имя !");
 		$(".ord input[name='name']").css("backgroundcolor", "#FFA1A1");
 		flag = false;
@@ -35,20 +36,48 @@ function confirmer() {
 		$(".ord input[name='name']").css("backgroundcolor", "#FFA1A1");
 		flag = false;
 	}
-	var regexp1 = /[^\w\s]+/;
+	var regexp1 = /[^\w\sа-яА-Я]+/;
 	if (regexp1.test(client)) {
-		$(".ord input[name='name']").val("В имени присутствуют посторонние сиволы !");
+    $(".ord input[name='name']").val("В имени присутствуют посторонние символы !");
 		$(".ord input[name='name']").css("backgroundcolor", "#FFA1A1");
 		flag = false;
 	}
 //Проверка телефона
 	var phone = $(".ord input[name='phone']").val();
-	var regexp2 = /[^-+()\d\s]+/;
-	if ((regexp2.test(phone)) || (phone.length < 7) || (phone.length > 20)) {
-		$(".ord input[name='phone']").val("Проверьте номер телефона !");
+  phone = phone.replace(/\D/g, "");
+  if ((phone.length > 11) || (phone.length < 7)) {
+    $(".ord input[name='phone']").val("Проверьте номер телефона !");
 		$(".ord input[name='phone']").css("backgroundcolor", "#FFA1A1");
 		flag = false;
-	}
+  }
+  else {
+    var arr_phone = phone.split("");
+    switch(phone.length) {
+      case 7: {
+          phone = "+7(495)" + arr_phone[0] + arr_phone[1] + arr_phone[2] + "-" + arr_phone[3] + arr_phone[4] + "-" + arr_phone[5] + arr_phone[6];
+          break;
+      }
+      case 8: {
+          phone = "+7(49" + arr_phone[0] + ")" + arr_phone[1] + arr_phone[2] + arr_phone[3] + "-" + arr_phone[4] + arr_phone[5] + "-" + arr_phone[6] + arr_phone[7];
+          break;
+      }
+      case 9: {
+         phone = "+7(9" + arr_phone[0] + arr_phone[1] + ")" + arr_phone[2] + arr_phone[3] + arr_phone[4] + "-" + arr_phone[5] + arr_phone[6] + "-" + arr_phone[7] + arr_phone[8];
+          break;
+      }
+      case 10: {
+          phone = "+7(" + arr_phone[0] + arr_phone[1] + arr_phone[2] + ")" + arr_phone[3] + arr_phone[4] + arr_phone[5] + "-" + arr_phone[6] + arr_phone[7] + "-" + arr_phone[8] + arr_phone[9];
+          break;
+      }
+      case 11: {
+          phone = "+7(" + arr_phone[1] + arr_phone[2] + arr_phone[3] + ")" + arr_phone[4] + arr_phone[5] + arr_phone[6] + "-" + arr_phone[7] + arr_phone[8] + "-" + arr_phone[9] + arr_phone[10];
+          break;
+      }
+    }
+    $(".ord input[name='phone']").val(phone);
+		var stroka = phone + " - Телефон понят правильно ?";
+    if (!confirm(stroka))  flag = false;
+  }
 //Проверка и-мейла
 	var email = $(".ord input[name='email']").val();
 	var regexp3 = /^([a-z0-9][\w\.-]*[a-z0-9])@((?:[a-z0-9]+[\.-]?)*[a-z0-9]\.[a-z]{2,})$/i;

@@ -66,9 +66,17 @@ else {
     }
     
     case 'part': {
-      $Client_ID = htmlspecialchars($_GET['Client_ID']);
-      unset($_GET['Client_ID']);
-      $creator->GetTableOnField($Client_ID);
+      if (isset($_GET['Client_ID'])) {
+        $Client_ID = htmlspecialchars($_GET['Client_ID']);
+        unset($_GET['Client_ID']);
+        $creator->GetTableOnField('Client_ID', $Client_ID);
+      }
+      elseif (isset($_GET['Number'])) {
+        $num = htmlspecialchars($_GET['Number']);
+        unset($_GET['Number']);
+        $num = preg_replace('~\D+~', '', $num);
+        $creator->GetTableOnField('Number', $num);
+      }
     break;
     }
 

@@ -7,25 +7,28 @@ defined('ACCESS') or die('Access denied');
 //Подключение абстрактного класса обработчика шаблонов
 require_once 'template_handler.php';
 
-class Order extends TemplateHandler {
+class Delivery extends TemplateHandler {
   protected $subst;
-  protected $subst_toy;
-  protected $order;
+  protected $dlvr;
   
   public function __construct($n_item) {
     parent::__construct($n_item);
-    $this->subst['%ordertoy%'] = $this->GetToys2order();
+    //$this->subst['%ordertoy%'] = $this->GetInfo();
   }
   
   //Получение содержания для meta тега описания страницы
   public function DescrPage() {
-    return 'Order Page Description...';
+    return 'Delivery Page Description...';
   }
   //Получение содержания для meta тега ключевых слов страницы
   public function KeywordsPage() {
-    return 'Order Page Key Words...';
+    return 'Delivery Page Key Words...';
   }
 
+  
+  
+  
+/*
   //Получение шаблона вставки игрушек для данного заказа
   protected function GetToys2order() {
     $toys2order = '';
@@ -43,9 +46,7 @@ class Order extends TemplateHandler {
         $this->subst_toy['%toyfilename%'] = $img[0];
         $this->subst_toy['%quantity%'] = htmlspecialchars($_SESSION[$toyid.'toyitems']);
         $this->subst_toy['%price%'] = htmlspecialchars($_SESSION[$toyid.'toyprice']);
-        
-        if (!isset($_SESSION['orderid']))    $toys2order .= $this->ReplaceTemplate($this->subst_toy, 'ordertoy');
-        else    $toys2order .= $this->ReplaceTemplate($this->subst_toy, 'ordertoy2');
+        $toys2order .= $this->ReplaceTemplate($this->subst_toy, 'ordertoy');
         
         $amount += $this->subst_toy['%quantity%'] * $this->subst_toy['%price%'];
       }
@@ -57,19 +58,19 @@ class Order extends TemplateHandler {
     $this->subst['%amount%'] = $amount;
     return $toys2order;
   }
+ 
+ */
   
+
+
+
   //--------!!!!!!!!!--------   Эта функция готова...  -------!!!!!!!!!--------
   //Получение строки html для составления домашней страницы
   public function CreatePage() {
-    if ($_SESSION['items'] == 0)     $this->order = "<h2>Ваша корзина пуста</h2><div style='text-align: center;'><img style='width: 500px;' src='views/pages/pictures/emptybasket.png' title='Корзина пуста' alt='emptybasket' /></div>";
-    elseif (!isset($_SESSION['orderid']))    $this->order = $this->ReplaceTemplate($this->subst, 'orderbody');
-    else {
-      $this->subst['%orderid%'] = $_SESSION['orderid'];
-      $this->order = $this->ReplaceTemplate($this->subst, 'ordermade');
-    }
+    $this->dlvr = $this->ReplaceTemplate($this->subst, 'delivery');
     
-    $order_html = $this->general_1."<link rel='stylesheet' type='text/css' href='".PAGE."styles/order.css' />".$this->general_2.$this->basket.$this->order.$this->general_3;
-    return $order_html;
+    $dlvr_html = $this->general_1."<link rel='stylesheet' type='text/css' href='".PAGE."styles/delivery.css' />".$this->general_2.$this->basket.$this->dlvr.$this->general_3;
+    return $dlvr_html;
   }
   
 }

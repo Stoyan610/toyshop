@@ -1,6 +1,5 @@
 <?php
 session_start();
-
 //Запрет прямого обращения
 defined('ACCESS') or die('Access denied');
 
@@ -39,6 +38,16 @@ class CatalogueFilm extends TemplateHandler {
     $this->subst_active['%multid%'] = $multid;
     $name = $this->db->ReceiveFieldOnCondition(MULTS, 'Name', 'ID', '=', $multid);
     $this->subst_active['%multname%'] = $name[0];
+    $j = 11;
+    $r_exp = '[\-\s]';
+    $old_wrds = mb_split($r_exp, $name[0]);
+    foreach ($old_wrds as $value) {
+      $lng = mb_strlen($value, utf8);
+      if ($lng > $j)  $new_wrds[] = mb_substr($value, 0, $j-1).".";
+      else $new_wrds[] = $value;
+    }
+    $newname = str_replace($old_wrds, $new_wrds, $name[0]);
+    $this->subst_active['%shortmultname%'] = $newname;
     $arr1 = $this->db->ReceiveFieldOnCondition(MULTS, 'Image_ID', 'ID', '=', $multid);
     $img = $this->db->ReceiveFieldOnCondition(IMG, 'FileName', 'ID', '=', $arr1[0]);
     $this->subst_active['%multfilename%'] = $img[0];
@@ -55,7 +64,18 @@ class CatalogueFilm extends TemplateHandler {
     for ($i = 0; $i < $mult_num; $i++) {
       if ($arr[$i]['ID'] != $multid) {
         $this->subst_hidden['%multid%'] = $arr[$i]['ID'];
-        $this->subst_hidden['%multname%'] = $arr[$i]['Name'];
+        $j = 11;
+        $r_exp = '[\-\s]';
+        $old_wrds = mb_split($r_exp, $arr[$i]['Name']);
+        foreach ($old_wrds as $value) {
+          $lng = mb_strlen($value, utf8);
+          if ($lng > $j)  $new_wrds[] = mb_substr($value, 0, $j-1).".";
+          else $new_wrds[] = $value;
+        }
+        $newname[$i] = str_replace($old_wrds, $new_wrds, $arr[$i]['Name']);
+        unset($old_wrds);
+        unset($new_wrds);
+        $this->subst_hidden['%shortmultname%'] = $newname[$i];
         $img = $this->db->ReceiveFieldOnCondition(IMG, 'FileName', 'ID', '=', $arr[$i]['Image_ID']);
         $this->subst_hidden['%multfilename%'] = $img[0];
         $hiddens .= $this->ReplaceTemplate($this->subst_hidden, 'hiddenfilms');

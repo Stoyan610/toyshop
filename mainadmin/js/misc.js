@@ -120,19 +120,20 @@ function checkall() {
   }
   return r;
 }
-function toylistservice(td, tdend, flag) {
+
+function toylist2(num) {
   var sitepict = $("#hide0").text();
-  var toylist = $("#hide1").text();
-  var mid_arr = new Array();
+  var str_toys = $("#hide1").text();
+  var one_toy = new Array();
   var arr_toys = new Array();
-  mid_arr = toylist.split("^");
-  var n = mid_arr.length;
+  one_toy = str_toys.split("^");
+  var n = one_toy.length;
   for (var i =0; i < n; i++) {
-    arr_toys[i] = mid_arr[i].split("~");
+    arr_toys[i] = one_toy[i].split("~");
   }
-  var k;
-  var new_td = td;
-  var str;
+  var new_td = "<tr id='chosen'><td colspan='4'>";
+  document.cookie = "old_td=" + str_toys;
+  document.cookie = "sitepict=" + sitepict;
   var str;
   for (var i = 0; i < n; i++) {
     new_td += "<div id='" + i + "' style='display: inline-block; width: 130px; text-align: center; vertical-align: top;'><span id='0-" + i + "' hidden>" + arr_toys[i][0] + "</span><span id='4-" + i + "' hidden>" + arr_toys[i][4] + "</span>";
@@ -140,84 +141,128 @@ function toylistservice(td, tdend, flag) {
     new_td += str;
     new_td += "</div>";
   }
-  new_td += "<br /><button onclick='gettoys" + flag + "(" + n + ")'>Выбрано</button>" + tdend;
+  new_td += "<br /><button onclick='gettoys2(" + n + ", " + num + ")'>Выбрано</button>" + "</td></tr>";
   $("#products").replaceWith(new_td);
+  $("#edit").hide();
 }
 
-function toylist() {
-  toylistservice("<td id='chosen'>", "</td>", "1");
-}
-
-function toylist2() {
-  toylistservice("<tr id='chosen'><td colspan='4'>", "</td></tr>", "2");
-}
-
-function gettoys1(n) {
-  var l;
-  var lng = 0;
+function gettoys2(n, num) {
+  var j = 0;
   var a;
   var choice = new Array();
-  var arr_b = new Array();
+  var chosen_toy = new Array();
   var deadline = $("#DTime").val();
   for (var i = 0; i < n; i++) {
     a = $("#" + i + " input").val();
     if (a != "") {
-      arr_b[lng] = [$("#0-" + i).text(), $("#1-" + i).text(), $("#2-" + i).text(), $("#3-" + i).text(), $("#4-" + i).text()];
+      chosen_toy[j] = [$("#0-" + i).text(), $("#1-" + i).text(), $("#2-" + i).text(), $("#3-" + i).text(), $("#4-" + i).text()];
       var k = Number(a);
-      var m = Number(arr_b[lng][3]);
-      if (k > m) {
-        a = arr_b[lng][3];
+      var mx = Number(chosen_toy[j][3]);
+      if (k > mx) {
+        a = chosen_toy[j][3];
       }
-      l = arr_b[lng].push(a);
-      var str_b = arr_b[lng].join("~");
-      var z = Number(arr_b[lng][4]);
+      chosen_toy[j].splice(3, 1, a);
+      var z = Number(chosen_toy[j][4]);
       var x = Math.max(deadline, z);
       deadline = x;
-      lng = choice.push(str_b);
+      j++;
     }
   }
-  var bigstr = choice.join("^");
-  if (bigstr == "") {
-    alert("Ни одной игрушки не выбрано. Если не нужен новый заказ, нажмите `Отмена`.");
-    return;
+  if (j == 0)    {
+    alert("Ни одной игрушки не добавлено");
+    var r = document.cookie.match("(^|;) ?sitepict=([^;]*)(;|$)");
+		if (r) var sitepict = r[2];
+    var r = document.cookie.match("(^|;) ?old_td=([^;]*)(;|$)");
+		if (r) var str_toys = r[2];
+    var old_td = "<tr id='products'><td colspan='4' ondblclick='toylist2(" + num + ")'><span style='text-decoration: underline;' >Для добавления игрушек дважды кликни здесь</span><div id='hide0' hidden>" + sitepict + "</div><div id='hide1' hidden>" + str_toys + "</div></td></tr>";
+    $("#chosen").replaceWith(old_td);
   }
-  var newest_td = "<td>";
-  for (var i = 0; i < lng; i++) {
-    newest_td += "<div style='display: inline-block; width: 130px; text-align: center; vertical-align: top;'>" + arr_b[i][0] + "<br />" + arr_b[i][1] + "<br />" + arr_b[i][2] + " руб.<br />" + arr_b[i][5] + " шт из " + arr_b[i][3] + "</div>";
+  else {
+    $("#chosen").replaceWith("");
+    $("#edit").show();
+    $("#DTime").val(deadline);
+    for (var i = 0; i < j; i++) {
+      var inum = i + num;
+      $("#toy" + inum).show();
+      $("#first" + inum).val(chosen_toy[i][0]);
+      $("#second" + inum).val(chosen_toy[i][1]);
+      $("#third" + inum).val(chosen_toy[i][2]);
+      $("#fourth" + inum).val(chosen_toy[i][3]);
+      var numj = num + j;
+      $("#count").val(numj);
+    }
   }
-  $("#chosen").replaceWith(newest_td);
-  $("#toysinfo").val(bigstr);
-  $("#DTime").val(deadline);
 }
 
-function gettoys2(n) {
-  var l;
-  var lng = 0;
+function toylist() {
+  var sitepict = $("#hide0").text();
+  var str_toys = $("#hide1").text();
+  var one_toy = new Array();
+  var arr_toys = new Array();
+  one_toy = str_toys.split("^");
+  var n = one_toy.length;
+  for (var i =0; i < n; i++) {
+    arr_toys[i] = one_toy[i].split("~");
+  }
+  var new_td = "<td id='chosen' colspan='3'>";
+  document.cookie = "old_td=" + str_toys;
+  document.cookie = "sitepict=" + sitepict;
+  var str;
+  for (var i = 0; i < n; i++) {
+    new_td += "<div id='" + i + "' style='display: inline-block; width: 130px; text-align: center; vertical-align: top;'><span id='0-" + i + "' hidden>" + arr_toys[i][0] + "</span><span id='4-" + i + "' hidden>" + arr_toys[i][4] + "</span>";
+    str = "<img src='" + sitepict + arr_toys[i][5] + ".jpg' alt='" + arr_toys[i][5] + "' width='70' height='70' /><br /><span id='1-" + i + "'>" + arr_toys[i][1] + "</span><br /><span id='2-" + i + "'>" + arr_toys[i][2] + "</span> руб.<br /><input type='text' name='" + i + "' value=''  size='3' /> шт<br />максимум <span id='3-" + i + "'>" + arr_toys[i][3] + "</span>";
+    new_td += str;
+    new_td += "</div>";
+  }
+  new_td += "<br /><button onclick='gettoys1(" + n + ")'>Выбрано</button>" + "</td>";
+  $("#products").replaceWith(new_td);
+  $("#edit").hide();
+}
+
+function gettoys1(n) {
+  var j = 0;
   var a;
   var choice = new Array();
-  var arr_b = new Array();
+  var chosen_toy = new Array();
+  var deadline = $("#DTime").val();
   for (var i = 0; i < n; i++) {
     a = $("#" + i + " input").val();
     if (a != "") {
-      arr_b[lng] = [$("#0-" + i).text(), $("#1-" + i).text(), $("#2-" + i).text(), $("#3-" + i).text(), $("#4-" + i).text()];
+      chosen_toy[j] = [$("#0-" + i).text(), $("#1-" + i).text(), $("#2-" + i).text(), $("#3-" + i).text(), $("#4-" + i).text()];
       var k = Number(a);
-      var m = Number(arr_b[lng][3]);
+      var m = Number(chosen_toy[j][3]);
       if (k > m) {
-        a = arr_b[lng][3];
+        a = chosen_toy[j][3];
       }
-      l = arr_b[lng].push(a);
-      var str_b = arr_b[lng].join("~");
-      lng = choice.push(str_b);
+      chosen_toy[j].splice(3, 1, a);
+      var z = Number(chosen_toy[j][4]);
+      var x = Math.max(deadline, z);
+      deadline = x;
+      j++;
     }
   }
-  var bigstr = choice.join("^");
-  if (bigstr == "")    alert("Ни одной игрушки не добавлено");
-  var newest_td = "";
-  for (var i = 0; i < lng; i++) {
-    newest_td += "<tr><td>" + arr_b[i][1] + "</td><td>" + arr_b[i][2] + " руб.</td><td>" + arr_b[i][5] + " шт</td><td></td><tr>";
+  if (j == 0)    {
+    alert("Ни одной игрушки не добавлено");
+    var r = document.cookie.match("(^|;) ?sitepict=([^;]*)(;|$)");
+		if (r) var sitepict = r[2];
+    var r = document.cookie.match("(^|;) ?old_td=([^;]*)(;|$)");
+		if (r) var str_toys = r[2];
+    var old_td = "<tr id='products'><td colspan='4' ondblclick='toylist()'><span style='text-decoration: underline;' >Для добавления игрушек дважды кликни здесь</span><div id='hide0' hidden>" + sitepict + "</div><div id='hide1' hidden>" + str_toys + "</div></td></tr>";
+    $("#chosen").replaceWith(old_td);
   }
-  $("#toysinfo").val(bigstr);
-  $("#chosen").replaceWith(newest_td);
+  else {
+    $("#chosen").replaceWith("<td colspan='3'></td>");
+    $("#edit").show();
+    $("#DTime").val(deadline);
+    for (var i = 0; i < j; i++) {
+      $("#toy" + i).show();
+      $("#first" + i).val(chosen_toy[i][0]);
+      $("#second" + i).val(chosen_toy[i][1]);
+      $("#third" + i).val(chosen_toy[i][2]);
+      $("#fourth" + i).val(chosen_toy[i][3]);
+      $("#count").val(j);
+    }
+  }
 }
 
 function mustbe() {

@@ -86,7 +86,6 @@ h1 {
 #item table td:nth-of-type(odd) {
 	color: #005555;
 	font-size: 115%;
-	text-decoration: underline;
 	font-weight: bold;
 }
 #item form {

@@ -1,4 +1,7 @@
 ﻿/*Только в оформлении заказа*/
+#ordermade {
+  margin: 0 12%;
+}
 .ord {
 	margin: 0 auto;
 	background-color: #FDFDFD;

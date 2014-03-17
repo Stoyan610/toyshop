@@ -25,7 +25,7 @@ class Client extends Admin {
       for ($i = 0; $i < $lines; $i++) {
         echo "<tr align='center'>";
         foreach ($arr_table[$i] as $val)     echo "<td>".$val."</td>";
-        echo "<td><ol><li><a href='client.php?act=edit&id=".$arr_table[$i]['ID']."'>Редактировать данные</a></li><li><a href='client.php?act=del&id=".$arr_table[$i]['ID']."'>Удалить клиента</a></li></ol></td></tr>";
+        echo "<td><ol><li><a href='client.php?act=edit&id=".$arr_table[$i]['ID']."'>Редактировать данные</a></li><li><a href='order.php?act=part&Client_ID=".$arr_table[$i]['ID']."'>Заказы клиента</a></li><li><a href='client.php?act=del&id=".$arr_table[$i]['ID']."'>Удалить клиента</a></li></ol></td></tr>";
       }
       echo "</table><br />";
     }

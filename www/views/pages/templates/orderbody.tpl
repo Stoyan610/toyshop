@@ -1,5 +1,5 @@
 <h2>Оформление заказа</h2>
-<form name='ordering' action='#' method='post'>
+<form name='ordering' action='orderproceed.php' method='post'>
   <div class='ord'> <!-- Оформление заказа -->
     <table id='dtls' cellpadding='2px' cellspacing='0' border='0' align='center'>
       <tr>
@@ -11,12 +11,15 @@
         <td>%amount% руб.</td>
         <td><img id='calc' src='%site_url%pictures/recalc_button.png' height='70px' width='210px' title='Пересчитать' alt='Calc' onclick='recalc()' /></td>
       </tr>
+      <tr>
+        <td colspan='5' align='center'><i style='font-size: 80%;'>* Все внесённые Вами изменения будут сохранены только при подтверждении заказа *</i></td>
+      </tr>
       
     </table>
   </div>
 
-<script type='text/javascript' src='js/ordering.js'></script>
-
+<script type='text/javascript' src='views/pages/js/ordering.js'></script>
+    
     <br />
   <div class='ord'> <!-- Продолжение оформления заказа -->
     <table cellpadding='5px' cellspacing='0' border='0' align='center'>
@@ -56,6 +59,3 @@
   </div>
 </form>
 <br />
-  </div>
-</form>
-<br /><br />

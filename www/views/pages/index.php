@@ -37,6 +37,10 @@ switch ($page) {
     break;
   }
   
+  case 'delivery.php': {
+    $pager = new Delivery($n_item);
+    break;
+  }
   
   //Далее по списку классов страниц
   

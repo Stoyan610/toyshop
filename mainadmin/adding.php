@@ -46,6 +46,7 @@ if (isset($_POST['add'])) {
       $db->DataIn(TOYS, $fields_values);
       break;
     }
+    
     case 'catalog': {
       //Формирование массива полей и значений для добавления в БД
       $arr = array('Name', 'Description', 'Keywords', 'Image_ID', 'Priority', 'PublishFrom');
@@ -56,6 +57,13 @@ if (isset($_POST['add'])) {
       $db->DataIn(MULTS, $fields_values);
       break;
     }
+    
+    
+    
+    
+    
+    
+    
     case 'order': {
       //Формирование массива полей и значений для добавления клиента в БД
       $arr_cln = array('Name', 'Phone', 'Mail');
@@ -66,6 +74,7 @@ if (isset($_POST['add'])) {
       //Проверка телефона и почты
       if (!checkphone($cln_fields_values['Phone'])) exit('Телефон не корректен');
       if (!checkmail($cln_fields_values['Mail'])) exit('Почта не корректна');
+      //Проверка на наличие данного клиента в базе или добавление в базу
       $cond = "`Name` = '".$cln_fields_values['Name']."' AND `Phone` = '".$cln_fields_values['Phone']."' AND `Mail` = '".$cln_fields_values['Mail']."'";
       $arrid = $db->ReceiveFieldOnManyConditions(CLNTS, 'ID', $cond);
       if ($arrid !== FALSE)     $Client_ID = $arrid[0];
@@ -75,31 +84,53 @@ if (isset($_POST['add'])) {
         $db->DataIn(CLNTS, $cln_fields_values);
         $Client_ID = $db->IdOfLast(CLNTS);
       }
-      //Формирование массива полей и значений для добавления заказа в БД
-      $arr_ord = array('DeliveryAddress', 'DeliveryTime', 'Info');
-      foreach ($arr_ord as $val) {
-        $ord_fields_values[$val] = htmlspecialchars($_POST[$val]);
+      //Формирование массива полей и значений для добавления заказа
+      $order_fields = array('DeliveryAddress', 'DeliveryTime', 'Info');
+      foreach ($order_fields as $val) {
+        $order_fields_values[$val] = htmlspecialchars($_POST[$val]);
         unset($_POST[$val]);
       }
-      $ord_fields_values['Client_ID'] = $Client_ID;
-      $ord_fields_values['Created'] = date('Y-m-d');
-      $ord_fields_values['Changed'] = $ord_fields_values['Created'];
-      $db->DataIn(ORDS, $ord_fields_values);
+      $order_fields_values['Client_ID'] = $Client_ID;
+      $order_fields_values['Created'] = date('Y-m-d');
+      $order_fields_values['Changed'] = $order_fields_values['Created'];
+      $order_fields_values['Number'] = date('n').'0'.$Client_ID;
+      $db->DataIn(ORDS, $order_fields_values);
       $Order_ID = $db->IdOfLast(ORDS);
-      //Формирование массива полей и значений для добавления корзины в БД
-      $basket = htmlspecialchars($_POST['Products']);
-      $arr_bask = array('Product_ID', 'Name', 'Price', 'Order_ID', 'Quantity');
-      unset($_POST['Products']);
-      $arr_prod = explode('^', $basket);
-      foreach ($arr_prod as $val) {
-        $arr_values = explode('~', $val);
-        array_splice($arr_values, 3, 1);
-        $bask_fields_values = array_combine($arr_bask, $arr_values);
-        $bask_fields_values['Order_ID'] = $Order_ID;
-        $db->DataIn(BASKET, $bask_fields_values);
+      //Определение и добавление новых записей в корзину
+      $count = htmlspecialchars($_POST['count']);
+      unset($_POST['count']);
+      $bask_fields = array('Order_ID', 'Product_ID', 'Name', 'Price', 'Quantity');
+      $bask_values = array();
+      $bask_values[0] = $Order_ID;
+      for ($i = 0; $i < $count; $i++) {
+        if(!empty($_POST['del'.$i])) {
+          unset($_POST['del'.$i]);
+          unset($_POST['Quantity'.$i]);
+          unset($_POST['Product_ID'.$i]);
+          unset($_POST['Name'.$i]);
+          unset($_POST['Price'.$i]);
+        }
+        else {
+          $bask_values[1] = htmlspecialchars($_POST['Product_ID'.$i]);
+          unset($_POST['Product_ID'.$i]);
+          $bask_values[2] = htmlspecialchars($_POST['Name'.$i]);
+          unset($_POST['Name'.$i]);
+          $bask_values[3] = htmlspecialchars($_POST['Price'.$i]);
+          unset($_POST['Price'.$i]);
+          $bask_values[4] = htmlspecialchars($_POST['Quantity'.$i]);
+          unset($_POST['Quantity'.$i]);
+          $fields_values = array_combine($bask_fields, $bask_values);
+          $db->DataIn(BASKET, $fields_values);
+        }
       }
       break;
     }
+    
+    
+    
+    
+    
+    
     case 'content': {
       //Формирование массива полей и значений для добавления в БД
       $arr = array('Category', 'Title', 'Brief', 'Text', 'Revision', 'PublishFrom');

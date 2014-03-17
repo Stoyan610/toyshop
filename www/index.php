@@ -3,6 +3,9 @@ session_start();
 //Запрет прямого обращения
 define('ACCESS', TRUE);
 
+mb_internal_encoding(utf8); 
+mb_regex_encoding(utf8);
+
 //Проверка, сколько товаров в корзине
 if (!isset($_SESSION['items'])) $_SESSION['items'] = 0;
 if (isset($_POST['add_x']) && ($_POST['page'] == 'toyitem')) {
@@ -43,7 +46,6 @@ if (isset($_GET['toy'])) {
   $toy = htmlspecialchars($_GET['toy']);
   unset($_GET['toy']);
   $_SESSION['toy'] = $toy;
-  if (!isset($_SESSION[$toy]['item'])) $_SESSION[$toy]['item'] = 0;
 }
 
 //Подключение конфигурационного файла

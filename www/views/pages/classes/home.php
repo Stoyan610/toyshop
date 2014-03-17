@@ -56,7 +56,7 @@ class Home extends TemplateHandler {
       }
     }
     else {
-      $arr = $this->db->ReceiveFewFieldsOnCondition(MULTS, array('ID', 'Image_ID'), 'PublishFrom', '<', date("Y-m-d"), 6);
+      $arr = $this->db->ReceiveFewFieldsOnFullCondition(MULTS, array('ID', 'Image_ID'), 'PublishFrom', '<', date("Y-m-d"), 'RAND()', TRUE, 6);
       for ($i = 0; $i < 6; $i++) {       
         $img = $this->db->ReceiveFieldOnCondition(IMG, 'FileName', 'ID', '=', $arr[$i]['Image_ID']);
         $mults[$i]['img'] = $img[0];

@@ -231,22 +231,28 @@ class DbRover {
   
   //Изменить запись по ID записи
   public function ChangeDataOnId($table, $input, $id) {
-    if ((!is_int($id)) && (!((is_string($id)) && (preg_match("~^(0|(-?\s?[1-9]\d*))$~", $id)))))    return FALSE;
-    $table = "`".$table."`";
-    $some = array();
-    foreach ($input as $key => $val) {
-      if ($key != 'ID')       $some[] = "`".$key."`='".$val."'"; 
+    if ((!is_int($id)) && (!((is_string($id)) && (preg_match("~^(0|(-?\s?[1-9]\d*))$~", $id))))) $this->DataIn($table, $input);
+    else {
+      $table = "`".$table."`";
+      $some = array();
+      foreach ($input as $key => $val) {
+        if ($key != 'ID')       $some[] = "`".$key."`='".$val."'"; 
+      }
+      $what = implode(",", $some);
+      $zapros = "UPDATE ".$table." SET ".$what." WHERE `ID` = ".$id;
+      $this->connection->query($zapros);
     }
-    $what = implode(",", $some);
-    $zapros = "UPDATE ".$table." SET ".$what." WHERE `ID` = ".$id;
-    $this->connection->query($zapros);
   }
   //Изменить одно поле по ID записи
   public function ChangeFieldOnId($table, $field, $val, $id) {
-    if ((!is_int($id)) && (!((is_string($id)) && (preg_match("~^(0|(-?\s?[1-9]\d*))$~", $id)))))    return FALSE;
-    $table = "`".$table."`";
-    $what = "`".$field."`='".$val."'"; 
-    $zapros = "UPDATE ".$table." SET ".$what." WHERE `ID` = ".$id;
+    if ((!is_int($id)) && (!((is_string($id)) && (preg_match("~^(0|(-?\s?[1-9]\d*))$~", $id))))) {
+      $zapros = "INSERT INTO ".$table." (".$field.") VALUES (".$val.")";
+    }
+    else {
+      $table = "`".$table."`";
+      $what = "`".$field."`='".$val."'"; 
+      $zapros = "UPDATE ".$table." SET ".$what." WHERE `ID` = ".$id;
+    }
     $this->connection->query($zapros);
   }
 

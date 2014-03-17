@@ -88,12 +88,18 @@ if (isset($_POST['edit'])) {
       unset($_POST['DTime']);
       $order_values[] = htmlspecialchars($_POST['Info']);
       unset($_POST['Info']);
-      //Определение ID записи и удаление её из корзины или изменение записи
+      $order_fields_values = array_combine($order_fields, $order_values);
+      $order_fields_values['Changed'] = date('Y-m-d');
+      
+      //Определение ID записи для удаления и удаление её из корзины или изменение записи
       $count = htmlspecialchars($_POST['count']);
       unset($_POST['count']);
-      for ($i = 0; $i < $count; $i++) {
+      $num = htmlspecialchars($_POST['inicount']);
+      unset($_POST['inicount']);
+      for ($i = 0; $i < $num; $i++) {
         if(!empty($_POST['del'.$i])) {
           unset($_POST['del'.$i]);
+          $baskQnt = 0;
           unset($_POST['Quantity'.$i]);
           $baskID = htmlspecialchars($_POST['baskID'.$i]);
           unset($_POST['baskID'.$i]);
@@ -104,29 +110,36 @@ if (isset($_POST['edit'])) {
           unset($_POST['baskID'.$i]);
           $baskQnt = htmlspecialchars($_POST['Quantity'.$i]);
           unset($_POST['Quantity'.$i]);
-          $db->ChangeFieldOnId(BASKET, 'Quantity', $baskQnt, $baskID);
+          $db->ChangeDataOnId(BASKET, array('Quantity' => $baskQnt), $baskID);
         }
       }
       //Определение и добавление новых записей в корзину
-      $Order_ID = htmlspecialchars($_POST['ordID']);
-      unset($_POST['ordID']);
-      $newprod = htmlspecialchars($_POST['Products']);
-      unset($_POST['Products']);
       $bask_fields = array('Order_ID', 'Product_ID', 'Name', 'Price', 'Quantity');
-      $arr_prod = array();
-      $arr_temp = explode('^', $newprod);
-      $lng = count($arr_temp);
-      for ($i = 0; $i < $lng; $i++) {
-        $arr_prod[$i] = explode('~', $arr_temp[$i]);
-        if ($arr_prod[$i][4] > $order_values[1])    $order_values[1] = $arr_prod[$i][4];
-        array_splice($arr_prod[$i], 3, 2);
-        array_unshift($arr_prod[$i], $Order_ID);
-        $arr_bask = array_combine($bask_fields, $arr_prod[$i]);
-        $db->DataIn(BASKET, $arr_bask);
+      $bask_values = array();
+      $bask_values[0] = htmlspecialchars($_POST['ordID']);
+      unset($_POST['ordID']);
+      for ($i = $num; $i < $count; $i++) {
+        if(!empty($_POST['del'.$i])) {
+          unset($_POST['del'.$i]);
+          unset($_POST['Quantity'.$i]);
+          unset($_POST['Product_ID'.$i]);
+          unset($_POST['Name'.$i]);
+          unset($_POST['Price'.$i]);
+        }
+        else {
+          $bask_values[1] = htmlspecialchars($_POST['Product_ID'.$i]);
+          unset($_POST['Product_ID'.$i]);
+          $bask_values[2] = htmlspecialchars($_POST['Name'.$i]);
+          unset($_POST['Name'.$i]);
+          $bask_values[3] = htmlspecialchars($_POST['Price'.$i]);
+          unset($_POST['Price'.$i]);
+          $bask_values[4] = htmlspecialchars($_POST['Quantity'.$i]);
+          unset($_POST['Quantity'.$i]);
+          $fields_values = array_combine($bask_fields, $bask_values);
+          $db->DataIn(BASKET, $fields_values);
+        }
       }
-      $order_fields_values = array_combine($order_fields, $order_values);
-      $order_fields_values['Changed'] = date('Y-m-d');
-      $db->ChangeDataOnId(ORDS, $order_fields_values, $Order_ID);
+      $db->ChangeDataOnId(ORDS, $order_fields_values, $bask_values[0]);
       break;
     }
     
@@ -137,7 +150,7 @@ if (isset($_POST['edit'])) {
         if (($val == 'Text') or ($val == 'Brief')) $fields_values[$val] = $_POST[$val];
         else $fields_values[$val] = htmlspecialchars($_POST[$val]);
         unset($_POST[$val]);
-        }
+      }
       $db->ChangeDataOnId(INFO, $fields_values, $id);
       break;
     }
