@@ -115,7 +115,7 @@ abstract class TemplateHandler {
   //Получение правильного суффикса для слова "игрушки" в корзине
   protected function GetSuffix($n_item) {
     $ind = $n_item % 10;
-    if ($n_item == 0) $n_item="нет";
+    if ($n_item == 'нет') return "ек";
     if (($n_item >= 10) && ($n_item <= 20)) $suff="ек";
     else {
       switch($ind) {

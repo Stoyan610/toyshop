@@ -21,8 +21,10 @@ function checkmail($mail) {
   return $r;
 }
 
-//Формирование массива полей и значений для добавления клиента в БД
 $arr_cln = array();
+$arr_ord = array();
+$arr_bask = array();
+//Формирование массива полей и значений для добавления клиента в БД
 $arr_cln['Name'] = htmlspecialchars($_POST['name']);
 unset($_POST['name']);
 $arr_cln['Phone'] = htmlspecialchars($_POST['phone']);
@@ -32,32 +34,89 @@ unset($_POST['email']);
 //Проверка телефона и почты
 if (!checkphone($arr_cln['Phone'])) exit('Телефон не корректен');
 if (!checkmail($arr_cln['Mail'])) exit('Почта не корректна');
-$cond = "`Name` = '".$arr_cln['Name']."' AND `Phone` = '".$arr_cln['Phone']."' AND `Mail` = '".$arr_cln['Mail']."'";
-$arrid = $db->ReceiveFieldOnManyConditions(CLNTS, 'ID', $cond);
-if ($arrid !== FALSE)     $Client_ID = $arrid[0];
-else {
-  $arr_cln['Created'] = date('Y-m-d');
-  $arr_cln['Changed'] = $arr_cln['Created'];
-  $db->DataIn(CLNTS, $arr_cln);
-  $Client_ID = $db->IdOfLast(CLNTS);
-}
-
-//Формирование массива полей и значений для добавления заказа в БД
-$arr_ord = array();
-$arr_ord['Client_ID'] = $Client_ID;
-$arr_ord['Created'] = date('Y-m-d');
-$arr_ord['Changed'] = $arr_ord['Created'];
 $arr_ord['DeliveryAddress'] = htmlspecialchars($_POST['addr']);
 unset($_POST['addr']);
 $arr_ord['DeliveryTime'] = htmlspecialchars($_POST['time']);
 unset($_POST['time']);
 $arr_ord['Info'] = htmlspecialchars($_POST['extra']);
 unset($_POST['extra']);
-$db->DataIn(ORDS, $arr_ord);
-$Order_ID = $db->IdOfLast(ORDS);
+
+//Проверка - был ли уже оформлен заказ
+if (!isset($_SESSION['thisorderid'])) {
+  $flag = TRUE;
+  $flag2 = TRUE;
+}
+else {
+  $flag = FALSE;
+  $flag2 = FALSE;
+  if (($_SESSION['Name'] != $arr_cln['Name']) || ($_SESSION['Phone'] != $arr_cln['Phone']) || ($_SESSION['Mail'] != $arr_cln['Mail']))    $flag = TRUE;
+  if (($_SESSION['DeliveryAddress'] != $arr_ord['DeliveryAddress']) || ($_SESSION['DeliveryTime'] != $arr_ord['DeliveryTime']) || ($_SESSION['Info'] != $arr_ord['Info']))    $flag2 = TRUE;
+}
+
+if ($flag) {
+  $_SESSION['Name'] = $arr_cln['Name'];
+  $_SESSION['Phone'] = $arr_cln['Phone'];
+  $_SESSION['Mail'] = $arr_cln['Mail'];
+  $cond = "`Name` = '".$arr_cln['Name']."' AND `Phone` = '".$arr_cln['Phone']."' AND `Mail` = '".$arr_cln['Mail']."'";
+  $arrid = $db->ReceiveFieldOnManyConditions(CLNTS, 'ID', $cond);
+  if ($arrid !== FALSE)     $Client_ID = $arrid[0];
+  else {
+    $arr_cln['Created'] = date('Y-m-d');
+    $arr_cln['Changed'] = $arr_cln['Created'];
+    $db->DataIn(CLNTS, $arr_cln);
+    $Client_ID = $db->IdOfLast(CLNTS);
+    $_SESSION['Client_ID'] = $Client_ID;
+  }
+}
+else {
+  $Client_ID = htmlspecialchars($_SESSION['Client_ID']);
+}
+
+//Формирование массива полей и значений для добавления заказа в БД
+$arr_ord['Client_ID'] = $Client_ID;
+
+if ($flag) {
+  $arr_ord['Created'] = date('Y-m-d');
+  $arr_ord['Changed'] = $arr_ord['Created'];
+  
+  
+  $binder = 0;
+  do {
+    $ordernumber = date('nd').$binder.$Client_ID;
+    $binder++;
+  }
+  while ($db->СountDataOnCondition(ORDS, 'Number', '=', $ordernumber) != 0);
+  $arr_ord['Number'] = $ordernumber;
+  
+  
+  $_SESSION['Number'] = $arr_ord['Number'];
+  $_SESSION['DeliveryAddress'] = $arr_ord['DeliveryAddress'];
+  $_SESSION['DeliveryTime'] = $arr_ord['DeliveryTime'];
+  $_SESSION['Info'] = $arr_ord['Info'];
+  $db->DataIn(ORDS, $arr_ord);
+  $Order_ID = $db->IdOfLast(ORDS);
+  //Аннулирование старого заказа
+  if (isset($_SESSION['thisorderid'])) {
+    $db->DataOffOnId (ORDS, htmlspecialchars($_SESSION['thisorderid']));
+    $db->DataOffOnCondition(BASKET, 'Order_ID', '=', htmlspecialchars($_SESSION['thisorderid']));
+  }
+}
+elseif ($flag2) {
+  $_SESSION['DeliveryAddress'] = $arr_ord['DeliveryAddress'];
+  $_SESSION['DeliveryTime'] = $arr_ord['DeliveryTime'];
+  $_SESSION['Info'] = $arr_ord['Info'];
+  $Order_ID = htmlspecialchars($_SESSION['thisorderid']);
+  $arr_ord['Changed'] = date('Y-m-d');
+  $db->ChangeDataOnId(ORDS, $arr_ord, $Order_ID);
+}
+else {
+  $Order_ID = htmlspecialchars($_SESSION['thisorderid']);
+}
+
+//Очистка корзины, относящейся к заказу, т.к. будет всё добавляться по новой
+$db->DataOffOnCondition(BASKET, 'Order_ID', '=', $Order_ID);
 
 //Формирование массива полей и значений для добавления корзины в БД
-$arr_bask = array();
 $arr_bask['Order_ID'] = $Order_ID;
 $items = 0;
 foreach ($_POST as $key => $val) {
@@ -76,7 +135,10 @@ foreach ($_POST as $key => $val) {
   $_SESSION[$arr_bask['Product_ID'].'toyitems'] = $arr_bask['Quantity'];
 }
 $_SESSION['items'] = $items;
+$_COOKIE['items'] = htmlspecialchars($_SESSION['items']);
 $_SESSION['orderid'] = $Order_ID;
+unset($_SESSION['thisorderid']);
+
 
 
 // ? ? ? ? ? ? ? ? ? ? ? ? ? ? ?

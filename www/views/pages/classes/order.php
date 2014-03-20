@@ -34,7 +34,7 @@ class Order extends TemplateHandler {
     $arrid = $this->db->ReceiveFields(TOYS, array('ID'), $sort='ID');
     foreach ($arrid as $val) {
       $toyid = $val['ID'];
-       if (isset($_SESSION[$toyid.'toyitems'])) {
+      if (isset($_SESSION[$toyid.'toyitems'])) {
         $this->subst_toy['%toyid%'] = htmlspecialchars($_SESSION[$toyid.'toyid']);
         $this->subst_toy['%toyname%'] = htmlspecialchars($_SESSION[$toyid.'toyname']);
         $cond = "`Product_ID` = ".$toyid." AND  `Priority` = 0";
@@ -51,20 +51,48 @@ class Order extends TemplateHandler {
       }
     }
     
+    
+    // ? ? ? ? ? ? ? ? ? ? ? ? ? ? ?
+    // Расчёт скидок и стоимости доставки для включения в итоговую сумму
     //$discount = 
     //$delivery_cost = 
+    // ? ? ? ? ? ? ? ? ? ? ? ? ? ? ?
+
     
     $this->subst['%amount%'] = $amount;
     return $toys2order;
   }
   
+  protected function GetClientData() {
+    if (isset($_SESSION['thisorderid'])) {
+      $this->subst['%Name%'] = htmlspecialchars($_SESSION['Name']);
+      $this->subst['%Phone%'] = htmlspecialchars($_SESSION['Phone']);
+      $this->subst['%Mail%'] = htmlspecialchars($_SESSION['Mail']);
+      $this->subst['%DeliveryAddress%'] = htmlspecialchars($_SESSION['DeliveryAddress']);
+      $this->subst['%DeliveryTime%'] = htmlspecialchars($_SESSION['DeliveryTime']);
+      $this->subst['%Info%'] = htmlspecialchars($_SESSION['Info']);
+    }
+    else {
+      $this->subst['%Name%'] = '';
+      $this->subst['%Phone%'] = '';
+      $this->subst['%Mail%'] = '';
+      $this->subst['%DeliveryAddress%'] = '';
+      $this->subst['%DeliveryTime%'] = '';
+      $this->subst['%Info%'] = '';
+    }
+  }
+  
   //--------!!!!!!!!!--------   Эта функция готова...  -------!!!!!!!!!--------
   //Получение строки html для составления домашней страницы
   public function CreatePage() {
+    
     if ($_SESSION['items'] == 0)     $this->order = "<h2>Ваша корзина пуста</h2><div style='text-align: center;'><img style='width: 500px;' src='views/pages/pictures/emptybasket.png' title='Корзина пуста' alt='emptybasket' /></div>";
-    elseif (!isset($_SESSION['orderid']))    $this->order = $this->ReplaceTemplate($this->subst, 'orderbody');
+    elseif (!isset($_SESSION['orderid'])) {
+      $this->GetClientData();
+      $this->order = $this->ReplaceTemplate($this->subst, 'orderbody');
+    }
     else {
-      $this->subst['%orderid%'] = $_SESSION['orderid'];
+      $this->subst['%ordernumber%'] = $_SESSION['Number'];
       $this->order = $this->ReplaceTemplate($this->subst, 'ordermade');
     }
     

@@ -1,24 +1,95 @@
+function deleteCookie(name) {
+	var date = new Date();			// Берём текущую дату
+	date.setTime(date.getTime() - 1);		// Возвращаемся в "прошлое"
+	document.cookie = name += "=; expires=" + date.toGMTString();		// Пустое значение и срок действия до "прошлого"
+}
+
 function deltoy(toy) {
 	var line = $(toy);
 	line.hide(500, function() {
 		line.remove();
+    
+    var n = Number(toy.substr(1));
+    deleteCookie(n + "toyid");
+    deleteCookie(n + "toyname");
+    deleteCookie(n + "toyprice");
+    deleteCookie(n + "toyitems");
+    
 		recalc();
 	});
 }
 
-function recalc() {
+function delall() {
 	var maxn = $("#dtls input").size();
-	var price;
+  var toyid;
+	for (var i = 0; i < maxn; i++) {
+    toyid = Number($("#dtls input").eq(i).attr('name'));
+    deltoy("#" + toyid);
+ 	}
+}
+
+function recalc() {
+  document.cookie = "recalc=" + 1;
+	var maxn = $("#dtls input").size();
+	document.cookie = "maxn=" + maxn;
+  var price;
 	var quant;
 	var t;
+  var toyid;
+  var toyname;
+  var items = 0;
 	var amount = 0;
 	for (var i = 0; i < maxn; i++) {
-		quant = $("#dtls input").eq(i).val();
-		t = $("#dtls td").eq(5*i+4).text();
+		quant = Number($("#dtls input").eq(i).val());
+    toyid = Number($("#dtls input").eq(i).attr('name'));
+    var r = document.cookie.match("(^|; )" + toyid + "onstock=([^;]*)(;|$)");
+    if (r) var stock = Number(r[2]);
+    if (quant > stock) {
+      quant = stock;
+      $("#dtls input").eq(i).val(quant);
+    }
+    t = $("#dtls td").eq(5*i+4).text();
 		price = parseFloat(t);
-		amount = amount + quant*price;
-	}
-	$("#dtls td").eq(maxn*5+2).text(amount + " руб.")
+		amount += quant*price;
+    items += quant;
+    
+    document.cookie = i + "toyid=" + toyid;
+    toyname = $("#dtls td.td1 a").eq(i).text();
+    document.cookie = toyid + "toyname=" + toyname;
+    document.cookie = toyid + "toyprice=" + price;
+    document.cookie = toyid + "toyitems=" + quant;
+ 	}
+	$("#dtls td").eq(maxn*5+2).text(amount + " руб.");
+  document.cookie = "items=" + items;
+  
+  var suf;  
+  var ind = items % 10;
+  if (items == 0) items="нет";
+  if ((items >= 10) && (items <= 20)) suf="ек";
+  else {
+    switch(ind) {
+      case 1: {
+        suf="ка";
+        break;
+      }
+      case 2: {
+        suf="ки";
+        break;
+      }
+      case 3: {
+        suf="ки";
+        break;
+      }
+      case 4: {
+        suf="ки";
+        break;
+      }
+      default: {
+        suf="ек";
+      }
+    }
+  }
+  $("#inmenu span").html(" В корзине <b>" + items + "</b> игруш" + suf);
 }
 
 function confirmer() {

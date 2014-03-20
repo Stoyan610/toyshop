@@ -93,7 +93,17 @@ if (isset($_POST['add'])) {
       $order_fields_values['Client_ID'] = $Client_ID;
       $order_fields_values['Created'] = date('Y-m-d');
       $order_fields_values['Changed'] = $order_fields_values['Created'];
-      $order_fields_values['Number'] = date('n').'0'.$Client_ID;
+      
+      
+      $binder = 0;
+      do {
+        $ordernumber = date('nd').$binder.$Client_ID;
+        $binder++;
+      }
+      while ($db->СountDataOnCondition(ORDS, 'Number', '=', $ordernumber) != 0);
+      $order_fields_values['Number'] = $ordernumber;
+      
+      
       $db->DataIn(ORDS, $order_fields_values);
       $Order_ID = $db->IdOfLast(ORDS);
       //Определение и добавление новых записей в корзину

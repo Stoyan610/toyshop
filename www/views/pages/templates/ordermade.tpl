@@ -10,10 +10,22 @@
       <td>%amount% руб.</td>
     </tr>
     <tr>
-      <td class='td3' colspan='4' align='center'>Номер Вашего заказа %orderid%</td>
+      <td class='td3' colspan='4' align='center'>Номер Вашего заказа %ordernumber%</td>
     </tr>
     <tr>
-      <td colspan='4' align='center'><i style='font-size: 80%;'>* Ваш заказ в обработке. С Вами свяжется наш менеджер в самое ближайшее время для уточнения условий доставки. Если Вы захотите внести изменения в заказ, Вы можете обсудить это с менеджером *</i></td>
+      <td colspan='4' align='center'><i style='font-size: 80%;'>* Ваш заказ в обработке. Наш менеджер свяжется с Вами в самое ближайшее время *<br />* Если Вы хотите внести изменения в заказ, нажмите кнопку "Добавить ещё игрушки" *</i></td>
+    </tr>
+    <tr>
+      <td colspan='3' align='center'>
+        <form name='continue' action='ordercontinue.php' method='post'>
+          <input class='dim' type='image' name='continue' src='%site_url%pictures/add_toys.png' style='margin-top: 20px;' /> 
+        </form>
+      </td>
+      <td align='center'>
+        <form name='cancel' action='ordercancel.php' method='post'>
+          <input class='dim' type='image' name='cancel' src='%site_url%pictures/terminate.png' style='margin-top: 20px;' /> 
+        </form>
+      </td>
     </tr>
   </table>
 </div>
