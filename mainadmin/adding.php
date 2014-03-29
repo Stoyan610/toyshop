@@ -58,12 +58,6 @@ if (isset($_POST['add'])) {
       break;
     }
     
-    
-    
-    
-    
-    
-    
     case 'order': {
       //Формирование массива полей и значений для добавления клиента в БД
       $arr_cln = array('Name', 'Phone', 'Mail');
@@ -136,18 +130,22 @@ if (isset($_POST['add'])) {
       break;
     }
     
-    
-    
-    
-    
-    
     case 'content': {
       //Формирование массива полей и значений для добавления в БД
       $arr = array('Category', 'Title', 'Brief', 'Text', 'Revision', 'PublishFrom');
       foreach ($arr as $val) {
-        if (($val == 'Text') or ($val == 'Brief')) $fields_values[$val] = $_POST[$val];
+        if ($val == 'Text') {
+          $fields_values[$val] = htmlspecialchars(addslashes($_POST['editor']));
+          unset($_POST['editor']);
+        }
         else $fields_values[$val] = htmlspecialchars($_POST[$val]);
         unset($_POST[$val]);
+      }
+      $cat = htmlspecialchars($_POST['new_Cat']);
+      unset($_POST['new_Cat']);
+      if ($cat != '') $fields_values['Category'] = $cat;
+      else {
+        if ($fields_values['Revision'])     $db->ChangeFieldOnCondition(INFO, 'Revision', 0, 'Category', '=', $fields_values['Category']);
       }
       $db->DataIn(INFO, $fields_values);
       break;

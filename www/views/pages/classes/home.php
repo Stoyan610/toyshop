@@ -30,12 +30,8 @@ class Home extends TemplateHandler {
   //Получение строки-приветствия html из файла tpl и замена в ней параметров
   protected function GetGreeting() {
     //Получение текста приветствия из базы данных
-    $extract = $this->db->ReceiveFieldOnCondition(INFO, 'Title', 'Category', 'LIKE', '%ривет%');
-    $this->greeting['%title_of_article%'] = $extract[0];
-    $extract = $this->db->ReceiveFieldOnCondition(INFO, 'Brief', 'Category', 'LIKE', '%ривет%');
-    $this->greeting['%hello%'] = $extract[0];
     $extract = $this->db->ReceiveFieldOnCondition(INFO, 'Text', 'Category', 'LIKE', '%ривет%');
-    $this->greeting['%article_body%'] = $extract[0];
+    $this->greeting['%article_body%'] = htmlspecialchars_decode($extract[0]);
     return $this->ReplaceTemplate($this->greeting, 'greeting');
   }
   

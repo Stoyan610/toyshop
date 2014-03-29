@@ -37,16 +37,6 @@ else {
       $creator->EditItem($id);
     break;
     }
-    
-/*    
-    case 'changeimg': {
-      $id = htmlspecialchars($_GET['id']);
-      unset($_GET['id']);
-      $creator->ChangeImage($id);
-    break;
-    }
-    
-*/    
     case 'basket': {
       $id = htmlspecialchars($_GET['id']);
       unset($_GET['id']);
@@ -59,12 +49,10 @@ else {
       $creator->DeleteItem($id);
     break;
     }
-    
     case 'add': {
       $creator->InsertItem();
     break;
     }
-    
     case 'part': {
       if (isset($_GET['Client_ID'])) {
         $Client_ID = htmlspecialchars($_GET['Client_ID']);
@@ -76,6 +64,21 @@ else {
         unset($_GET['Number']);
         $num = preg_replace('~\D+~', '', $num);
         $creator->GetTableOnField('Number', $num);
+      }
+    break;
+    }
+
+    default: {
+      exit ('Это сделать невозможно');
+    }
+    
+  }
+}
+ 
+?>
+  
+</body>
+</html>->GetTableOnField('Number', $num);
       }
     break;
     }

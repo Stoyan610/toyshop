@@ -45,7 +45,13 @@ else {
       $creator->InsertItem();
     break;
     }
-    
+    case 'part': {
+      $cat = htmlspecialchars($_GET['Cat']);
+      unset($_GET['Cat']);
+      $creator->GetTableOnField($cat);
+      break;
+    }
+
     default: {
       exit ('Это сделать невозможно');
     }

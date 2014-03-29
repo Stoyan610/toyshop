@@ -105,7 +105,7 @@ class DbRover {
   }
   //Получение уникальных (неповторяющихся) значений поля
 	public function GetUniqField($table, $field) {
-		return $this->Choice($table, "DISTINCT `".$field."`");
+		return $this->Choice($table, array("DISTINCT `".$field."`"));
   }
   //Получение ID последней вставленной записи
 	public function IdOfLast($table) {
@@ -236,7 +236,7 @@ class DbRover {
       $table = "`".$table."`";
       $some = array();
       foreach ($input as $key => $val) {
-        if ($key != 'ID')       $some[] = "`".$key."`='".$val."'"; 
+        if ($key != 'ID')       $some[] = "`".$key."`='".addslashes($val)."'"; 
       }
       $what = implode(",", $some);
       $zapros = "UPDATE ".$table." SET ".$what." WHERE `ID` = ".$id;
@@ -250,12 +250,18 @@ class DbRover {
     }
     else {
       $table = "`".$table."`";
-      $what = "`".$field."`='".$val."'"; 
+      $what = "`".$field."`='".addslashes($val)."'"; 
       $zapros = "UPDATE ".$table." SET ".$what." WHERE `ID` = ".$id;
     }
     $this->connection->query($zapros);
   }
-
+  //Изменить одно поле по условию
+  public function ChangeFieldOnCondition($table, $field, $val, $infield, $sign, $invalue) {
+    $table = "`".$table."`";
+    $what = "`".$field."`='".addslashes($val)."'"; 
+    $zapros = "UPDATE ".$table." SET ".$what." WHERE `".$infield."`".$sign."'".addslashes($invalue)."'";
+    $this->connection->query($zapros);
+  }
 
   public function __destruct() {
 		if ($this->connection) $this->connection->close();
