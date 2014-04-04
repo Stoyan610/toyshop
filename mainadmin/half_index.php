@@ -45,7 +45,7 @@ defined('ACCESS') or die('Access denied');
 </head>
 <body>
 
-  <ul style="background-color: #8AE78A; padding: 10px 0 10px 30px; margin: 0;">
+  <ul style="background-color: #8AE78A; padding: 10px 0 10px 30px; margin: 0; font-size: 125%;">
     <div class='list'><li><a href="admin_controller.php?table=a_catalog">Категории</a></li></div>
     <div class='list'><li><a href="admin_controller.php?table=a_product">Товары</a></li></div>
     <div class='list'><li><a href="admin_controller.php?table=a_image">Изображения</a></li></div>

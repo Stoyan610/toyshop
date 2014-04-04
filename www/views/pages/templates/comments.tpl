@@ -6,10 +6,11 @@
 			<col width='100px' span='1' />
 			<col span='1' />
 		</colgroup>
-		<tr><td colspan='2' align='right'>
-			<form name='lvc' action='leavecomment.php' method='post'><button name='send'>Оставить свой отзыв.</button></form>
-		</td></tr>
-		<tr><td></td><td></td></tr>
+		<tr><td colspan='2'></td></tr>
 		%commenttext% 		<!-- Шаблон добавления рядов в таблицу с комментариями. -->
-	</table>
+  </table>
+  <form style='text-align: right;' name='lvc' action='#' method='get'>
+    <input type='hidden' name='page' value='comments' />
+    <input class='dim' type='image' name='comment' src='%site_url%pictures/comment_button.png' height='70' width='210' />
+  </form>
 </div>

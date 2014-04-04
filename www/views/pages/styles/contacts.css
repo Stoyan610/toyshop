@@ -1,0 +1,22 @@
+﻿/*Только в контактах и доставке*/
+#contacts table {
+	background-color: #FDFDFD;
+	border: 10px solid #FDFDFD;
+	border-radius: 10px;
+  width: 80%;
+}
+#contacts table td {
+	font-family: 'Comic Sans MS', Verdana, 'Lucida Sans Unicode';
+}
+#contacts table td:nth-of-type(even) {
+	font-size: 105%;
+	font-style: italic;
+	text-indent: 30px;
+	text-align: left;
+}
+#contacts table td:nth-of-type(odd) {
+	color: #656565;
+	font-size: 125%;
+	font-weight: bold;
+	text-align: right;
+} 

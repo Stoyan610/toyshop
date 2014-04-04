@@ -144,7 +144,7 @@ if (isset($_POST['edit'])) {
     }
     
     case 'content': {
-      //Формирование массива полей и значений для добавления в БД
+      //Формирование массива полей и значений для изменения записи в БД
       $arr = array('Category', 'Title', 'Brief', 'Text', 'Revision', 'PublishFrom');
       foreach ($arr as $val) {
         if ($val == 'Text') {
@@ -161,6 +161,21 @@ if (isset($_POST['edit'])) {
         if ($fields_values['Revision'])     $db->ChangeFieldOnCondition(INFO, 'Revision', 0, 'Category', '=', $fields_values['Category']);
       }
       $db->ChangeDataOnId(INFO, $fields_values, $id);
+      break;
+    }
+    
+    case 'feedback': {
+      //Формирование массива полей и значений для изменения записи в БД
+      $arr = array('Date', 'Name', 'Content', 'PublishFrom');
+      foreach ($arr as $val) {
+        if ($val == 'Content') {
+          $fields_values[$val] = htmlspecialchars($_POST['editor']);
+          unset($_POST['editor']);
+        }
+        else $fields_values[$val] = htmlspecialchars($_POST[$val]);
+        unset($_POST[$val]);
+      }
+      $db->ChangeDataOnId(REP, $fields_values, $id);
       break;
     }
     

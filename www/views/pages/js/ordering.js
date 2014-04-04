@@ -145,9 +145,11 @@ function confirmer() {
           break;
       }
     }
-    $(".ord input[name='phone']").val(phone);
-		var stroka = phone + " - Телефон понят правильно ?";
-    if (!confirm(stroka))  flag = false;
+    if (phone == $(".ord input[name='phone']").val()) {
+      $(".ord input[name='phone']").val(phone);
+      var stroka = phone + " - Телефон понят правильно ?";
+      if (!confirm(stroka))  flag = false;
+    }
   }
 //Проверка и-мейла
 	var email = $(".ord input[name='email']").val();

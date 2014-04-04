@@ -1,3 +1,3 @@
 AddDefaultCharset utf-8
-php_flag magic_quates_gpc Off
+php_flag magic_quotes_gpc Off
 ErrorDocument 404 http://localhost:8888/toyshop.local/www/page404.html

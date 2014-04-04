@@ -36,6 +36,8 @@ if (!checkphone($arr_cln['Phone'])) exit('Телефон не корректен
 if (!checkmail($arr_cln['Mail'])) exit('Почта не корректна');
 $arr_ord['DeliveryAddress'] = htmlspecialchars($_POST['addr']);
 unset($_POST['addr']);
+$_SESSION['DeliveryCost'] = htmlspecialchars($_POST['city']);
+unset($_POST['city']);
 $arr_ord['DeliveryTime'] = htmlspecialchars($_POST['time']);
 unset($_POST['time']);
 $arr_ord['Info'] = htmlspecialchars($_POST['extra']);
@@ -79,7 +81,6 @@ if ($flag) {
   $arr_ord['Created'] = date('Y-m-d');
   $arr_ord['Changed'] = $arr_ord['Created'];
   
-  
   $binder = 0;
   do {
     $ordernumber = date('nd').$binder.$Client_ID;
@@ -87,7 +88,6 @@ if ($flag) {
   }
   while ($db->СountDataOnCondition(ORDS, 'Number', '=', $ordernumber) != 0);
   $arr_ord['Number'] = $ordernumber;
-  
   
   $_SESSION['Number'] = $arr_ord['Number'];
   $_SESSION['DeliveryAddress'] = $arr_ord['DeliveryAddress'];
@@ -116,9 +116,12 @@ else {
 //Очистка корзины, относящейся к заказу, т.к. будет всё добавляться по новой
 $db->DataOffOnCondition(BASKET, 'Order_ID', '=', $Order_ID);
 
-//Формирование массива полей и значений для добавления корзины в БД
+//Формирование массива полей и значений для добавления корзины в БД и в текст емейла администратору
+$message = 'Имя клиента: '.$_SESSION['Name'].'\nТелефон: '.$_SESSION['Phone'].'\nЭлектронный адрес: '.$_SESSION['Mail'].'\nЗаказано:\n';
 $arr_bask['Order_ID'] = $Order_ID;
 $items = 0;
+$count = 0;
+$amount = 0;
 foreach ($_POST as $key => $val) {
   $arr_bask['Product_ID'] = (integer)$key;
   $arr_bask['Quantity'] = htmlspecialchars($val);
@@ -133,18 +136,45 @@ foreach ($_POST as $key => $val) {
   $_SESSION[$arr_bask['Product_ID'].'toyname'] = $arr_bask['Name'];
   $_SESSION[$arr_bask['Product_ID'].'toyprice'] = $arr_bask['Price'];
   $_SESSION[$arr_bask['Product_ID'].'toyitems'] = $arr_bask['Quantity'];
-}
+  
+  $amount += $arr_bask['Price']*$arr_bask['Quantity'];
+  
+  $message .= $count.'-й товар: '.$arr_bask['Name'].'\nв количестве '.$arr_bask['Quantity'].'штук\n';
+  }
 $_SESSION['items'] = $items;
 $_COOKIE['items'] = htmlspecialchars($_SESSION['items']);
 $_SESSION['orderid'] = $Order_ID;
 unset($_SESSION['thisorderid']);
 
+$amount += $_SESSION['DeliveryCost'];
+$message .= 'Всего '.$items.' игрушек\nНа сумму с доставкой '.$amount.' руб\nАдрес доставки:\n';
 
 
 // ? ? ? ? ? ? ? ? ? ? ? ? ? ? ?
 //Отправка емейла администратору с информацией о данном заказе
-// ? ? ? ? ? ? ? ? ? ? ? ? ? ? ?
+function add_eol($text) {
+  $mes = '';
+  do {
+    $str_rep = mb_substr($text, 0, 70, 'utf-8');
+    $mes .= $str_rep.'\n';
+    $text = str_replace($str_rep, '', $text);
+    $lng = mb_strlen($text, 'utf-8');
+  }
+  while ($lng != 0);
+  return $mes;
+}
 
+$to_whom = ADMIN_EMAIL;
+$from = SEND_EMAIL;
+$add_headers = "From: ".$from."\r\nReply_To: nowhere@nomail.non\r\nConent-type: text/plain; charset=utf-8\r\n";
+$subject = "Новый заказ № ".$_SESSION['Number'];
+
+$message .= add_eol($_SESSION['DeliveryAddress']);
+$message .= 'Время доставки: '.$_SESSION['DeliveryTime'].'\n';
+$message .= 'Прочая информация:\n'.add_eol($_SESSION['Info']);
+
+if (!mail($to_whom, $subject, $message, $add_headers))      exit ("не O.K.");
+// ? ? ? ? ? ? ? ? ? ? ? ? ? ? ?
 
 
 //Возвращение на страницу заказа

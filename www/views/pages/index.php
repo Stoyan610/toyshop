@@ -42,6 +42,16 @@ switch ($page) {
     break;
   }
   
+  case 'contacts.php': {
+    $pager = new Contact($n_item);
+    break;
+  }
+  
+  case 'comments.php': {
+    $pager = new Comment($n_item);
+    break;
+  }
+  
   //Далее по списку классов страниц
   
   default:

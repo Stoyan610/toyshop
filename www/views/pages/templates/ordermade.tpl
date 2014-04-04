@@ -6,7 +6,7 @@
     </tr>
     %ordertoy%
     <tr class='td3'>
-      <td colspan='3' align='right'><span>На сумму</span></td>
+      <td colspan='3' align='right'><span>На сумму с доставкой</span></td>
       <td>%amount% руб.</td>
     </tr>
     <tr>

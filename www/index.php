@@ -83,6 +83,12 @@ if (isset($_GET['toy'])) {
   $_SESSION['toy'] = $toy;
 }
 
+if (isset($_GET['comment_x'])) {
+  $com = htmlspecialchars($_GET['comment_x']);
+  unset($_GET['comment_x']);
+  $_SESSION['comment'] = $com;
+}
+
 //Подключение конфигурационного файла
 require_once 'config_address.php';
 require_once 'config.php';

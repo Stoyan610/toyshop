@@ -1,0 +1,47 @@
+﻿/*Только в отзывах*/
+#comment p {
+	text-indent: 25px;
+	margin: 0;
+}
+#comment a {
+	margin: 0 2px 10px;
+	float: right;
+}
+.surname, .cloud1 {
+	font-family: 'Comic Sans MS', Verdana, 'Lucida Sans Unicode';
+	color: #656565;
+}
+.cloud1 span {
+  font-weight: bold;
+}
+.surname {
+  font-size: 130%;
+  border-radius: 10px 0 0 0;
+  font-weight: bold;
+}
+.surname, .cloud1, .cloud2 {
+	background-color: #FDFDFD;
+	border: 10px solid #FDFDFD;
+}
+.cloud1 {
+	border-radius: 0 10px 10px 10px;
+}
+.cloud2 {
+	border-radius: 0 0 0 10px;
+}
+#instr {
+  font-family: 'Comic Sans MS', Verdana, 'Lucida Sans Unicode';
+	font-style: italic;
+	font-size: 90%;
+}
+#instr div {
+  margin: 0 0 0 300px;
+}
+.extract {
+  font-family: 'Comic Sans MS', Verdana, 'Lucida Sans Unicode';
+	text-align: center;
+	font-size: 115%;
+}
+#footer {
+	clear: both;
+}

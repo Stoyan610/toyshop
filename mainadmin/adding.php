@@ -151,6 +151,20 @@ if (isset($_POST['add'])) {
       break;
     }
     
+    case 'feedback': {
+      //Формирование массива полей и значений для добавления в БД
+      $fields_values['Content'] = htmlspecialchars(addslashes($_POST['editor']));
+      unset($_POST['editor']);
+      $arr = array('Date', 'Name', 'PublishFrom');
+      foreach ($arr as $val) {
+        $fields_values[$val] = htmlspecialchars($_POST[$val]);
+        unset($_POST[$val]);
+      }
+      $db->DataIn(REP, $fields_values);
+      break;
+    }
+    
+    
     
     default:
       break;

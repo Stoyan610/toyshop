@@ -1,6 +1,6 @@
 		<div id='footer'>
-			<p>%site_map%</p>
-			<p>%SEO%</p>
+      <div><p>%site_map%</p></div>
+			<div><p>%SEO%</p></div>
 		</div>
 	</div>
 </body>

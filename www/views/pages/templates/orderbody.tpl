@@ -42,7 +42,11 @@
       </tr>
       <tr>
         <td class='td1'>Адрес доставки</td>
-        <td><input type='text' name='addr' value='%DeliveryAddress%' size='40' /></td>
+        <td>
+          <input type='radio' name='city' value='%Mos%' %Moscheck% />Москва&nbsp;&nbsp;&nbsp;
+          <input type='radio' name='city' value='%Area%' %Areacheck% />Московская область не далее 15 км от МКАД<br />
+          <input type='text' name='addr' value='%DeliveryAddress%' size='40' />
+        </td>
       </tr>
       <tr>
         <td class='td1'>Время доставки</td>

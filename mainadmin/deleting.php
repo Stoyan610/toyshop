@@ -45,6 +45,10 @@ if (isset($_POST['delete'])) {
       $db->DataOffOnId(INFO, $iddel);
       break;
     }
+    case 'feedback': {
+      $db->DataOffOnId(REP, $iddel);
+      break;
+    }
 
       
     default:

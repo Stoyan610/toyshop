@@ -3,4 +3,4 @@
 </tr>
 <tr valign='top'><td class='cloud2' height='30px'><i>%issuedate%</i></td></tr>
 <tr valign='top'><td></td></tr>
-<tr><td></td><td></td></tr>
+<tr><td colspan='2'></td></tr>

@@ -15,6 +15,8 @@ class Order extends TemplateHandler {
   public function __construct($n_item) {
     parent::__construct($n_item);
     $this->subst['%ordertoy%'] = $this->GetToys2order();
+    $this->subst['%Mos%'] = MOSC;
+    $this->subst['%Area%'] = MAREA;
   }
   
   //Получение содержания для meta тега описания страницы
@@ -44,20 +46,13 @@ class Order extends TemplateHandler {
         $this->subst_toy['%quantity%'] = htmlspecialchars($_SESSION[$toyid.'toyitems']);
         $this->subst_toy['%price%'] = htmlspecialchars($_SESSION[$toyid.'toyprice']);
         
+        
         if (!isset($_SESSION['orderid']))    $toys2order .= $this->ReplaceTemplate($this->subst_toy, 'ordertoy');
         else    $toys2order .= $this->ReplaceTemplate($this->subst_toy, 'ordertoy2');
         
         $amount += $this->subst_toy['%quantity%'] * $this->subst_toy['%price%'];
       }
     }
-    
-    
-    // ? ? ? ? ? ? ? ? ? ? ? ? ? ? ?
-    // Расчёт скидок и стоимости доставки для включения в итоговую сумму
-    //$discount = 
-    //$delivery_cost = 
-    // ? ? ? ? ? ? ? ? ? ? ? ? ? ? ?
-
     
     $this->subst['%amount%'] = $amount;
     return $toys2order;
@@ -81,17 +76,34 @@ class Order extends TemplateHandler {
       $this->subst['%Info%'] = '';
     }
   }
-  
+    
   //--------!!!!!!!!!--------   Эта функция готова...  -------!!!!!!!!!--------
   //Получение строки html для составления домашней страницы
   public function CreatePage() {
-    
+        
+    if ($_SESSION['DeliveryCost'] == MAREA) {
+      $this->subst['%Moscheck%'] = '';
+      $this->subst['%Areacheck%'] = 'checked';
+    }
+    else {
+      $this->subst['%Moscheck%'] = 'checked';
+      $this->subst['%Areacheck%'] = '';
+    }
+        
+  
     if ($_SESSION['items'] == 0)     $this->order = "<h2>Ваша корзина пуста</h2><div style='text-align: center;'><img style='width: 500px;' src='views/pages/pictures/emptybasket.png' title='Корзина пуста' alt='emptybasket' /></div>";
     elseif (!isset($_SESSION['orderid'])) {
       $this->GetClientData();
       $this->order = $this->ReplaceTemplate($this->subst, 'orderbody');
     }
     else {
+      // Расчёт стоимости доставки для включения в итоговую сумму
+      if (isset($_SESSION['DeliveryCost'])) {
+        $delivery_cost = $_SESSION['DeliveryCost'];
+        $this->subst['%amount%'] += $delivery_cost;
+      }
+
+
       $this->subst['%ordernumber%'] = $_SESSION['Number'];
       $this->order = $this->ReplaceTemplate($this->subst, 'ordermade');
     }
