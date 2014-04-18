@@ -21,6 +21,4 @@ require_once 'config_address.php';
   <h1 id='emp' onclick="entrance()">Форма - пуста,<br />Пустота - есть форма,<br />Пустота - пуста...</h1>
   
 </body>
-
-</body>
 </html>

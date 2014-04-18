@@ -56,12 +56,4 @@ REDIRECT;
 
 }
 
-//Возвращение на страницу image.php
-
-echo <<<REDIRECT
-<script type='text/javascript'>
-	setTimeout("document.location.href='image.php'", 0);
-</script>
-REDIRECT;
-
 ?>

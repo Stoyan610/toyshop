@@ -73,32 +73,4 @@ else {
   }
 }
  
-?>eak;
-    }
-
-    default: {
-      exit ('Это сделать невозможно');
-    }
-    
-  }
-}
- 
 ?>
-  
-</body>
-</html>->GetTableOnField('Number', $num);
-      }
-    break;
-    }
-
-    default: {
-      exit ('Это сделать невозможно');
-    }
-    
-  }
-}
- 
-?>
-  
-</body>
-</html>

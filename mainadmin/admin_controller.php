@@ -74,10 +74,5 @@ switch ($table) {
   }
 }
 
-?>�а для подключения таблиц
-require_once 'half_index.php';
 
 ?>
-  
-</body>
-</html>
