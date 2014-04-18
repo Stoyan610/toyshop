@@ -39,7 +39,9 @@ class Catalogue extends TemplateHandler {
         $this->subst_row['%multname%'] = $arr[$i]['Name'];
         $img = $this->db->ReceiveFieldOnCondition(IMG, 'FileName', 'ID', '=', $arr[$i]['Image_ID']);
         $this->subst_row['%multfilename%'] = $img[0];
-        $this->subst_row['%toysofmult%'] = $this->GetToysofMult($arr[$i]['ID']);
+        $wtoys = $this->GetToysofMult($arr[$i]['ID']);
+        if ($wtoys)     $this->subst_row['%toysofmult%'] = $wtoys;
+        else          continue;
         $rows .= $this->ReplaceTemplate($this->subst_row, 'rowsfilmandtoys');
       }
     }
@@ -53,7 +55,7 @@ class Catalogue extends TemplateHandler {
     $cond = "`Catalog_ID` = ".$id." AND `PublishFrom` < '".date("Y-m-d")."'";
     $arr = $this->db->ReceiveFieldOnManyConditions(TOYS, 'ID', $cond);
     $toy_num = $this->db->СountDataOnManyConditions(TOYS, $cond);
-    if ($toy_num == 0)    return "В КАТАЛОГЕ ИГРУШЕК НЕТ !!!";
+    if ($toy_num == 0)    return FALSE;
     else {
       for ($i = 0; $i < $toy_num; $i++) {
         $cond1 = "`Product_ID` = ".$arr[$i]." AND  `Priority` = 0";

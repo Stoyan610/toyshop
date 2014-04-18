@@ -89,6 +89,12 @@ if (isset($_GET['comment_x'])) {
   $_SESSION['comment'] = $com;
 }
 
+if (isset($_GET['phrase'])) {
+  $search_phrase = htmlspecialchars($_GET['phrase']);
+  unset($_GET['phrase']);
+  $_SESSION['search_phrase'] = $search_phrase;
+}
+
 //Подключение конфигурационного файла
 require_once 'config_address.php';
 require_once 'config.php';

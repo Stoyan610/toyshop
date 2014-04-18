@@ -45,17 +45,17 @@ unset($_POST['extra']);
 
 //Проверка - был ли уже оформлен заказ
 if (!isset($_SESSION['thisorderid'])) {
-  $flag = TRUE;
-  $flag2 = TRUE;
+  $flag_newclient = TRUE;
+  $flag_newinfo = TRUE;
 }
 else {
-  $flag = FALSE;
-  $flag2 = FALSE;
-  if (($_SESSION['Name'] != $arr_cln['Name']) || ($_SESSION['Phone'] != $arr_cln['Phone']) || ($_SESSION['Mail'] != $arr_cln['Mail']))    $flag = TRUE;
-  if (($_SESSION['DeliveryAddress'] != $arr_ord['DeliveryAddress']) || ($_SESSION['DeliveryTime'] != $arr_ord['DeliveryTime']) || ($_SESSION['Info'] != $arr_ord['Info']))    $flag2 = TRUE;
+  $flag_newclient = FALSE;
+  $flag_newinfo = FALSE;
+  if (($_SESSION['Name'] != $arr_cln['Name']) || ($_SESSION['Phone'] != $arr_cln['Phone']) || ($_SESSION['Mail'] != $arr_cln['Mail']))    $flag_newclient = TRUE;
+  if (($_SESSION['DeliveryAddress'] != $arr_ord['DeliveryAddress']) || ($_SESSION['DeliveryTime'] != $arr_ord['DeliveryTime']) || ($_SESSION['Info'] != $arr_ord['Info']))    $flag_newinfo = TRUE;
 }
 
-if ($flag) {
+if ($flag_newclient) {
   $_SESSION['Name'] = $arr_cln['Name'];
   $_SESSION['Phone'] = $arr_cln['Phone'];
   $_SESSION['Mail'] = $arr_cln['Mail'];
@@ -77,7 +77,7 @@ else {
 //Формирование массива полей и значений для добавления заказа в БД
 $arr_ord['Client_ID'] = $Client_ID;
 
-if ($flag) {
+if ($flag_newclient) {
   $arr_ord['Created'] = date('Y-m-d');
   $arr_ord['Changed'] = $arr_ord['Created'];
   
@@ -95,13 +95,15 @@ if ($flag) {
   $_SESSION['Info'] = $arr_ord['Info'];
   $db->DataIn(ORDS, $arr_ord);
   $Order_ID = $db->IdOfLast(ORDS);
+  
   //Аннулирование старого заказа
   if (isset($_SESSION['thisorderid'])) {
     $db->DataOffOnId (ORDS, htmlspecialchars($_SESSION['thisorderid']));
     $db->DataOffOnCondition(BASKET, 'Order_ID', '=', htmlspecialchars($_SESSION['thisorderid']));
   }
+  
 }
-elseif ($flag2) {
+elseif ($flag_newinfo) {
   $_SESSION['DeliveryAddress'] = $arr_ord['DeliveryAddress'];
   $_SESSION['DeliveryTime'] = $arr_ord['DeliveryTime'];
   $_SESSION['Info'] = $arr_ord['Info'];
@@ -115,7 +117,6 @@ else {
 
 //Очистка корзины, относящейся к заказу, т.к. будет всё добавляться по новой
 $db->DataOffOnCondition(BASKET, 'Order_ID', '=', $Order_ID);
-
 //Формирование массива полей и значений для добавления корзины в БД и в текст емейла администратору
 $message = 'Имя клиента: '.$_SESSION['Name'].'\nТелефон: '.$_SESSION['Phone'].'\nЭлектронный адрес: '.$_SESSION['Mail'].'\nЗаказано:\n';
 $arr_bask['Order_ID'] = $Order_ID;
@@ -149,7 +150,6 @@ unset($_SESSION['thisorderid']);
 $amount += $_SESSION['DeliveryCost'];
 $message .= 'Всего '.$items.' игрушек\nНа сумму с доставкой '.$amount.' руб\nАдрес доставки:\n';
 
-
 // ? ? ? ? ? ? ? ? ? ? ? ? ? ? ?
 //Отправка емейла администратору с информацией о данном заказе
 function add_eol($text) {
@@ -175,7 +175,6 @@ $message .= 'Прочая информация:\n'.add_eol($_SESSION['Info']);
 
 if (!mail($to_whom, $subject, $message, $add_headers))      exit ("не O.K.");
 // ? ? ? ? ? ? ? ? ? ? ? ? ? ? ?
-
 
 //Возвращение на страницу заказа
 header("Location: index.php?page=order");

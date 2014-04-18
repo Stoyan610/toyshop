@@ -29,199 +29,236 @@ class Product extends Admin {
     else    $img = 'emptytoy';
     return $img;
 }
-//Получение количества фото по ID игрушки 
+
+  //Получение количества фото по ID игрушки 
   private function CountImage($id) {
     return $this->db->СountDataOnCondition(LIMG, 'Product_ID', '=', $id);
   }
+  
+  
+  
+  
   //Подпрограмма выведения ячеек с ноготками игрушек
   private function GetImgCells ($arr) {
-    foreach ($arr as $key => $val) {
-      if ($key == 'Name') {
-        echo "<td>".$val."</td>";
-        $pic = $this->GetImage($arr['ID']);
-        $num = $this->CountImage($arr['ID']);
-        echo "<td><img src='".SITEURL.PICT."toy70x70/".$pic.".jpg' alt='".$pic."' width='70' height='70' /><br />(".$num." фото)</td>";
-      }
-      elseif ($key == 'Catalog_ID') {
-        $mult = $this->db->ReceiveFieldOnCondition(MULTS, 'Name', 'ID', '=', $val);
-        echo "<td>".$mult[0]."</td>";
-      }
-      elseif ($key == 'Manufacture') {
-        echo "<td>".$val."<br />";
-      }
-      elseif ($key == 'Material') {
-        echo $val."<br />";
-      }
-      elseif ($key == 'Dimension') {
-        echo $val."<br />";
-      }
-      elseif ($key == 'Weight') {
-        echo $val."</td>";
-      }
-      else echo "<td>".$val."</td>";
-    }
+    $subst['%toyid%'] = $arr['ID'];
+    $subst['%toyname%'] = $arr['Name'];
+    $subst['%pictname%'] = $this->GetImage($arr['ID']);
+    $subst['%num%'] = $this->CountImage($arr['ID']);
+    $subst['%pictpath%'] = SITEURL.PICT;
+    $mult = $this->db->ReceiveFieldOnCondition(MULTS, 'Name', 'ID', '=', $arr['Catalog_ID']);
+    $subst['%multname%'] = $mult[0];
+    $subst['%description%'] = $arr['Description'];
+    $subst['%keywords%'] = $arr['Keywords'];
+    $subst['%toypriority%'] = $arr['Priority'];
+    $subst['%publishfrom%'] = $arr['PublishFrom'];
+    $subst['%toyrice%'] = $arr['Price'];
+    $subst['%quantity%'] = $arr['Quantity'];
+    $subst['%deadline%'] = $arr['Deadline'];
+    $subst['%manufacture%'] = $arr['Manufacture'];
+    $subst['%material%'] = $arr['Material'];
+    $subst['%dimension%'] = $arr['Dimension'];
+    $subst['%weight%'] = $arr['Weight'];
+    $subst['%toypopularity%'] = $arr['Popularity'];
+    return $subst;
   }
 
+  
+  
   //Получение полной информации из данной таблицы БД 
   public function GetTable() {
-    echo '<h2>Таблица - Все игрушки по популярности</h2>';
-    $stl = "style='font-size: 120%; font-weight: bold;'";
-    $stl0 = "style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'";
+    $admin_page = $this->general;
     $arr_table = $this->db->ReceiveFields($this->tbl, $this->allfields, 'Popularity', FALSE);
-    if (!$arr_table)     echo "<p>Таблица пуста</p><a href='product.php?act=add' ".$stl.">Добавить игрушку</a><br /><br />";
+    if (!$arr_table)     $admin_page .= $this->ReplaceTemplate(NULL, 'product_empty');
     else {
       $lines = count($arr_table);
-      echo "<a href='product.php?act=add' ".$stl.">Добавить игрушку</a><br /><br /><table name='toy' cellspacing='0' cellpadding='3' border='1'><colgroup><col span='13' /><col span='1' width='240px' /></colgroup><tr align='center' ".$stl0."><td>ID</td><td>Имя</td><td>Фото</td><td>Мульт.</td><td>Описание</td><td>Ключ. слова</td><td>Пр-тет</td><td>Дата пуб-ции</td><td>Цена</td><td>Есть</td><td>Срок</td><td>Страна<br />Материал<br />Размеры<br />Вес</td><td>Поп-сть</td><td></td></tr>";
+      $substtable['%table_name%'] = 'Все игрушки по популярности';
+      $substtable['%table_lines%'] = '';
       for ($i = 0; $i < $lines; $i++) {
-        echo "<tr align='center'>";
-        $this->GetImgCells($arr_table[$i]);
-        echo "<td><ol><li><a href='product.php?act=changeimg&id=".$arr_table[$i]['ID']."'>Заменить изображения</a></li><li><a href='product.php?act=edit&id=".$arr_table[$i]['ID']."'>Редактировать игрушку</a></li><li><a href='product.php?act=del&id=".$arr_table[$i]['ID']."'>Удалить игрушку</a></li></ol></td></tr>";
+        $substline = $this->GetImgCells($arr_table[$i]);
+        $substtable['%table_lines%'] .= $this->ReplaceTemplate($substline, 'product_table_line');
       }
-      echo "</table><br />";
+      $admin_page .= $this->ReplaceTemplate($substtable, 'product_table');
     }
+    $admin_page .= '</body></html>';
+    echo $admin_page;
   }
   
+  
+
   //Вывод информации требуемого вида из данной таблицы БД 
   public function GetTableOnField($field, $value) {
-    $stl = "style='font-size: 120%; font-weight: bold;'";
-    $stl0 = "style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'";
+    $admin_page = $this->general;
     if ($field == 'Catalog_ID') {
-      echo '<h2>Таблица - Все игрушки с выбранным мультфильмом</h2>';
       $arr_table = $this->db->ReceiveFewFieldsOnCondition($this->tbl, $this->allfields, $field, '=', $value);
-      if (!$arr_table)     echo "<p>Таблица пуста - мультфильм можно удалять</p><a href='catalog.php?act=del&id=".$value."'>Удалить выбранный мультфильм</a>";
+      if (!$arr_table) {
+        $substtable['%catalogid%'] = $value;
+        $admin_page .= $this->ReplaceTemplate($substtable, 'product_empty_1');
+      }
       else {
         $lines = count($arr_table);
-        echo "<table name='toy' cellspacing='0' cellpadding='3' border='1'><colgroup><col span='13' /><col span='1' width='240px' /></colgroup><tr align='center' ".$stl0."><td>ID</td><td>Имя</td><td>Фото</td><td>Мульт.</td><td>Описание</td><td>Ключ. слова</td><td>Пр-тет</td><td>Дата пуб-ции</td><td>Цена</td><td>Есть</td><td>Срок</td><td>Страна<br />Материал<br />Размеры<br />Вес</td><td>Поп-сть</td><td></td></tr>";
+        $substtable['%table_name%'] = 'Все игрушки с выбранным мультфильмом';
         for ($i = 0; $i < $lines; $i++) {
-          echo "<tr align='center'>";
-          $this->GetImgCells($arr_table[$i]);
-          echo "<td><ol><li><a href='product.php?act=changeimg&id=".$arr_table[$i]['ID']."'>Заменить изображения</a></li><li><a href='product.php?act=del&id=".$arr_table[$i]['ID']."'>Удалить игрушку</a></li></ol></td></tr>";
+          $substline = $this->GetImgCells($arr_table[$i]);
+          $substtable['%table_lines%'] .= $this->ReplaceTemplate($substline, 'product_table_line_1');
         }
-        echo "</table><br />";
+        $admin_page .= $this->ReplaceTemplate($substtable, 'product_table');
       }
     }
     elseif ($field == 'Image_ID') {
-      echo '<h2>Таблица - Все игрушки с выбранным изображением</h2>';
       $product_id = $this->db->ReceiveFieldOnCondition(LIMG, 'Product_ID', $field, '=', $value);
       $arr_table = $this->db->ReceiveFewFieldsOnCondition($this->tbl, $this->allfields, 'ID', '=', $product_id[0]);
-      if (!$arr_table)     echo "<p>Таблица пуста - фото можно удалять</p><a href='image.php?act=del&id=".$value."'>Удалить выбранное изображение</a>";
+      if (!$arr_table) {
+        $substtable['%imageid%'] = $value;
+        $admin_page .= $this->ReplaceTemplate($substtable, 'product_empty_2');
+      }
       else {
         $lines = count($arr_table);
-        echo "<table name='toy' cellspacing='0' cellpadding='3' border='1'><colgroup><col span='13' /><col span='1' width='240px' /></colgroup><tr align='center' ".$stl0."><td>ID</td><td>Имя</td><td>Фото</td><td>Мульт.</td><td>Описание</td><td>Ключ. слова</td><td>Пр-тет</td><td>Дата пуб-ции</td><td>Цена</td><td>Есть</td><td>Срок</td><td>Страна<br />Материал<br />Размеры<br />Вес</td><td>Поп-сть</td><td></td></tr>";
+        $substtable['%table_name%'] = 'Все игрушки с выбранным изображением';
         for ($i = 0; $i < $lines; $i++) {
-          echo "<tr align='center'>";
-          $this->GetImgCells($arr_table[$i]);
-          echo "<td><ol><li><a href='product.php?act=changeimg&id=".$arr_table[$i]['ID']."'>Заменить изображения</a></li><li><a href='product.php?act=del&id=".$arr_table[$i]['ID']."'>Удалить игрушку</a></li></ol></td></tr>";
+          $substline = $this->GetImgCells($arr_table[$i]);
+          $substtable['%table_lines%'] .= $this->ReplaceTemplate($substline, 'product_table_line_1');
         }
-        echo "</table><br />";
+        $admin_page .= $this->ReplaceTemplate($substtable, 'product_table');
       }
     }
+    $admin_page .= '</body></html>';
+    echo $admin_page;
   }
+  
+  
+  
   
   //Удаление записи в таблице БД
   public function DeleteItem($id){
-    echo '<h2>Эта запись будет удалена</h2>';
+    $admin_page = $this->general;
     $arr_table = $this->db->ReceiveFieldsOnId($this->tbl, $this->allfields, $id);
     if (!$arr_table)     exit('Нечего удалять');
-    $stl = "style='font-size: 120%; font-weight: bold;'";
-    $stl0 = "style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'";
-    echo "<table name='deleting' cellspacing='0' cellpadding='3' border='1'><tr align='center' ".$stl0."><td>ID</td><td>Название</td><td>Фото</td><td>Мульт.</td><td>Описание</td><td>Ключевые слова</td><td>Пр-тет</td><td>Дата публикации</td><td>Цена</td><td>Есть</td><td>Сроки</td><td>Страна<br />Материал<br />Размеры<br />Вес</td><td>Поп-сть</td></tr><tr align='center'>";
-    $this->GetImgCells($arr_table);
-    echo "</tr></table><br /><form name='deleting' action='deleting.php' method='post'><input type='hidden' name='del' value='".$id."' /><input type='hidden' name='choice' value='product' /><input type='submit' name='delete' value='Подтверждаю удаление' /></form><br /><form name='cancel' action='deleting.php' method='post'><input type='hidden' name='choice' value='product' /><input type='submit' name='cancel' value='Отмена' /></form>";
+    $substline = $this->GetImgCells($arr_table);
+    $admin_page .= $this->ReplaceTemplate($substline, 'product_delete');
+    $admin_page .= '</body></html>';
+    echo $admin_page;
   }
+  
+  
+  
+  
   
   //Изменение записи в таблице БД
   public function EditItem($id) {
-    echo '<h2>Изменение данных записи - игрушки</h2>';
+    $admin_page = $this->general;
     $arr_table = $this->db->ReceiveFieldsOnId($this->tbl, $this->allfields, $id);
-    $stl = "style='font-size: 120%; font-weight: bold;'";
-    echo "<table name='editing' cellspacing='0' cellpadding='5' border='1'><form name='editing' action='editing.php' method='post'>";
-    echo "<tr><td ".$stl.">ID</td><td><input type='text' name='ID' value='".$arr_table['ID']."' readonly /></td></tr><tr><td ".$stl.">Название</td><td><input type='text' name='Name' value='".$arr_table['Name']."' /></td></tr>";
+    $substedit['%toyid%'] = $arr_table['ID'];
+    $substedit['%toyname%'] = $arr_table['Name'];
     //Получение массива названий мультфильмов
     $arr_mult = $this->db->ReceiveIDFieldsOnCondition(MULTS, 'Name');
     $arr_mult['0'] = '';
-    
-    echo "<tr><td ".$stl.">Мультфильм</td><td><select name='Catalog_ID'>";
+    $substedit['%options%'] = '';
     foreach ($arr_mult as $key => $val) {
-      echo "<option value='".$key."'";
-      if ($key == $arr_table['Catalog_ID']) echo " selected";
-      echo ">".$val."</option>";
+      $subst['%catalogid%'] = $key;
+      $subst['%catalogname%'] = $val;
+      $subst['%selected%'] = '';
+      if ($key == $arr_table['Catalog_ID'])     $subst['%selected%'] = ' selected';
+      $substedit['%options%'] .= $this->ReplaceTemplate($subst, 'product_edit_mult');
     }
-    echo "</select></td></tr>";
-    
-    echo "<tr><td ".$stl.">Описание</td><td><input type='text' name='Description' value='".$arr_table['Description']."' size='100' /></td></tr><tr><td ".$stl.">Ключевые слова</td><td><input type='text' name='Keywords' value='".$arr_table['Keywords']."' size='50' /></td></tr><tr><td ".$stl.">Приоритет</td><td><input type='text' name='Priority' value='".$arr_table['Priority']."' /></td></tr><tr><td ".$stl.">Дата публикации</td><td><input type='text' id='pick' name='PublishFrom' value='".$arr_table['PublishFrom']."' /></td></tr><tr><td ".$stl.">Цена</td><td><input type='text' id='prc' name='Price' value='".$arr_table['Price']."'  onblur='checknum(".'"prc"'.")' /></td></tr><tr><td ".$stl.">В наличии</td><td><input type='text' name='Quantity' value='".$arr_table['Quantity']."' /></td></tr><tr><td ".$stl.">Сроки</td><td><input type='text' name='Deadline' value='".$arr_table['Deadline']."' /></td></tr><tr><td ".$stl.">Страна</td><td><input type='text' name='Manufacture' value='".$arr_table['Manufacture']."' /></td></tr><tr><td ".$stl.">Материал</td><td><input type='text' name='Material' value='".$arr_table['Material']."' /></td></tr><tr><td ".$stl.">Размеры</td><td><input type='text' name='Dimension' value='".$arr_table['Dimension']."' /></td></tr><tr><td ".$stl.">Вес</td><td><input type='text' id='wgt' name='Weight' value='".$arr_table['Weight']."' onblur='checknum(".'"wgt"'.")' /></td></tr><tr><td ".$stl.">Популярность</td><td><input type='text' name='Popularity' value='".$arr_table['Popularity']."' /></td></tr>";
-    echo "<tr><td colspan='2' align='right'><input type='hidden' name='choice' value='product' /><input type='submit' name='edit' value='Подтверждаю изменения' /></td></tr></form><tr><td colspan='2' align='right'><form name='cancel' action='editing.php' method='post'><input type='hidden' name='choice' value='product' /><input type='submit' name='cancel' value='Отмена' /></form></td></tr></table><br />";
+    $substedit['%description%'] = $arr_table['Description'];
+    $substedit['%keywords%'] = $arr_table['Keywords'];
+    $substedit['%toypriority%'] = $arr_table['Priority'];
+    $substedit['%publishfrom%'] = $arr_table['PublishFrom'];
+    $substedit['%toyprice%'] = $arr_table['Price'];
+    $substedit['%toyquantity%'] = $arr_table['Quantity'];
+    $substedit['%deadline%'] = $arr_table['Deadline'];
+    $substedit['%manufacture%'] = $arr_table['Manufacture'];
+    $substedit['%toymaterial%'] = $arr_table['Material'];
+    $substedit['%toydimension%'] = $arr_table['Dimension'];
+    $substedit['%toyweight%'] = $arr_table['Weight'];
+    $substedit['%toypopularity%'] = $arr_table['Popularity'];
+    $admin_page .= $this->ReplaceTemplate($substedit, 'product_edit');
+    $admin_page .= '</body></html>';
+    echo $admin_page;
   }
+  
+  
+  
+  
   
   //Замена изображения в записи
   public function ChangeImage($Product_ID) {
-    echo '<h2>Редактированите приоритетов или удаление картинок данной игрушки</h2>';
+    $admin_page = $this->general;
     //Получение массива изображений данной игрушки
     $arr_img = $this->db->ReceiveFewFieldsOnCondition(LIMG, $this->limgfields, 'Product_ID', '=', $Product_ID);
-    echo "<h3><a href='product.php?act=addimg&id=".$Product_ID."'>Добавить изображение</a></h3>";
-    if (!$arr_img)     echo "<p>Нет фото у данной игрушки</p><a href='product.php'>Вернуться к списку игрушек</a>";
+    $substimg['%productid%'] = $Product_ID;
+    if (!$arr_img)      $admin_page .= $this->ReplaceTemplate($substimg, 'product_img_empty');
     else {
-      echo "<form name='change' action='imgchtoy.php' method='post'>";
-      $stl = "style='display: inline-block; width: 170px; vertical-align: top; text-align: center;'";
-      $count = 0;
+      $substimg['%count%'] = 0;
+      $substimg['%imglist%'] = '';
       foreach ($arr_img as $num => $toyimage) {
-        $count++;
-        echo "<div ".$stl.">";
-        foreach ($toyimage as $key => $val) {
-          if ($key == 'ID')     echo "<input type='hidden' name='ID-".$num."' value='".$val."' />";
-          if ($key == 'Image_ID') {
-            if ($val == 0)    $pic[0] = 'emptytoy';
-            else    $pic = $this->db->ReceiveFieldOnCondition(IMG, 'FileName', 'ID', '=', $val);
-            echo "<img src='".SITEURL.PICT."toy70x70/".$pic[0].".jpg' alt='".$pic[0]."' width='70' height='70' /><input type='hidden' name='Image_ID-".$num."' value='".$val."' /><br />";
-          }
-          if ($key == 'Priority')     echo "<input type='text' name='Priority-".$num."' value='".$val."' size='5' />&nbsp;Приор.<br />";
+        $substimg['%count%']++;
+        $subst['%num%'] = $num;
+        $subst['%limgid%'] = $toyimage['ID'];
+        $subst['%imageid%'] = $toyimage['Image_ID'];
+        $subst['%imageid%'] = $toyimage['Image_ID'];
+        $subst['%pictpath%'] = SITEURL.PICT;
+        if ($toyimage['Image_ID'] == 0)    $subst['%pictname%'] = 'emptytoy';
+        else {
+          $pic = $this->db->ReceiveFieldOnCondition(IMG, 'FileName', 'ID', '=', $toyimage['Image_ID']);
+          $subst['%pictname%'] = $pic[0];
         }
-        echo "<input type='checkbox' name='del-".$num."' />Удалить";  
-        echo "</div>";
+        $subst['%priority%'] = $toyimage['Priority'];
+        $substimg['%imglist%'] .= $this->ReplaceTemplate($subst, 'product_imglist');
       }
-      echo "<br /><br /><input type='hidden' name='count' value='".$count."' /><input type='submit' name='changing' value='Подтверждаю изменения' /></form><br /><form name='cancel' action='imgchtoy.php' method='post'><input type='submit' name='cancel' value='Отмена' /></form>";
-    }  
+      $admin_page .= $this->ReplaceTemplate($substimg, 'product_img_change');
+    }
+    $admin_page .= '</body></html>';
+    echo $admin_page;
   }
-    
+  
+  
+  
+  
+  
   //Добавление изображения в запись
   public function AddImage($Product_ID) {
-    echo '<h2>Добавление картинок к данной игрушке</h2>';
+    $admin_page = $this->general;
     //Получение массива изображений игрушек
     $field_list = array('ID', 'FileName');
     $arr_img = $this->db->ReceiveFewFieldsOnCondition(IMG, $field_list, 'Kind', ' LIKE ', 'Игр%');
-    if (!$arr_img)     echo "<p>Не из чего выбирать</p><a href='image.php'>К списку изображений</a>";
-    $stl = "style='display: inline-block; width: 150px; vertical-align: top; text-align: center;'";
-    echo "<form name='change' action='imgchtoy.php' method='post'><div id='toys'>";
-    foreach ($arr_img as $row) {
-      $img_id = $row['ID'];
-      $pic = $row['FileName'];
-      echo "<div ".$stl."><img id='".$img_id."'src='".SITEURL.PICT."toy70x70/".$pic.".jpg' alt='".$pic."' width='70' height='70' onclick='gettoyimg(".$img_id.")' /></div>";
+    if (!$arr_img)     $admin_page .= $this->ReplaceTemplate(NULL, 'product_img_empty_1');
+    else {
+      $substimg['%toyid%'] = $Product_ID;
+      $substimg['%imglist%'] = '';
+      foreach ($arr_img as $row) {
+        $subst['%pictid%'] = $row['ID'];
+        $subst['%pictname%'] = $row['FileName'];
+        $subst['%pictpath%'] = SITEURL.PICT;
+        $substimg['%imglist%'] .= $this->ReplaceTemplate($subst, 'product_imglist_1');
+      }
+      $admin_page .= $this->ReplaceTemplate($substimg, 'product_img_add');
     }
-    echo "</div><br /><input type='text' name='Priority' value='0' size='5' /> - Приоритет<br />";
-    
-    echo "<br /><input type='hidden' name='toy_id' value='".$Product_ID."' /><input id='imageid' type='hidden' name='toyimg_id' value='' /><input type='submit' name='adding' value='Подтверждаю выбор изображения' /></form><br /><form name='cancel' action='imgchtoy.php' method='post'><input type='submit' name='cancel' value='Отмена' /></form>";
+    $admin_page .= '</body></html>';
+    echo $admin_page;
   }
-    
+  
+  
+
+  
+  
+  
   //Добавление новой записи в таблицу БД
   public function InsertItem() {
-    echo '<h2>Новая запись - игрушка</h2>';
-    $stl = "style='font-size: 120%; font-weight: bold;'";
-    echo "<table name='adding' cellspacing='0' cellpadding='5' border='1'><form name='adding' action='adding.php' method='post' onSubmit='return mustbe()'>";
-    echo "<tr><td ".$stl.">Название</td><td><input id='req1' type='text' name='Name' value='' /> (* - обязательно)</td></tr>";
+    $admin_page = $this->general;
     //Получение массива названий мультфильмов
     $arr_mult = $this->db->ReceiveIDFieldsOnCondition(MULTS, 'Name');
     $arr_mult['0'] = '';
-    
-    echo "<tr><td ".$stl.">Мультфильм</td><td><select name='Catalog_ID'>";
+    $substedit['%options%'] = '';
     foreach ($arr_mult as $key => $val) {
-      echo "<option value='".$key."'";
-      if ($key == '0') echo " selected";
-      echo ">".$val."</option>";
+      $subst['%catalogid%'] = $key;
+      $subst['%catalogname%'] = $val;
+      if ($key == '0') $subst['%selected%'] = " selected";
+      $substedit['%options%'] .= $this->ReplaceTemplate($subst, 'product_edit_mult');
     }
-    echo "</select></td></tr>";
-    
-    echo "<tr><td ".$stl.">Описание</td><td><input type='text' name='Description' value='' size='100' /></td></tr><tr><td ".$stl.">Ключевые слова</td><td><input type='text' name='Keywords' value='' size='50' /></td></tr><tr><td ".$stl.">Приоритет</td><td><input type='text' name='Priority' value='' /></td></tr><tr><td ".$stl.">Дата публикации</td><td><input type='text' id='pick' name='PublishFrom' value='' /></td></tr><tr><td ".$stl.">Цена</td><td><input type='text' id='prc' name='Price' value=''  onblur='checknum(".'"prc"'.")' /></td></tr><tr><td ".$stl.">В наличии</td><td><input type='text' name='Quantity' value='' /></td></tr><tr><td ".$stl.">Сроки</td><td><input type='text' name='Deadline' value='' /></td></tr><tr><td ".$stl.">Страна</td><td><input type='text' name='Manufacture' value='' /></td></tr><tr><td ".$stl.">Материал</td><td><input type='text' name='Material' value='' /></td></tr><tr><td ".$stl.">Размеры</td><td><input type='text' name='Dimension' value='' /></td></tr><tr><td ".$stl.">Вес</td><td><input type='text' id='wgt' name='Weight' value='' onblur='checknum(".'"wgt"'.")' /></td></tr><tr><td ".$stl.">Популярность</td><td><input type='text' name='Popularity' value='' /></td></tr>";
-    echo "<tr><td colspan='2' align='right'><input type='hidden' name='choice' value='product' /><input type='submit' name='add' value='Подтверждаю добавление' /></td></tr></form><tr><td colspan='2' align='right'><form name='cancel' action='adding.php' method='post'><input type='hidden' name='choice' value='product' /><input type='submit' name='cancel' value='Отмена' /></form></td></tr></table><br />";
+    $admin_page .= $this->ReplaceTemplate($substedit, 'product_edit');
+    $admin_page .= '</body></html>';
+    echo $admin_page;
   }
   
 }

@@ -1,0 +1,32 @@
+/*Только в поиске*/
+#searchres table {
+	background-color: #FDFDFD;
+  width: 100%;
+}
+
+#searchres div {
+	background-color: #FDFDFD;
+	border: 10px solid #FDFDFD;
+	border-radius: 10px;
+  width: 80%;
+  margin: 0 auto;
+}
+
+#searchres table td, #empty {
+	font-family: 'Comic Sans MS', Verdana, 'Lucida Sans Unicode';
+}
+
+#searchres table td a {
+  text-decoration: underline;
+  color: blue;
+} 
+
+#searchres table td span {
+  background-color: yellow;
+}
+
+#empty {
+  font-size: 125%;
+  font-weight: bold;
+  text-align: center;
+}

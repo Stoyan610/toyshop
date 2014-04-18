@@ -65,6 +65,7 @@ switch ($table) {
     exit;
   }
   case '': {
+    header('Location: order.php');
     break;
   } 
   default: {
@@ -73,7 +74,7 @@ switch ($table) {
   }
 }
 
-//Подключение html файла для подключения таблиц
+?>�а для подключения таблиц
 require_once 'half_index.php';
 
 ?>

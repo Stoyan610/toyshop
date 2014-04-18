@@ -1,8 +1,8 @@
 <div id='search'>
-	<form name='search' action='index.php?page=search' method='get'>
+	<form name='search' action='index.php' method='get'>
 		<table width='100%' cellpadding='1px' cellspacing='0' border='0'>
 			<tr valign='middle'>
-				<td align='right'><input id='invitation' type='text' name='phrase' value='Напиши, что найти...' size='30' onfocus='erasing()' /></td>
+        <td align='right'><input type='hidden' name='page' value='search'><input id='invitation' type='text' name='phrase' value='Напиши, что найти...' size='30' onfocus='erasing()' /></td>
 				<td><input id='pluto' type='image' name='send' src='%site_url%pictures/plutorests.png' value='' /></td>
 			</tr>
 		</table>

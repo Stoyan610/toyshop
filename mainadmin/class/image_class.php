@@ -16,43 +16,48 @@ class Images extends Admin {
   
   //Вывод преложения для получения требуемой информации из данной таблицы БД 
   public function GetTable() {
-    $stl = "style='font-size: 120%; font-weight: bold;'";
-    echo "<a href='image.php?act=add' ".$stl.">Добавить изображение</a><br /><br /><form name='getkind' action='image.php' method='get'><table name='getkind' cellspacing='0' cellpadding='5' border='1'>";
-    echo "<tr><td ".$stl.">Выбор типа изображений<br />для вывода в таблице</td><td><input type='radio' name='act' value='get_cat' />Мультфильмы<br /><input type='radio' name='act' value='get_prod' />Игрушки<br /><input type='radio' name='act' value='get_all' checked/>Все изображения</td></tr>";
-    echo "<tr><td colspan='2' align='right'><input type='submit' name='gettable' value='Выбор сделан' /></td></tr></table></form><br />";
+    $admin_page = $this->general;
+    $admin_page .= $this->ReplaceTemplate(NULL, 'image_tablechoice');
+    $admin_page .= '</body></html>';
+    echo $admin_page;
   }
   
   //Вывод информации требуемого вида из данной таблицы БД 
   public function GetTableOnKind($kind) {
-    echo '<h2>Таблица - Все изображения по выбору "'.$kind.'"</h2>';
-    $stl = "style='font-size: 120%; font-weight: bold;'";
-    echo "<a href='image.php?act=add' ".$stl.">Добавить изображение</a><br /><br />";
+    $admin_page = $this->general;
+    $substimage['%imagekind%'] = $kind;
     $arr_table = $this->db->ReceiveFewFieldsOnCondition($this->tbl, $this->allfields, 'Kind', ' LIKE ', $kind.'%');
-    if (!$arr_table)     echo "<p>Таблица пуста - изображений нет</p>";
+    if (!$arr_table)     $admin_page .= $this->ReplaceTemplate($substimage, 'image_empty');
     else {
       $lines = count($arr_table);
-      echo "<table name='picture' cellspacing='0' cellpadding='3' border='1'><colgroup><col span='9' /><col span='1' width='240px' /></colgroup><tr align='center' style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'><td>ID</td><td>Тип</td><td>Изображение</td><td>Имя файла</td><td>Ширина</td><td>Высота</td><td>Описание</td><td></td></tr>";
+      $substimage['%imagelines%'] = '';
       for ($i = 0; $i < $lines; $i++) {
-        echo "<tr align='center'>";
-        foreach ($arr_table[$i] as $key => $val) {
-          echo "<td>".$val."</td>";
-          if ($key == 'Kind') {
-            if ($val == 'Игрушка') {
-              $pic = $arr_table[$i]['FileName'];
-              echo "<td><img src='".SITEURL.PICT."toy70x70/".$pic.".jpg' alt='".$pic."' width='70' height='70' /></td>";
-            }
-             else {
-               $pic = $arr_table[$i]['FileName'];
-               echo "<td><img src='".SITEURL.PICT."mult114x86/".$pic.".jpg' alt='".$pic."' width='114' height='86' /></td>";
-             }
-          }
+        $subst['%imageid%'] = $arr_table[$i]['ID'];
+        $subst['%imagekind%'] = $arr_table[$i]['Kind'];
+        $subst['%pictname%'] = $arr_table[$i]['FileName'];
+        if ($arr_table[$i]['Kind'] == 'Игрушка') {
+          $subst['%pictpath%'] = SITEURL.PICT.'toy70x70/';
+          $subst['%minwidth%'] = 70;
+          $subst['%minheight%'] = 70;
         }
-        echo "<td><ol><li><a href='image.php?act=edit&id=".$arr_table[$i]['ID']."'>Редактировать изображение</a></li><li><a href='image.php?act=del&id=".$arr_table[$i]['ID']."'>Удалить изображение</a></li></ol></td></tr>";
+        else {
+          $subst['%pictpath%'] = SITEURL.PICT.'mult114x86/';
+          $subst['%minwidth%'] = 114;
+          $subst['%minheight%'] = 86;
+        }
+        $subst['%imagewidth%'] = $arr_table[$i]['Width'];
+        $subst['%imageheight%'] = $arr_table[$i]['Height'];
+        $subst['%imagealt%'] = $arr_table[$i]['Alt'];
+        if ($this->WhetherActive($subst['%imageid%'], $subst['%imagekind%']))     $subst['%imageactive%'] = 'Не задействовано';
+        else     $subst['%imageactive%'] = 'Используется';
+        $substimage['%imagelines%'] .= $this->ReplaceTemplate($subst, 'image_table_line');
       }
-      echo "</table><br />";
+      $admin_page .= $this->ReplaceTemplate($substimage, 'image_table');
     }
+    $admin_page .= '</body></html>';
+    echo $admin_page;
   }
-
+ 
   //Проверка изображения на независимость от активных ссылок
   private function WhetherActive($id, $kind) {
     $today = time();
@@ -84,61 +89,73 @@ class Images extends Admin {
   
   //Удаление записи в таблице БД
   public function DeleteItem($id){
-    echo '<h2>Это изображение будет удалено</h2>';
+    $admin_page = $this->general;
     $arr_table = $this->db->ReceiveFieldsOnId($this->tbl, $this->allfields, $id);
     if (!$arr_table)     exit('Нечего удалять - такого изображения нет');
-    $pic = $arr_table['FileName'];
     $kind = $arr_table['Kind'];
-    if ($this->WhetherActive($id, $kind)) {
-      echo "<table name='delpic' cellspacing='0' cellpadding='3' border='1'><tr align='center' style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'><td>ID</td><td>Тип</td><td>Изображение</td><td>Имя файла</td><td>Ширина</td><td>Высота</td><td>Описание</td></tr><tr align='center'>";
-      foreach ($arr_table as $key => $val) {
-        echo "<td>".$val."</td>";
-        if (($key == 'Kind') && ($kind == 'Игрушка'))      echo "<td><img src='".SITEURL.PICT."toy135x135/".$pic.".jpg' alt='".$pic."' width='135' height='135' /></td>";
-        elseif (($key == 'Kind') && ($kind != 'Игрушка'))     echo "<td><img src='".SITEURL.PICT."mult114x86/".$pic.".jpg' alt='".$pic."' width='114' height='86' /></td>";
-      }
-        echo "</tr></table><br /><form name='delete' action='delimage.php' method='post'><input type='hidden' name='del' value='".$id."' /><input type='submit' name='delete' value='Подтверждаю удаление' /></form><br /><form name='cancel' action='delimage.php' method='post'><input type='submit' name='cancel' value='Отмена' /></form>";
+    $subst['%imageid%'] = $id;
+    $subst['%imagekind%'] = $kind;
+    $subst['%pictname%'] = $arr_table['FileName'];
+    if ($kind == 'Игрушка') {
+      $subst['%pictpath%'] = SITEURL.PICT.'toy135x135/';
+      $subst['%minwidth%'] = 135;
+      $subst['%minheight%'] = 135;
+    }
+    else {
+      $subst['%pictpath%'] = SITEURL.PICT.'mult114x86/';
+      $subst['%minwidth%'] = 114;
+      $subst['%minheight%'] = 86;
+    }
+    $subst['%imagewidth%'] = $arr_table['Width'];
+    $subst['%imageheight%'] = $arr_table['Height'];
+    $subst['%imagealt%'] = $arr_table['Alt'];
+    if ($this->WhetherActive($id, $kind))     $admin_page .= $this->ReplaceTemplate ($subst, 'image_delete');
+    else {
+      if ($kind == 'Игрушка') {
+        $subst['%resphref%'] = "product.php?act=part&field=Image_ID&value=".$id;
+        $subst['%respitem%'] = 'игрушек';
       }
       else {
-        echo "<p>К сожалению, удалить изображение <b>`".$arr_table['Alt']."`</b> невозможно, так как с ним связаны активные мультфильмы или игрушки</p>";
-        if ($kind == 'Игрушка')     echo "<a href='product.php?act=part&field=Image_ID&value=".$id."'>Показать список соответствующих игрушек?</a> ";
-        else    echo "<a href='catalog.php?act=part&Image_ID=".$id."'>Показать список соответствующих мультфильмов?</a> или<br /><a href='image.php'>Вернуться к списку изображений?</a>";
+        $subst['%resphref%'] = "catalog.php?act=part&Image_ID=".$id;
+        $subst['%respitem%'] = 'мультфильмов';
       }
+      $admin_page .= $this->ReplaceTemplate ($subst, 'image_del_impos');
+    }
+    $admin_page .= '</body></html>';
+    echo $admin_page;
   }
-  
+   
   //Добавление новой записи в таблицу БД
   public function InsertItem() {
-    echo '<h2>Новая запись - изображение</h2>';
-    echo "<table name='addpicture' cellspacing='0' cellpadding='5' border='1'>";
-    echo "<form name='addimage' action='addimage.php' method='post' enctype='multipart/form-data' onSubmit='return mustbeimg()'>";
-    $stl = "style='font-size: 120%; font-weight: bold;'";
-    //Выбрать файл
-    echo "<tr><td ".$stl.">Загружаемый файл<br />(только формата jpg)</td><td><input id='file' type='file' name='ImageFile' onchange='checkjpg()' /></td></tr>";
-    echo "<tr><td ".$stl.">Тип изображения</td><td><input type='radio' name='Type' value='Мультфильм' checked />Постер мультфильма<br /><input type='radio' name='Type' value='Игрушка' />Фото игрушки</td></tr><tr><td ".$stl.">Описание</td><td><input id='alt' type='text' name='Alt' value='' /> (* - обязательно)</td></tr><tr><td ".$stl.">Имя файла изображения<br />(латиницей)</td><td><input id='filename' type='text' name='FileName' value='' /> (* - обязательно)</td></tr>";
-    echo "<tr><td colspan='2' align='right'><input onmouseover='valid()' type='submit' name='add' value='Подтверждаю добавление' /></td></tr></form><tr><td colspan='2' align='right'><form name='cancel' action='addimage.php' method='post'><input type='submit' name='cancel' value='Отмена' /></form></td></tr></table><br />";
+    $admin_page = $this->general;
+    $admin_page .= $this->ReplaceTemplate(NULL, 'image_insert');
+    $admin_page .= '</body></html>';
+    echo $admin_page;
   }
   
   //Изменение записи в таблице БД
   public function EditItem($id) {
-    echo '<h2>Изменение записи - изображения</h2>';
+    $admin_page = $this->general;
     $arr_table = $this->db->ReceiveFieldsOnId($this->tbl, $this->allfields, $id);
     if (!$arr_table)     exit('Нечего редактировать - такого изображения нет');
-    $pic = $arr_table['FileName'];
     $kind = $arr_table['Kind'];
-    echo "<table name='editing' cellspacing='0' cellpadding='3' border='1'><tr align='center' style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'><td>ID</td><td>Тип изображения</td><td>Изображение</td><td>Описание</td><td></td><td></td></tr><tr align='center'><form name='editing' action='editing.php' method='post'>";
-    foreach ($arr_table as $key => $val) {
-      if ($key == 'ID') {
-        echo "<td>".$val."<input type='hidden' name='ID' value='".$val."' /></td>";
-      }
-      if ($key == 'Kind') {
-        echo "<td>".$val."</td>";
-        if ($kind == 'Игрушка')      echo "<td><img src='".SITEURL.PICT."toy135x135/".$pic.".jpg' alt='".$pic."' width='135' height='135' /></td>";
-        else     echo "<td><img src='".SITEURL.PICT."mult114x86/".$pic.".jpg' alt='".$pic."' width='114' height='86' /></td>";
-      }
-      if ($key == 'Alt') {
-        echo "<td><input type='text' name='Alt' value='".$val."' size='100' /></td>";
-      }
+    $subst['%imageid%'] = $id;
+    $subst['%imagekind%'] = $kind;
+    $subst['%pictname%'] = $arr_table['FileName'];
+    if ($kind == 'Игрушка') {
+      $subst['%pictpath%'] = SITEURL.PICT.'toy135x135/';
+      $subst['%minwidth%'] = 135;
+      $subst['%minheight%'] = 135;
     }
-    echo "<td><input type='hidden' name='choice' value='image' /><input type='submit' name='edit' value='Подтверждаю изменения' /></td></form><td><form name='cancel' action='editing.php' method='post'><input type='hidden' name='choice' value='image' /><input type='submit' name='cancel' value='Отмена' /></form></td></tr></table><br />";
+    else {
+      $subst['%pictpath%'] = SITEURL.PICT.'mult114x86/';
+      $subst['%minwidth%'] = 114;
+      $subst['%minheight%'] = 86;
+    }
+    $subst['%imagealt%'] = $arr_table['Alt'];
+    $admin_page .= $this->ReplaceTemplate ($subst, 'image_edit');
+    $admin_page .= '</body></html>';
+    echo $admin_page;
   }
   
 }

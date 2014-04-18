@@ -27,115 +27,139 @@ class Catalog extends Admin {
     return $img;
   }
   
-  //Подпрограмма выведения ячеек с маленьким изображением мультфильмов
-  private function GetImgCells ($arr) {
-    foreach ($arr as $key => $val) {
-      if ($key == 'Image_ID') {
-        $pic = $this->GetImage($arr['Image_ID']);
-        echo "<td><img src='".SITEURL.PICT."mult114x86/".$pic.".jpg' alt='".$pic."' width='114' height='86' /></td>";
-      }
-      else echo "<td>".$val."</td>";
-    }
+  protected function GetTableLine($arr) {
+    $subst = array();
+    $subst['%catalogid%'] = $arr['ID'];
+    $subst['%catalogname%'] = $arr['Name'];
+    $subst['%description%'] = $arr['Description'];
+    $subst['%toycount%'] = $this->db->СountDataOnCondition(TOYS, 'Catalog_ID', '=', $subst['%catalogid%']);
+    $subst['%keywords%'] = $arr['Keywords'];
+    $subst['%pictpath%'] = SITEURL.PICT;
+    $subst['%pictname%'] = $this->GetImage($arr['Image_ID']);
+    $subst['%priority%'] = $arr['Priority'];
+    $subst['%publishfrom%'] = $arr['PublishFrom'];
+    return $subst;
   }
   
   //Получение полной информации из данной таблицы БД 
   public function GetTable() {
-    echo '<h2>Таблица - Все мультфильмы по приоритету</h2>';
+    $admin_page = $this->general;
     $arr_table = $this->db->ReceiveFields($this->tbl, $this->allfields,'Priority', FALSE);
-    if (!$arr_table)     echo "<p>Таблица пуста</p><a href='catalog.php?act=add' style='font-size: 120%; font-weight: bold;'>Добавить мультфильм</a><br /><br />";
+    if (!$arr_table)     $admin_page .= $this->ReplaceTemplate(NULL, 'catalog_empty');
     else {
       $lines = count($arr_table);
-      echo "<a href='catalog.php?act=add' style='font-size: 120%; font-weight: bold;'>Добавить мультфильм</a><br /><br /><table name='mult' cellspacing='0' cellpadding='3' border='1'><colgroup><col span='7' /><col span='1' width='240px' /></colgroup><tr align='center' style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'><td>ID</td><td>Название</td><td>Описание</td><td>Ключевые слова</td><td>Изображение</td><td>Приоритет</td><td>Дата публикации</td><td></td></tr>";
+      $substtable['%table_name%'] = 'Все мультфильмы по приоритету';
+      $substtable['%table_lines%'] = '';
       for ($i = 0; $i < $lines; $i++) {
-        echo "<tr align='center'>";
-        $this->GetImgCells($arr_table[$i]);
-        echo "<td><ol><li><a href='catalog.php?act=changeimg&id=".$arr_table[$i]['ID']."'>Заменить изображение</a></li><li><a href='catalog.php?act=edit&id=".$arr_table[$i]['ID']."'>Редактировать мультфильм</a></li><li><a href='catalog.php?act=del&id=".$arr_table[$i]['ID']."'>Удалить мультфильм</a></li></ol></td></tr>";
+        $substline = $this->GetTableLine($arr_table[$i]);
+        $substtable['%table_lines%'] .= $this->ReplaceTemplate($substline, 'catalog_table_line');
       }
-      echo "</table><br />";
+      $admin_page .= $this->ReplaceTemplate($substtable, 'catalog_table');
     }
-  }
- 
-  //Вывод информации требуемого вида из данной таблицы БД 
-  public function GetTableOnImage($Image_ID) {
-    echo '<h2>Таблица - Все мультфильмы с выбранным изображением</h2>';
-    $arr_table = $this->db->ReceiveFewFieldsOnCondition($this->tbl, $this->allfields, 'Image_ID', '=', $Image_ID);
-    if (!$arr_table)     echo "<p>Таблица пуста - изображение можно удалять</p><a href='image.php?act=del&id=".$Image_ID."'>Удалить выбранное изображение</a>";
-    else {
-      $lines = count($arr_table);
-      echo "<table name='multonpic' cellspacing='0' cellpadding='3' border='1'><colgroup><col span='7' /><col span='1' width='240px' /></colgroup><tr align='center' style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'><td>ID</td><td>Название</td><td>Описание</td><td>Ключевые слова</td><td>Изображение</td><td>Приоритет</td><td>Дата публикации</td><td></td></tr>";
-      for ($i = 0; $i < $lines; $i++) {
-        echo "<tr align='center'>";
-        $this->GetImgCells($arr_table[$i]);
-        echo "<td><ol><li><a href='catalog.php?act=changeimg&id=".$arr_table[$i]['ID']."'>Заменить изображение</a></li><li><a href='catalog.php?act=del&id=".$arr_table[$i]['ID']."'>Удалить мультфильм</a></li></ol></td></tr>";
-      }
-      echo "</table><br />";
-    }
+    $admin_page .= '</body></html>';
+    echo $admin_page;
   }
   
-  //Проверка мультфильма на независимость от ссылок
-  private function WhetherProduct($id) {
-    return $this->db->ReceiveIDFieldsOnCondition(TOYS, 'Name', '`Catalog_ID` = '.$id);
+  //Вывод информации требуемого вида из данной таблицы БД 
+  public function GetTableOnImage($Image_ID) {
+    $admin_page = $this->general;
+    $arr_table = $this->db->ReceiveFewFieldsOnCondition($this->tbl, $this->allfields, 'Image_ID', '=', $Image_ID);
+    if (!$arr_table) {
+      $substimage['%delid%'] = $Image_ID;
+      $admin_page .= $this->ReplaceTemplate($substimage, 'catalog_empty_1');
+    }
+    else {
+      $lines = count($arr_table);
+      $substtable['%table_name%'] = 'Все мультфильмы с выбранным изображением';
+      $substtable['%table_lines%'] = '';
+      for ($i = 0; $i < $lines; $i++) {
+        $substline = $this->GetTableLine($arr_table[$i]);
+        $substtable['%table_lines%'] .= $this->ReplaceTemplate($substline, 'catalog_table_line_1');
+      }
+      $admin_page .= $this->ReplaceTemplate($substtable, 'catalog_table');
+    }
+    $admin_page .= '</body></html>';
+    echo $admin_page;
   }
   
   //Удаление записи в таблице БД
   public function DeleteItem($id){
-    echo '<h2>Эта запись будет удалена</h2>';
+    $admin_page = $this->general;
     $arr_table = $this->db->ReceiveFieldsOnId($this->tbl, $this->allfields, $id);
-    if (!$this->WhetherProduct($id)) {
+    //Проверка мультфильма на независимость от ссылок
+    $check = $this->db->ReceiveIDFieldsOnCondition(TOYS, 'Name', '`Catalog_ID` = '.$id);
+    if (!$check) {
       if (!$arr_table)     exit('Нечего удалять');
-      echo "<table name='deleting' cellspacing='0' cellpadding='3' border='1'><tr align='center' style='background-color: #88DD7B; font-size: 120%; font-weight: bold;'><td>ID</td><td>Название</td><td>Описание</td><td>Ключевые слова</td><td>Изображение</td><td>Приоритет</td><td>Дата публикации</td></tr><tr align='center'>";
-      $this->GetImgCells($arr_table);
-      echo "</tr></table><br /><form name='deleting' action='deleting.php' method='post'><input type='hidden' name='del' value='".$id."' /><input type='hidden' name='choice' value='catalog' /><input type='submit' name='delete' value='Подтверждаю удаление' /></form><br /><form name='cancel' action='deleting.php' method='post'><input type='hidden' name='choice' value='catalog' /><input type='submit' name='cancel' value='Отмена' /></form>";
+      $subst = $this->GetTableLine($arr_table);
+      $admin_page .= $this->ReplaceTemplate($subst, 'catalog_delete');
     }
-    else     echo "<p>К сожалению, удалить мультфильм  `".$arr_table['Name']."`  невозможно, так как с ним связаны существующие игрушки</p><a href='product.php?act=part&field=Catalog_ID&value=".$id."'>Показать список соответствующих игрушек?</a> или <a href='catalog.php'>Вернуться к списку мультфильмов?</a>";
+    else {
+      $subst['%catalogname%'] = $arr_table['Name'];
+      $subst['%catalogid%'] = $arr_table['ID'];
+      $admin_page .= $this->ReplaceTemplate($subst, 'catalog_del_impos');
+    }
+    $admin_page .= '</body></html>';
+    echo $admin_page;
   }
   
   //Изменение записи в таблице БД
   public function EditItem($id) {
-    echo '<h2>Изменение данных записи - мультфильма</h2>';
+    $admin_page = $this->general;
     $arr_table = $this->db->ReceiveFieldsOnId($this->tbl, $this->allfields, $id);
-    $stl = "style='font-size: 120%; font-weight: bold;'";
-    echo "<table name='editing' cellspacing='0' cellpadding='5' border='1'><form name='editing' action='editing.php' method='post'>";
-    echo "<tr><td ".$stl.">ID</td><td><input type='text' name='ID' value='".$arr_table['ID']."' readonly /></td></tr><tr><td ".$stl.">Название</td><td><input type='text' name='Name' value='".$arr_table['Name']."' /></td></tr><tr><td ".$stl.">Описание</td><td><input type='text' name='Description' value='".$arr_table['Description']."' size='100' /></td></tr><tr><td ".$stl.">Ключевые слова</td><td><input type='text' name='Keywords' value='".$arr_table['Keywords']."' size='50' /></td></tr><tr><td ".$stl.">Приоритет</td><td><input type='text' name='Priority' value='".$arr_table['Priority']."' /></td></tr><tr><td ".$stl.">Дата публикации</td><td><input type='text' id='pick' name='PublishFrom' value='".$arr_table['PublishFrom']."' /></td></tr>";
-    echo "<tr><td colspan='2' align='right'><input type='hidden' name='choice' value='catalog' /><input type='submit' name='edit' value='Подтверждаю изменения' /></td></tr></form><tr><td colspan='2' align='right'><form name='cancel' action='editing.php' method='post'><input type='hidden' name='choice' value='catalog' /><input type='submit' name='cancel' value='Отмена' /></form></td></tr></table><br />";
+    $subst['%title%'] = 'Изменение данных записи - мультфильма';
+    $subst['%catalogid%'] = $arr_table['ID'];
+    $subst['%catalogname%'] = $arr_table['Name'];
+    $subst['%description%'] = $arr_table['Description'];
+    $subst['%keywords%'] = $arr_table['Keywords'];
+    $subst['%priority%'] = $arr_table['Priority'];
+    $subst['%publishfrom%'] = $arr_table['PublishFrom'];
+    $admin_page .= $this->ReplaceTemplate($subst, 'catalog_edit');
+    $admin_page .= '</body></html>';
+    echo $admin_page;
   }
-   
+  
   //Замена изображения в записи
   public function ChangeImage($id) {
+    $admin_page = $this->general;
     //Получение массива изображений мультфильмов
     $arr_img = $this->db->ReceiveFewFieldsOnCondition(IMG, $this->smallfields, 'Kind', ' LIKE ', 'Мульт%');
-    if (!$arr_img)     echo "<p>Не из чего выбирать</p><a href='catalog.php'>Вернуться к списку мультфильмов</a>";
-    $stl = "style='display: inline-block; width: 150px; height: 160px; vertical-align: top; text-align: center;'";
-    echo "<form name='change' action='imgchmult.php' method='post'>";
-    foreach ($arr_img as $row) {
-      $img_id = $row['ID'];
-      $pic = $row['FileName'];
-      echo "<div ".$stl."><img src='".SITEURL.PICT."mult114x86/".$pic.".jpg' alt='".$pic."' width='114' height='86' /><br /><input type='radio' name='img' value='".$img_id."' />".$row['Alt']."</div>";
+    if (!$arr_img)     $admin_page .= $this->ReplaceTemplate(NULL, 'catalog_image_empty');
+    else {
+      $substimage['%imageline%'] = '';
+      foreach ($arr_img as $row) {
+        $substline['%pictid%'] = $row['ID'];
+        $substline['%pictname%'] = $row['FileName'];
+        $substline['%pictpath%'] = SITEURL.PICT;
+        $substline['%pictalt%'] = $row['Alt'];
+        $substimage['%imageline%'] .= $this->ReplaceTemplate($substline, 'catalog_image_line');
+      }
+      $substimage['%imageid%'] = $id;
+      $admin_page .= $this->ReplaceTemplate($substimage, 'catalog_image');
     }
-    echo "<br /><input type='hidden' name='mult_id' value='".$id."' /><input type='submit' name='changing' value='Подтверждаю выбор изображения' /></form><br /><form name='cancel' action='imgchmult.php' method='post'><input type='submit' name='cancel' value='Отмена' /></form>";
+    $admin_page .= '</body></html>';
+    echo $admin_page;
   }
   
   //Добавление новой записи в таблицу БД
   public function InsertItem() {
-    echo '<h2>Новая запись - мультфильм</h2>';
-    $stl = "style='font-size: 120%; font-weight: bold;'";
-    echo "<table name='adding' cellspacing='0' cellpadding='5' border='1'><form name='adding' action='adding.php' method='post' onSubmit='return mustbe()'>";
-    echo "<tr></tr><tr><td ".$stl.">Название</td><td><input id='req1' type='text' name='Name' value='' /> (* - обязательно)</td></tr><tr><td ".$stl.">Описание</td><td><input type='text' name='Description' value='' size='100' /></td></tr><tr><td ".$stl.">Ключевые слова</td><td><input type='text' name='Keywords' value='' size='50' /></td></tr><tr><td ".$stl.">Приоритет</td><td><input type='text' name='Priority' value='' /></td></tr><tr><td ".$stl.">Дата публикации</td><td><input type='text' id='pick' name='PublishFrom' value='' /></td></tr>";
+    $admin_page = $this->general;
+    $subst['%title%'] = 'Новая запись - мультфильм';
     //Получение массива изображений мультфильмов
     $arr_img = $this->db->ReceiveFewFieldsOnCondition(IMG, $this->smallfields, 'Kind', ' LIKE ', 'Мульт%');
-    $arr_id = Array();
-    $arr_pic = Array();
+    $arr_id = array();
+    $arr_pic = array();
     $arr_id[0] = 0;
     $arr_pic[0] = 'emptymult';
     foreach ($arr_img as $value) {
       $arr_id[] = $value['ID'];
       $arr_pic[] = $value['FileName'];
     }
-    $str_id = implode('~', $arr_id);
-    $str_pic = implode('~', $arr_pic);
-    
-    echo "<tr><td ".$stl.">Изображение<input id='imageid' type='hidden' name='Image_ID' value='0' /></td><td id='pictures' ondblclick='galery()'><span style='text-decoration: underline;' >Для выбора изображения дважды кликни здесь</span><div id='hide0' hidden>".SITEURL.PICT."</div><div id='hide1' hidden>".$str_id."</div><div id='hide2' hidden>".$str_pic."</div></td></tr>";
-    echo "<tr><td colspan='2' align='right'><input type='hidden' name='choice' value='catalog' /><input type='submit' name='add' value='Подтверждаю добавление' /></td></tr></form><tr><td colspan='2' align='right'><form name='cancel' action='adding.php' method='post'><input type='hidden' name='choice' value='catalog' /><input type='submit' name='cancel' value='Отмена' /></form></td></tr></table><br />";
+    $subst['%pictpath%'] = SITEURL.PICT;
+    $subst['%str_id%'] = implode('~', $arr_id);
+    $subst['%str_pic%'] = implode('~', $arr_pic);
+    $admin_page .= $this->ReplaceTemplate($subst, 'catalog_insert');
+    $admin_page .= '</body></html>';
+    echo $admin_page;
   }
   
 }

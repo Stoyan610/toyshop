@@ -102,8 +102,6 @@ class Order extends TemplateHandler {
         $delivery_cost = $_SESSION['DeliveryCost'];
         $this->subst['%amount%'] += $delivery_cost;
       }
-
-
       $this->subst['%ordernumber%'] = $_SESSION['Number'];
       $this->order = $this->ReplaceTemplate($this->subst, 'ordermade');
     }

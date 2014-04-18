@@ -10,8 +10,6 @@ if (empty($_SESSION['login'])) {
   header("Location: ".SITEURL);
   exit;
 }
-//Подключение html файла для подключения таблиц
-require_once 'half_index.php';
 //Подключение модели - обработчика базы данных, и создание его объекта (с подключением к БД)
 require_once PATH.'www/'.MODEL;
 //Создание объекта, соответствующего таблице, и подключение класса обработчика соответствующей таблицы
@@ -65,6 +63,15 @@ else {
       $value = htmlspecialchars($_GET['value']);
       unset($_GET['value']);
       $creator->GetTableOnField($field, $value);
+    break;
+    }
+    default: {
+      exit ('Это сделать невозможно');
+    }
+  }
+}
+ 
+?>
     break;
     }
     default: {

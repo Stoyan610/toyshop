@@ -1,0 +1,60 @@
+/*Общий для всех*/
+	
+body {
+	margin: 0;
+	padding: 0;
+	background-color: #B3FFA5;
+}
+
+.list {
+  display: inline-block;
+  padding: 0 45px 0 0;
+}
+
+#mainul {
+  background-color: #8AE78A;
+  padding: 10px 0 10px 30px;
+  margin: 0;
+  font-size: 125%;
+}
+h1, h2, h3, h4 {
+	font-family: 'Comic Sans MS', Verdana, 'Lucida Sans Unicode';
+	text-align: center;
+	color: #656565;
+}
+
+.stl, .stl0 {
+  font-size: 120%;
+  font-weight: bold;
+}
+.stl0 {
+  background-color: #88DD7B;
+}
+
+.imgblock, .stl2 {
+  display: inline-block;
+  vertical-align: top;
+  text-align: center;
+}
+
+.imgblock {
+  width: 150px;
+  height: 160px;
+}
+
+.stl2 {
+  width: 170px;
+}
+
+#pictures span, products span {
+  text-decoration: underline; 
+}
+
+.stl3 {
+  background-color: #CFFFCF;
+}
+
+.stl4 {
+  height: 150px;
+  overflow: auto;
+}

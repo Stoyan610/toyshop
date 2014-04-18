@@ -52,7 +52,11 @@ switch ($page) {
     break;
   }
   
-  //Далее по списку классов страниц
+  case 'search.php': {
+    $pager = new Search($n_item);
+    break;
+  }
+  
   
   default:
     break;

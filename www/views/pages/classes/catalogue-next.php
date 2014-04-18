@@ -91,7 +91,7 @@ class CatalogueFilm extends TemplateHandler {
     $cond = "`Catalog_ID` = ".$multid." AND `PublishFrom` < '".date("Y-m-d")."'";
     $arr = $this->db->ReceiveFieldOnManyConditions(TOYS, 'ID', $cond);
     $toy_num = $this->db->СountDataOnManyConditions(TOYS, $cond);
-    if ($toy_num == 0)    return "В КАТАЛОГЕ ИГРУШЕК НЕТ !!!";
+    if ($toy_num == 0)    return "КАТАЛОГ ПУСТОЙ !!!";
     else {
       for ($i = 0; $i < $toy_num; $i++) {
         $cond1 = "`Product_ID` = ".$arr[$i]." AND  `Priority` = 0";
