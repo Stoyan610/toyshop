@@ -66,7 +66,7 @@ class Search extends TemplateHandler {
           $xpr = $this->db->ReceiveFieldOnCondition($this->tbl[$j]['title'], $this->tbl[$j]['fields'][$k], 'ID', '=', $id);
           $flag = FALSE;
           for ($i = 0; $i < $count; $i++) {
-            if (preg_match('~\b.*'.$arr_phr[$i].'.*\b~', $xpr[0]))      $flag = TRUE;
+            if (preg_match('~(^|\b).*'.$arr_phr[$i].'.*(\b|$)~', $xpr[0]))      $flag = TRUE;
           }
           if ($flag) {
             if ($expr != '')      $expr .= '; ';
@@ -74,20 +74,22 @@ class Search extends TemplateHandler {
           }
         }
         $expr = htmlspecialchars_decode($expr);
+        $expr = preg_replace('~\<[^\<\>]+\>~', "", $expr);
         $y = 100000;
         for ($i = 0; $i < $count; $i++) {
-          $expr = str_replace($arr_phr[$i], "<span>".$arr_phr[$i]."</span>", $expr);
           preg_match('~'.$arr_phr[$i].'~', $expr, $arr_match, PREG_OFFSET_CAPTURE);
           $koef = strlen($expr)/mb_strlen($expr, 'utf-8');
           $arr_match[0][1] = (int)($arr_match[0][1]/$koef);
           $y = min(array($y,  $arr_match[0][1]));
         }
-        if (mb_strlen($expr, 'utf-8') > 300) {
-          if ($y < 200)       $substres['%expression%'] = mb_substr($expr, 0, 300, 'utf-8');
-          else        $substres['%expression%'] = '...'.mb_substr($expr, $y - 200, 300, 'utf-8');
-          $substres['%expression%'] .= '...';
+        if (mb_strlen($expr, 'utf-8') > 200) {
+          if ($y < 150)       $substres['%expression%'] = mb_substr($expr, 0, 200, 'utf-8').'...';
+          else        $substres['%expression%'] = '...'.mb_substr($expr, $y - 150, 200, 'utf-8').'...';
         }
         else      $substres['%expression%'] = $expr;
+        for ($i = 0; $i < $count; $i++) {
+          $substres['%expression%'] = str_replace($arr_phr[$i], "<span class='yellow'>".$arr_phr[$i]."</span>", $substres['%expression%']);
+        }
         if ($this->tbl[$j]['kind'] == '')       $substres['%kind%'] = $this->db->ReceiveFieldOnCondition($this->tbl[$j]['title'], 'Category', 'ID', '=', $id);
         else    $substres['%kind%'] = $this->tbl[$j]['kind'];
         $arr_kind = array('грушк'=>"toyitem&toy=".$id, 'ульт'=>"catalogue-next&mult=".$id, 'тзы'=>"comments", 'остав'=>"delivery", 'онтак'=>"contacts");

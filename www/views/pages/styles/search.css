@@ -21,7 +21,7 @@
   color: blue;
 } 
 
-#searchres table td span {
+#searchres table td .yellow {
   background-color: yellow;
 }
 
