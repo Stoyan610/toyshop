@@ -19,7 +19,7 @@ require_once PATH.'mainadmin/class/comment_class.php';
 if (isset($creator)) {
   unset($creator);
 }
-$creator = new Feedback($_SESSION['login'], $_SESSION['password']);
+$creator = new Feedback(DB_USER, DB_PASS);
 if (!isset($_GET['act'])) {
   $creator->GetTable();
 }

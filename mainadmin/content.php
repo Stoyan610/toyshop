@@ -19,7 +19,7 @@ require_once PATH.'mainadmin/class/content_class.php';
 if (isset($creator)) {
   unset($creator);
 }
-$creator = new Content($_SESSION['login'], $_SESSION['password']);
+$creator = new Content(DB_USER, DB_PASS);
 if (!isset($_GET['act'])) {
   $creator->GetTable();
 }

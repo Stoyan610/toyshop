@@ -31,7 +31,9 @@ define('HOST', 'localhost');
 //БД
 define('DB', 'toyshop');
 //Пользователь БД по умолчанию
-define('DB_USER', 'root');
+define('DB_USER', 'toyadmin');
+//Пароль пользователя
+define('DB_PASS', 'toyadmin');
 //Префикс к паролям
 define('PASS_PREFIX', 'multik');
 
@@ -53,6 +55,10 @@ define('BASKET', 'l_basket');
 define('INFO', 'a_content');
 //Таблицы базы данных - таблица отзывов
 define('REP', 'j_feedback');
+//Таблицы базы данных - таблица аминистраторов
+define('ADM', 's_admin_info');
+//Таблицы базы данных - таблица категорий контента
+define('CAT', 's_category');
 
 //Название магазина
 define('TITLE', 'Интернет магазин игрушек - героев мультфильмов');
@@ -65,12 +71,5 @@ define('MOSC', 300);
 define('MAREA', 500);
 //Минимальные сроки доставки - дней
 define('MINTIME', 1);
-
-//Имя администратора
-define('ADMIN', 'Stoyan');
-//Емеля администратора
-define('ADMIN_EMAIL', 'stoyan.k-n@yandex.ru');
-//Емеля отправки с сайта
-define('SEND_EMAIL', 'info.toyshop@mail.ru');
 
 ?>

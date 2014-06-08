@@ -11,7 +11,7 @@ if (empty($_SESSION['login'])) {
 }
 //Подключение модели - обработчика базы данных, и создание его объекта (с подключением к БД)
 require_once PATH.'www/'.MODEL;
-$db = new DbRover($_SESSION['login'], $_SESSION['password']);
+$db = new DbRover(DB_USER, DB_PASS);
 
 
 function checkphone($phone) {
@@ -132,20 +132,29 @@ if (isset($_POST['add'])) {
     
     case 'content': {
       //Формирование массива полей и значений для добавления в БД
-      $arr = array('Category', 'Title', 'Brief', 'Text', 'Revision', 'PublishFrom');
+      $arr = array('Category_ID', 'Title', 'Brief', 'Text', 'Revision', 'PublishFrom');
       foreach ($arr as $val) {
         if ($val == 'Text') {
           $fields_values[$val] = htmlspecialchars(addslashes($_POST['editor']));
           unset($_POST['editor']);
+        }
+        elseif ($val == 'Category_ID') {
+          $cat_ids = $db->ReceiveFieldOnCondition(CAT, 'ID', 'Category', '=', htmlspecialchars($_POST[$val]));
+          $fields_values[$val] = $cat_ids[0];
         }
         else $fields_values[$val] = htmlspecialchars($_POST[$val]);
         unset($_POST[$val]);
       }
       $cat = htmlspecialchars($_POST['new_Cat']);
       unset($_POST['new_Cat']);
-      if ($cat != '') $fields_values['Category'] = $cat;
+      if ($cat != '') {
+        $cat_fields['Category'] = $cat;
+        $db->DataIn(CAT, $cat_fields);
+        $cat_id = $db->IdOfLast(CAT);
+        $fields_values['Category_ID'] = $cat_id;
+      }
       else {
-        if ($fields_values['Revision'])     $db->ChangeFieldOnCondition(INFO, 'Revision', 0, 'Category', '=', $fields_values['Category']);
+        if ($fields_values['Revision'])     $db->ChangeFieldOnCondition(INFO, 'Revision', 0, 'Category_ID', '=', $fields_values['Category_ID']);
       }
       $db->DataIn(INFO, $fields_values);
       break;

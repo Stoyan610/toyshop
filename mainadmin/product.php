@@ -20,7 +20,7 @@ if (isset($creator)) {
   unset($creator);
 }
 
-$creator = new Product($_SESSION['login'], $_SESSION['password']);
+$creator = new Product(DB_USER, DB_PASS);
 
 if (!isset($_GET['act'])) {
   $creator->GetTable();

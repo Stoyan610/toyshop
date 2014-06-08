@@ -11,7 +11,7 @@ if (empty($_SESSION['login'])) {
 }
 //Подключение модели - обработчика базы данных, и создание его объекта (с подключением к БД)
 require_once PATH.'www/'.MODEL;
-$db = new DbRover($_SESSION['login'], $_SESSION['password']);
+$db = new DbRover(DB_USER, DB_PASS);
 
 //Проверка POST-параметра 
 if (isset($_POST['changing'])) {

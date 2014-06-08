@@ -7,7 +7,7 @@ class DbRover {
   private $connection;
   
   public function __construct($user, $pass) {
-		$this->connection = new mysqli(HOST, $user, $pass, DB) or die("№ 3' - Can't set connection to DB");
+		$this->connection = new mysqli(HOST, $user, $pass, DB) or die("Can't set connection to DB");
 		$this->connection->query("SET NAMES 'utf8'");
  	}
 

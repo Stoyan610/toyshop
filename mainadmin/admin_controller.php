@@ -6,6 +6,13 @@ define('ACCESS', TRUE);
 require_once 'config_address.php';
 require_once PATH.'www/config.php';
 
+//Проверка - если не устанавливается подключение, то на выход
+$admin_connect = @new mysqli(HOST, DB_USER, DB_PASS, DB);
+if (mysqli_connect_errno()) {
+  header("Location: ".SITEURL);
+  exit;
+}
+
 if (isset($_POST['send'])) {
   $_SESSION['login'] = htmlspecialchars($_POST['log']);
   $_SESSION['password'] = htmlspecialchars($_POST['pass']);
@@ -13,18 +20,18 @@ if (isset($_POST['send'])) {
   unset($_POST['log']);
   unset($_POST['pass']);
 }
-//Проверка - если не устанавливается подключение, то на выход
-$admin_connect = @new mysqli(HOST, $_SESSION['login'], $_SESSION['password'], DB);
-if (mysqli_connect_errno()) {
-  unset($_SESSION['login']);
-  unset($_SESSION['password']);
+
+//Проверка - если зашёл с неправильными логином и паролем, то на выход
+if (empty($_SESSION['login'])) {
   header("Location: ".SITEURL);
   exit;
 }
-
-//Проверка - если зашёл без логина, то на выход
-if (empty($_SESSION['login'])) {
+$zapros = "SELECT COUNT(`ID`) FROM `".ADM."` WHERE `NAME` = '".addslashes($_SESSION['login'])."' AND `PASS` = '".hash('sha512', $_SESSION['password'])."'";
+$result = $admin_connect->query($zapros);
+if ($result == 0) {
   header("Location: ".SITEURL);
+  unset($_SESSION['login']);
+  unset($_SESSION['password']);
   exit;
 }
 
@@ -73,6 +80,5 @@ switch ($table) {
     break;
   }
 }
-
 
 ?>

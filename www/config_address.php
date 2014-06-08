@@ -17,8 +17,4 @@ define('ADMINURL', 'http://localhost:80/toyshop.local/mainadmin/');
 define('SITEURL', 'http://localhost:80/toyshop.local/www/');
 //define('SITEURL', 'http://toyshop.local/');
 
-//Для Денвера пароль '', а для MAMP пароль 'root'
-define('DB_PASS', 'root');
-//define('DB_PASS', '');
-
 ?>

@@ -25,8 +25,10 @@ class Contact extends TemplateHandler {
   
   //Получение контактов в html из файла tpl и замена параметров
   protected function GetContact() {
+    //Получение номера категории "Контакты" из базы данных
+    $categ = $this->db->ReceiveFieldOnCondition(CAT, 'ID', 'Category', '=', 'Контакты');
     //Получение текста из базы данных
-    $cond = "`Category` LIKE '%онтак%' AND `Revision` = '1' AND `PublishFrom` <= '".date('Y-m-d')."'";
+    $cond = "`Category_ID` = '".$categ[0]."' AND `Revision` = '1' AND `PublishFrom` <= '".date('Y-m-d')."'";
     $extract = $this->db->ReceiveFieldOnManyConditions(INFO, 'Text', $cond);
     return htmlspecialchars_decode($extract[0]);
   }

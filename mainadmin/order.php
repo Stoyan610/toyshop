@@ -20,7 +20,7 @@ if (isset($creator)) {
   unset($creator);
 }
 
-$creator = new Order($_SESSION['login'], $_SESSION['password']);
+$creator = new Order(DB_USER, DB_PASS);
 
 if (!isset($_GET['act'])) {
   $creator->GetTable();

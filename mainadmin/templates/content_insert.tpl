@@ -4,7 +4,7 @@
     <tr>
       <td style='stl'>Выбрать категорию</td>
       <td>
-        <select name='Category'>
+        <select name='Category_ID'>
           %options%
         </select>
       </td>

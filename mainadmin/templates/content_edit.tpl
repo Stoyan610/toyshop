@@ -10,7 +10,7 @@
     <tr>
       <td class='stl'>Категория</td>
       <td>
-        <select name='Category'>
+        <select name='Category_ID'>
           %options%
         </select>
       </td>

@@ -11,7 +11,12 @@ class Content extends Admin {
   public function __construct($user, $pass) {
     parent::__construct($user, $pass);
     $this->tbl = INFO;
-    $this->allfields = array('ID', 'Category', 'Title', 'Brief', 'Text', 'Revision', 'PublishFrom');
+    $this->allfields = array('ID', 'Category_ID', 'Title', 'Brief', 'Text', 'Revision', 'PublishFrom');
+  }
+
+  private function GetCategory($id) {
+    $cat = $this->db->ReceiveFieldOnCondition(CAT, 'Category', 'ID', '=', $id);
+    return $cat[0];
   }
   
   private function FillFields($b) {
@@ -19,29 +24,31 @@ class Content extends Admin {
     if (!$b) {
       $substcontent['%title%'] = 'Вся информация по содержанию сайта по категориям';
       $substcontent['%empty%'] = 'Таблица пуста';
-      $arr_table = $this->db->ReceiveFields($this->tbl, $this->allfields, 'Category', TRUE);
-    }  
+      $arr_table = $this->db->ReceiveFields($this->tbl, $this->allfields, 'Category_ID', TRUE);
+    }
     else {
       $substcontent['%title%'] = 'Содержание по выбранной категории';
       $substcontent['%empty%'] = 'Странно, но таблица пуста';
-      $arr_table = $this->db->ReceiveFewFieldsOnCondition($this->tbl, $this->allfields, 'Category', '=', $b);
+      $b_id = $this->db->ReceiveFieldOnCondition(CAT, 'ID', 'Category', '=', $b);
+      $arr_table = $this->db->ReceiveFewFieldsOnCondition($this->tbl, $this->allfields, 'Category_ID', '=', $b_id[0]);
     }
+    
     if (!$arr_table)     $admin_page .= $this->ReplaceTemplate ($substcontent, 'content_empty');
     else {
       $lines = count($arr_table);
-      $arr_cat = $this->db->GetUniqField($this->tbl, 'Category');
+      $arr_cat = $this->db->ReceiveFieldOnCondition(CAT, 'Category', 'ID', '>', '0');
       $num = count($arr_cat);
       $substcontent['%options%'] = '';
       for ($j = 0; $j < $num; $j++) {
         if ($j == 0)    $subst['%selected%'] = 'selected';
         else    $subst['%selected%'] = '';
-        $subst['%contentcat%'] = $arr_cat[$j]['Category'];
-        $substcontent['options'] .= $this->ReplaceTemplate($subst, 'content_table_option');
+        $subst['%contentcat%'] = $arr_cat[$j];
+        $substcontent['%options%'] .= $this->ReplaceTemplate($subst, 'content_table_opt');
       }
       $substcontent['%table_lines%'] = '';
       for ($i = 0; $i < $lines; $i++) {
         $substline['%contentid%'] = $arr_table[$i]['ID'];
-        $substline['%contentcat%'] = $arr_table[$i]['Category'];
+        $substline['%contentcat%'] = $this->GetCategory($arr_table[$i]['Category_ID']);
         $substline['%contenttitle%'] = $arr_table[$i]['Title'];
         $substline['%contentbrief%'] = $arr_table[$i]['Brief'];
         if ($arr_table[$i]['Revision'])    $substline['%contentrevision%'] = 'Действует';
@@ -55,24 +62,24 @@ class Content extends Admin {
     $admin_page .= '</body></html>';
     echo $admin_page;
   }
-
+  
   //Получение полной информации из данной таблицы БД 
   public function GetTable() {
     $this->FillFields(FALSE);
   }
-
+  
   //Вывод информации требуемого вида из данной таблицы БД 
   public function GetTableOnField($x) {
     $this->FillFields($x);
   }
-   
+  
   //Удаление записи в таблице БД
   public function DeleteItem($id){
     $admin_page = $this->general;
     $arr_table = $this->db->ReceiveFieldsOnId($this->tbl, $this->allfields, $id);
     if (!$arr_table)     exit('Нечего удалять');
     $subst['%contentid%'] = $arr_table['ID'];
-    $subst['%contentcat%'] = $arr_table['Category'];
+    $subst['%contentcat%'] = $this->GetCategory($arr_table['Category_ID']);
     $subst['%contenttitle%'] = $arr_table['Title'];
     $subst['%contentbrief%'] = $arr_table['Brief'];
     $subst['%contentrevision%'] = $arr_table['Revision'];
@@ -86,14 +93,14 @@ class Content extends Admin {
   //Добавление новой записи в таблицу БД
   public function InsertItem() {
     $admin_page = $this->general;
-    $arr_cat = $this->db->GetUniqField($this->tbl, 'Category');
+    $arr_cat = $this->db->ReceiveFieldOnCondition(CAT, 'Category', 'ID', '>', '0');
     $num = count($arr_cat);
     $substcontent['%options%'] = '';
     for ($j = 0; $j < $num; $j++) {
       if ($j == 0)      $subst['%selected%'] = 'selected';
       else      $subst['%selected%'] = '';
-      $subst['%contentcat%'] = $arr_cat[$j]['Category'];
-      $substcontent['%options%'] .= $this->ReplaceTemplate($subst, 'content_insert_option');
+      $subst['%contentcat%'] = $arr_cat[$j];
+      $substcontent['%options%'] .= $this->ReplaceTemplate($subst, 'content_table_opt');
     }
     $admin_page .= $this->ReplaceTemplate($substcontent, 'content_insert');
     $admin_page .= '</body></html>';
@@ -105,14 +112,14 @@ class Content extends Admin {
     $admin_page = $this->general;
     $arr_table = $this->db->ReceiveFieldsOnId($this->tbl, $this->allfields, $id);
     $substcontent['%contentid%'] = $id;
-    $arr_cat = $this->db->GetUniqField($this->tbl, 'Category');
+    $arr_cat = $this->db->ReceiveFieldOnCondition(CAT, 'ID', 'ID', '>', '0');
     $num = count($arr_cat);
     $substcontent['%options%'] = '';
     for ($j = 0; $j < $num; $j++) {
-      if ($arr_cat[$j]['Category'] == $arr_table['Category'])     $subst['%selected%'] = 'selected';
+      if ($arr_cat[$j] == $arr_table['Category_ID'])     $subst['%selected%'] = 'selected';
       else      $subst['%selected%'] = '';
-      $subst['%contentcat%'] = $arr_cat[$j]['Category'];
-      $substcontent['%options%'] .= $this->ReplaceTemplate($subst, 'content_edit_option');
+      $subst['%contentcat%'] = $this->GetCategory($arr_cat[$j]);
+      $substcontent['%options%'] .= $this->ReplaceTemplate($subst, 'content_table_opt');
     }
     $substcontent['%contenttitle%'] = $arr_table['Title'];
     $substcontent['%contentbrief%'] = $arr_table['Brief'];
