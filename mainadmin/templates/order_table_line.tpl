@@ -1,6 +1,7 @@
 <tr align='center'>
   <td>%orderid%</td>
   <td>%ordernumber%</td>
+  <td>%orderstatus%</td>
   <td>%clientname%</td>
   <td>%clientphone%<br />%clientmail%</td>
   <td>

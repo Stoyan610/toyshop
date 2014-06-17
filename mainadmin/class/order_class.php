@@ -12,7 +12,7 @@ class Order extends Admin {
   public function __construct($user, $pass) {
     parent::__construct($user, $pass);
     $this->tbl = ORDS;
-    $this->allfields = array('ID', 'Number', 'Client_ID', 'DeliveryAddress', 'DeliveryTime', 'Info', 'Created', 'Changed'); 
+    $this->allfields = array('ID', 'Number', 'Status', 'Client_ID', 'DeliveryAddress', 'DeliveryTime', 'Info', 'Created', 'Changed'); 
     $this->basketfields = array('Product_ID', 'Name', 'Price', 'Quantity');
   }
 
@@ -20,6 +20,7 @@ class Order extends Admin {
     $subst = array();
     $subst['%orderid%'] = $arr['ID'];
     $subst['%ordernumber%'] = $arr['Number'];
+    $subst['%orderstatus%'] = $arr['Status'];
     //Получение данных о клиенте
     $field_list = array('Name', 'Phone', 'Mail');
     $client = $this->db->ReceiveFieldsOnId(CLNTS, $field_list, $arr['Client_ID']);
@@ -43,6 +44,20 @@ class Order extends Admin {
     return $subst;
   }
 
+  //Получение списка статусов для селектора
+  protected function GetOptions() {
+    $arr_stat = $this->db->ReceiveFieldOnCondition(STAT, 'Status', 'ID', '>', '0');
+    $num = count($arr_stat);
+    $sub = '';
+    for ($j = 0; $j < $num; $j++) {
+      if ($j == 0)    $subst['%selected%'] = 'selected';
+      else    $subst['%selected%'] = '';
+      $subst['%status%'] = $arr_stat[$j];
+      $sub .= $this->ReplaceTemplate($subst, 'order_table_opt');
+    }
+    return $sub;
+  }
+
   //Получение полной информации из данной таблицы БД 
   public function GetTable() {
     $admin_page = $this->general;
@@ -56,6 +71,7 @@ class Order extends Admin {
         $substline = $this->GetTableLine($arr_table[$i]);
         $substtable['%table_lines%'] .= $this->ReplaceTemplate($substline, 'order_table_line');
       }
+      $substtable['%options%'] = $this->GetOptions();
       $admin_page .= $this->ReplaceTemplate($substtable, 'order_table');
     }
     $admin_page .= '</body></html>';
@@ -78,7 +94,43 @@ class Order extends Admin {
         $substline = $this->GetTableLine($arr_table[$i]);
         $substtable['%table_lines%'] .= $this->ReplaceTemplate($substline, 'order_table_line');
       }
+      $substtable['%options%'] = $this->GetOptions();
       $admin_page .= $this->ReplaceTemplate($substtable, 'order_table');
+    }
+    $admin_page .= '</body></html>';
+    echo $admin_page;
+  }
+  
+  //Вывод информации по данным клиента из данной таблицы БД 
+  public function GetTableOnCond($field, $x) {
+    $admin_page = $this->general;
+    $arr_client_id = $this->db->ReceiveFieldOnCondition(CLNTS, 'ID', $field, 'LIKE', $x);
+    if (!$arr_client_id) {
+      $sub_x['%delid%'] = $x;
+      $admin_page .= $this->ReplaceTemplate($sub_x, 'order_empty_1');
+    }
+    else {
+      $clients_num = count($arr_client_id);
+      $arr_table = array();
+      for ($i = 0; $i < $clients_num; $i++) {
+        $arr = $this->db->ReceiveFewFieldsOnCondition($this->tbl, $this->allfields, 'Client_ID', '=', $arr_client_id[$i]);
+        if (!empty($arr))  $arr_table[] = $arr[0];
+      }
+      if (!$arr_table) {
+        $sub_x['%delid%'] = $x;
+        $admin_page .= $this->ReplaceTemplate($sub_x, 'order_empty_1');
+      }
+      else {
+        $lines = count($arr_table);
+        $substtable['%table_name%'] = 'Выбранные заказы';
+        $substtable['%table_lines%'] = '';
+        for ($i = 0; $i < $lines; $i++) {
+          $substline = $this->GetTableLine($arr_table[$i]);
+          $substtable['%table_lines%'] .= $this->ReplaceTemplate($substline, 'order_table_line');
+        }
+        $substtable['%options%'] = $this->GetOptions();
+        $admin_page .= $this->ReplaceTemplate($substtable, 'order_table');
+      }
     }
     $admin_page .= '</body></html>';
     echo $admin_page;
@@ -166,6 +218,7 @@ class Order extends Admin {
     $substedit['%orderaddress%'] = $arr_table['DeliveryAddress'];
     $substedit['%ordertime%'] = $arr_table['DeliveryTime'];
     $substedit['%orderinfo%'] = $arr_table['Info'];
+    $status = $arr_table['Status'];
     //Получение данных о корзине
     $goods = $this->db->ReceiveFewFieldsOnCondition(BASKET, array('ID', 'Product_ID', 'Name', 'Price', 'Quantity'), 'Order_ID', '=', $id);
     $num = count($goods);
@@ -186,6 +239,7 @@ class Order extends Admin {
     $substedit['%strtoys%'] = $this->ToyImg2string($bask_toys);
     $substedit['%toynum%'] = $num;
     $substedit['%picpath%'] = SITEURL.PICT;
+    $substedit['%options%'] = $this->GetOptions();
     $admin_page .= $this->ReplaceTemplate($substedit, 'order_edit');
     $admin_page .= '</body></html>';
     echo $admin_page;

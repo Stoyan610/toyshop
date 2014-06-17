@@ -63,6 +63,28 @@ else {
         $num = preg_replace('~\D+~', '', $num);
         $creator->GetTableOnField('Number', $num);
       }
+      if (isset($_GET['Status'])) {
+        $Status = htmlspecialchars($_GET['Status']);
+        unset($_GET['Status']);
+        $creator->GetTableOnField('Status', $Status);
+      }
+    break;
+    }
+    case 'find_client': {
+      if (isset($_GET['Name'])) {
+        $name = htmlspecialchars($_GET['Name']);
+        unset($_GET['Name']);
+        $name = "%".$name."%";
+        $creator->GetTableOnCond('Name', $name);
+      }
+      if (isset($_GET['Phone'])) {
+        $phone = htmlspecialchars($_GET['Phone']);
+        unset($_GET['Phone']);
+        $phone = preg_replace('~\D+~', '', $phone);
+        $phone = chunk_split($phone, 1, "%");
+        $phone = "%".$phone;
+        $creator->GetTableOnCond('Phone', $phone);
+      }
     break;
     }
 

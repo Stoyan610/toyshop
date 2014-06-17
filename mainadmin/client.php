@@ -40,8 +40,24 @@ else {
       $creator->DeleteItem($id);
     break;
     }
-    
-    
+    case 'find_client': {
+      if (isset($_GET['Name'])) {
+        $name = htmlspecialchars($_GET['Name']);
+        unset($_GET['Name']);
+        $name = "%".$name."%";
+        $creator->GetTableOnCond('Name', $name);
+      }
+      if (isset($_GET['Phone'])) {
+        $phone = htmlspecialchars($_GET['Phone']);
+        unset($_GET['Phone']);
+        $phone = preg_replace('~\D+~', '', $phone);
+        $phone = chunk_split($phone, 1, "%");
+        $phone = "%".$phone;
+        $creator->GetTableOnCond('Phone', $phone);
+      }
+    break;
+    }
+
     default: {
       exit ('Это сделать невозможно');
     }

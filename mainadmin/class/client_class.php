@@ -36,6 +36,33 @@ class Client extends Admin {
     echo $admin_page;
   }
   
+  //Вывод информации по данным клиента из данной таблицы БД 
+  public function GetTableOnCond($field, $x) {
+    $admin_page = $this->general;
+    $arr_table = $this->db->ReceiveFewFieldsOnCondition($this->tbl, $this->allfields, $field, 'LIKE', $x);
+    if (!$arr_table) {
+      $sub_x['%delid%'] = str_replace("%", "", $x);
+      $admin_page .= $this->ReplaceTemplate($sub_x, 'client_empty');
+    }
+    else {
+      $lines = count($arr_table);
+      $substclient['%table_lines%'] = '';
+      for ($i = 0; $i < $lines; $i++) {
+        $subst['%clientid%'] = $arr_table[$i]['ID'];
+        $subst['%clientname%'] = $arr_table[$i]['Name'];
+        $subst['%ordercount%'] = $this->db->СountDataOnCondition(ORDS, 'Client_ID', '=', $subst['%clientid%']);
+        $subst['%clientphone%'] = $arr_table[$i]['Phone'];
+        $subst['%clientmail%'] = $arr_table[$i]['Mail'];
+        $subst['%clientcreated%'] = $arr_table[$i]['Created'];
+        $subst['%clientchanged%'] = $arr_table[$i]['Changed'];
+        $substclient['%table_lines%'] .= $this->ReplaceTemplate($subst, 'client_table_line');
+      }
+      $admin_page .= $this->ReplaceTemplate($substclient, 'client_table');
+    }
+    $admin_page .= '</body></html>';
+    echo $admin_page;
+  }
+  
   //Проверка клиента на независимость от заказов
   private function WhetherClient($id) {
     return $this->db->ReceiveIDFieldsOnCondition(ORDS, 'Changed', '`Client_ID` = '.$id);

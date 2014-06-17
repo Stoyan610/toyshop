@@ -90,6 +90,8 @@ if (isset($_POST['edit'])) {
       unset($_POST['Info']);
       $order_fields_values = array_combine($order_fields, $order_values);
       $order_fields_values['Changed'] = date('Y-m-d');
+      $order_fields_values['Status'] = htmlspecialchars($_POST['Status']);
+      unset($_POST['Status']);
       
       //Определение ID записи для удаления и удаление её из корзины или изменение записи
       $count = htmlspecialchars($_POST['count']);

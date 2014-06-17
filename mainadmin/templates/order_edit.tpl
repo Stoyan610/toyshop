@@ -9,8 +9,14 @@
     </tr>
     <tr>
       <td style='stl'>№</td>
-      <td colspan='3'>
+      <td>
         <input type='text' name='Number' value='%ordernumber%' readonly size='4' />
+      </td>
+      <td style='stl'>Статус</td>
+      <td>
+        <select name='Status'>
+          %options%
+        </select>
       </td>
     </tr>
     <tr>

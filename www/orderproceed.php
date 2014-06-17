@@ -93,6 +93,9 @@ if ($flag_newclient) {
   $_SESSION['DeliveryAddress'] = $arr_ord['DeliveryAddress'];
   $_SESSION['DeliveryTime'] = $arr_ord['DeliveryTime'];
   $_SESSION['Info'] = $arr_ord['Info'];
+  
+  $xstat = $db->ReceiveFieldsOnId(STAT, array('Status'), '1');
+  $arr_ord['Status'] = $xstat['Status'];
   $db->DataIn(ORDS, $arr_ord);
   $Order_ID = $db->IdOfLast(ORDS);
   

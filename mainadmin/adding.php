@@ -87,7 +87,8 @@ if (isset($_POST['add'])) {
       $order_fields_values['Client_ID'] = $Client_ID;
       $order_fields_values['Created'] = date('Y-m-d');
       $order_fields_values['Changed'] = $order_fields_values['Created'];
-      
+      $xstat = $db->ReceiveFieldsOnId(STAT, array('Status'), '1');
+      $order_fields_values['Status'] = $xstat['Status'];
       
       $binder = 0;
       do {
