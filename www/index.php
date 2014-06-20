@@ -6,31 +6,6 @@ define('ACCESS', TRUE);
 mb_internal_encoding(utf8); 
 mb_regex_encoding(utf8);
 
-//Проверка, сколько товаров в корзине
-if ($_COOKIE['recalc'] == 1) {
-  setcookie('recalc', 1, time() - 1);
-  
-  $_SESSION['items'] = htmlspecialchars($_COOKIE['items']);
-  setcookie('items', 0, time() - 1);
-  
-  foreach ($_SESSION as $key => $val) {
-    if (preg_match('~\dtoy~', $key)) unset($_SESSION[$key]);
-  }
-
-  $maxn = htmlspecialchars($_COOKIE['maxn']);
-  for ($i = 0; $i < $maxn; $i++) {
-    $toyid = htmlspecialchars($_COOKIE[$i.'toyid']);
-    setcookie($i.'toyid', 0, time() - 1);
-    $_SESSION[$toyid.'toyid'] = $toyid;
-    $_SESSION[$toyid.'toyname'] = htmlspecialchars($_COOKIE[$toyid.'toyname']);
-    setcookie($toyid.'toyname', 0, time() - 1);
-    $_SESSION[$toyid.'toyprice'] = htmlspecialchars($_COOKIE[$toyid.'toyprice']);
-    setcookie($toyid.'toyprice', 0, time() - 1);
-    $_SESSION[$toyid.'toyitems'] = htmlspecialchars($_COOKIE[$toyid.'toyitems']);
-    setcookie($toyid.'toyitems', 0, time() - 1);
-  }
-}
-
 if (!isset($_SESSION['items'])) {
   $_SESSION['items'] = 0;
 }
@@ -39,9 +14,6 @@ if (isset($_POST['add_x']) && ($_POST['page'] == 'toyitem')) {
   $toyid = htmlspecialchars($_POST['toyid']);
   unset($_POST['toyid']);
   $_SESSION[$toyid.'toyid'] = $toyid;
-  
-//$_SESSION[$toyid.'add'] = TRUE;
-  
   $_SESSION[$toyid.'toyname'] = htmlspecialchars($_POST['toyname']);
   unset($_POST['toyname']);
   $_SESSION[$toyid.'toyprice'] = htmlspecialchars($_POST['toyprice']);
@@ -52,7 +24,6 @@ if (isset($_POST['add_x']) && ($_POST['page'] == 'toyitem')) {
   else {
     $_SESSION[$toyid.'toyitems']++;
   }
-  setcookie($toyid.'onstock', htmlspecialchars($_SESSION[$toyid.'onstock']));
 }
 
 $n_item = $_SESSION['items'];

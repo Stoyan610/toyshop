@@ -146,7 +146,6 @@ foreach ($_POST as $key => $val) {
   $message .= $count.'-й товар: '.$arr_bask['Name'].'\nв количестве '.$arr_bask['Quantity'].'штук\n';
   }
 $_SESSION['items'] = $items;
-$_COOKIE['items'] = htmlspecialchars($_SESSION['items']);
 $_SESSION['orderid'] = $Order_ID;
 unset($_SESSION['thisorderid']);
 

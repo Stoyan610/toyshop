@@ -145,9 +145,6 @@ class ToyItem extends TemplateHandler {
     $arr1 = $this->db->ReceiveFewFieldsOnCondition(TOYS, array('Price', 'Quantity', 'Deadline', 'Weight', 'Dimension', 'Material', 'Manufacture'), 'ID', '=', $toyid);
     $this->subst['%price%'] = $arr1[0]['Price'];
     $this->subst['%onstock%'] = $arr1[0]['Quantity'];
-    
-    $_SESSION[$toyid.'onstock'] = $arr1[0]['Quantity'];
-    
     $this->subst['%howlong%'] = $arr1[0]['Deadline'];
     $this->subst['%weight%'] = $arr1[0]['Weight'];
     $this->subst['%dimension%'] = $arr1[0]['Dimension'];
@@ -176,8 +173,6 @@ class ToyItem extends TemplateHandler {
     return $toynails;
   }
   
-  
-  //--------!!!!!!!!!--------   Эта функция готова...  -------!!!!!!!!!--------
   //Получение строки html для составления домашней страницы
   public function CreatePage() {
     $this->GetProduct($this->toyid);

@@ -67,13 +67,12 @@
 			<td id='bottomright'>%country%</td>
 		</tr>
     <tr>
-					<td colspan='2'>
-						<form name='to_cart' action='#' method='post'>
-              <input type='hidden' name='page' value='toyitem' />
-              <input type='hidden' name='toyid' value='%toyid%' />
-              <input type='hidden' name='toyname' value='%toyname%' />
-              <input type='hidden' name='toyprice' value='%price%' />
-              <input type='image' src='%site_url%pictures/add_button.png' name='add' />
-						</form>
-					</td>
-	
+      <td colspan='2'>
+        <form name='to_cart' action='#' method='post'>
+          <input type='hidden' name='page' value='toyitem' />
+          <input type='hidden' name='toyid' value='%toyid%' />
+          <input type='hidden' name='toyname' value='%toyname%' />
+          <input type='hidden' name='toyprice' value='%price%' />
+          <input type='image' src='%site_url%pictures/add_button.png' name='add' />
+        </form>
+      </td>

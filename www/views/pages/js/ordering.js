@@ -1,21 +1,10 @@
-function deleteCookie(name) {
-	var date = new Date();			// Берём текущую дату
-	date.setTime(date.getTime() - 1);		// Возвращаемся в "прошлое"
-	document.cookie = name += "=; expires=" + date.toGMTString();		// Пустое значение и срок действия до "прошлого"
-}
-
 function deltoy(toy) {
 	var line = $(toy);
 	line.hide(500, function() {
 		line.remove();
-    
     var n = Number(toy.substr(1));
-    deleteCookie(n + "toyid");
-    deleteCookie(n + "toyname");
-    deleteCookie(n + "toyprice");
-    deleteCookie(n + "toyitems");
-    
-		recalc();
+    $.post("handle_1.php", {toyid: n});
+ 		recalc();
 	});
 }
 
@@ -29,9 +18,6 @@ function delall() {
 }
 
 function recalc() {
-  document.cookie = "recalc=" + 1;
-	var maxn = $("#dtls input").size();
-	document.cookie = "maxn=" + maxn;
   var price;
 	var quant;
 	var t;
@@ -39,28 +25,18 @@ function recalc() {
   var toyname;
   var items = 0;
 	var amount = 0;
-	for (var i = 0; i < maxn; i++) {
+	var maxn = $("#dtls input").size();
+  for (var i = 0; i < maxn; i++) {
 		quant = Number($("#dtls input").eq(i).val());
     toyid = Number($("#dtls input").eq(i).attr('name'));
-    var r = document.cookie.match("(^|; )" + toyid + "onstock=([^;]*)(;|$)");
-    if (r) var stock = Number(r[2]);
-    if (quant > stock) {
-      quant = stock;
-      $("#dtls input").eq(i).val(quant);
-    }
     t = $("#dtls td").eq(5*i+4).text();
 		price = parseFloat(t);
 		amount += quant*price;
     items += quant;
-    
-    document.cookie = i + "toyid=" + toyid;
     toyname = $("#dtls td.td1 a").eq(i).text();
-    document.cookie = toyid + "toyname=" + toyname;
-    document.cookie = toyid + "toyprice=" + price;
-    document.cookie = toyid + "toyitems=" + quant;
- 	}
+    $.post("handle_2.php", {num: i, toyid: toyid, toyname: toyname, price: price, toyitems: quant});
+  }
 	$("#dtls td").eq(maxn*5+2).text(amount + " руб.");
-  document.cookie = "items=" + items;
   
   var suf;  
   var ind = items % 10;
