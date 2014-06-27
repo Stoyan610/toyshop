@@ -23,7 +23,6 @@ abstract class TemplateHandler {
     $this->subst_gen_1['%present_page_description%'] = $this->DescrPage();
     $this->subst_gen_1['%present_page_key_words%'] = $this->KeywordsPage();
     $this->subst_gen_2['%merry_go_round%'] = $this->GetMerryGoRound();
-    $this->subst_gen_3['%site_map%'] = $this->GetSiteMap();
     $this->subst_gen_3['%SEO%'] = $this->GetSEO();
     $this->general_1 = $this->ReplaceTemplate($this->subst_gen_1, 'general');
     $this->general_2 = $this->ReplaceTemplate($this->subst_gen_2, 'general2');
@@ -145,10 +144,6 @@ abstract class TemplateHandler {
   
   
   
-  
-  protected function GetSiteMap() {
-    return 'Some Site Map';
-  }
   protected function GetSEO() {
     return 'Some SEO';
   }

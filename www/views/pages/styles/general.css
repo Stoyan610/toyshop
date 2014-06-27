@@ -77,6 +77,16 @@ img{
 	text-decoration: none;
 	color: #333333;
 }
+.ainfooter {
+	font-size: 90%;
+  text-decoration: underline;
+}
+.ainfooter:hover {
+	background-color: #77BB77;
+}
+.ainfooter:visited {
+	color: maroon;
+}
 .menu {
 	font-size: 130%;
 	font-weight: bold;
